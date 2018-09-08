@@ -186,7 +186,9 @@
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>2.4</version>
                 <configuration>
-		    <useDefaultManifestFile>true</useDefaultManifestFile>
+                    <manifestEntries>
+                        <Automatic-Module-Name>java.security.jacc</Automatic-Module-Name>
+                    </manifestEntries>
                     <excludes>
                         <exclude>**/*.java</exclude>
                     </excludes>
