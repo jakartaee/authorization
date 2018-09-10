@@ -66,7 +66,6 @@ public final class WebRoleRefPermission extends Permission implements java.io.Se
 	 * Web resource identified in the name parameter. The value of the role reference must not be <code>null</code> or the
 	 * empty string.
 	 */
-
 	public WebRoleRefPermission(String name, String actions) {
 		super(name);
 		this.actions = actions;
@@ -84,7 +83,6 @@ public final class WebRoleRefPermission extends Permission implements java.io.Se
 	 * @param o the WebRoleRefPermission object being tested for equality with this WebRoleRefPermission.
 	 * @return true if the argument WebRoleRefPermission object is equivalent to this WebRoleRefPermission.
 	 */
-
 	public boolean equals(Object o) {
 		if (o == null || !(o instanceof WebRoleRefPermission))
 			return false;
@@ -151,7 +149,6 @@ public final class WebRoleRefPermission extends Permission implements java.io.Se
 	 * <P>
 	 * @return true if the specified permission is implied by this object, false if not.
 	 */
-
 	public boolean implies(Permission permission) {
 		return this.equals(permission);
 	}

@@ -34,7 +34,6 @@ package javax.security.jacc;
  * @author Ron Monzillo
  * @author Gary Ellison
  */
-
 public class PolicyContextException extends java.lang.Exception {
 
 	/**
@@ -50,7 +49,6 @@ public class PolicyContextException extends java.lang.Exception {
 	 * 
 	 * @param msg - a <code>String</code> containing a detail message describing the cause of the exception.
 	 */
-
 	public PolicyContextException(String msg) {
 		super(msg);
 	}
@@ -66,7 +64,6 @@ public class PolicyContextException extends java.lang.Exception {
 	 * this parameter may subsequently be retrieved by calling 
 	 * <code>getCause()</code> on the constructed exception.
 	 */
-
 	public PolicyContextException(String msg, Throwable cause) {
 		super(msg, cause);
 	}
@@ -79,7 +76,6 @@ public class PolicyContextException extends java.lang.Exception {
 	 * value passed through this parameter may subsequently be retrieved by calling <code>getCause()</code> on the
 	 * constructed exception.
 	 */
-
 	public PolicyContextException(Throwable cause) {
 		super(cause);
 	}

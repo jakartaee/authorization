@@ -58,7 +58,6 @@ import java.util.Set;
  * @author Ron Monzillo
  * @author Gary Ellison
  */
-
 public final class PolicyContext {
 
 	private PolicyContext() {
@@ -67,20 +66,17 @@ public final class PolicyContext {
 	/**
 	 * This static instance variable contains the policy context identifier value. It's initial value is null.
 	 */
-
 	private static ThreadLocal thisContextID = new ThreadLocal();
 
 	/**
 	 * This static instance variable contains the handler parameter data object. It's initial value is null.
 	 */
-
 	private static ThreadLocal thisHandlerData = new ThreadLocal();
 
 	/**
 	 * This static instance variable contains the mapping of container registered <code>PolicyContextHandler</code> objects
 	 * with the keys that identify the context objects returned by the handlers.
 	 */
-
 	private static Hashtable handlerTable = new Hashtable();
 
 	/**
@@ -94,7 +90,6 @@ public final class PolicyContext {
 	 * @throws java.lang.SecurityException if the calling AccessControlContext is not authorized by the container to call
 	 * this method.
 	 */
-
 	public static void setContextID(String contextID) {
 		java.lang.SecurityManager sm = System.getSecurityManager();
 		if (sm != null)
@@ -114,7 +109,6 @@ public final class PolicyContext {
 	 * @throws java.lang.SecurityException if the calling AccessControlContext is not authorized by the container to call
 	 * this method. Containers may choose to authorize calls to this method by any AccessControlContext.
 	 */
-
 	public static String getContextID() {
 		return (String) thisContextID.get();
 	}
@@ -132,7 +126,6 @@ public final class PolicyContext {
 	 * @throws java.lang.SecurityException if the calling AccessControlContext is not authorized by the container to call
 	 * this method.
 	 */
-
 	public static void setHandlerData(Object data) {
 
 		java.lang.SecurityManager sm = System.getSecurityManager();
@@ -166,7 +159,6 @@ public final class PolicyContext {
 	 * PolicyContextHandler causes it to throw a checked exception that is not accounted for in the signature of this
 	 * method.
 	 */
-
 	public static void registerHandler(String key, PolicyContextHandler handler, boolean replace) throws javax.security.jacc.PolicyContextException {
 		if (handler == null || key == null)
 			throw new IllegalArgumentException("invalid (null) key or handler");
@@ -191,7 +183,6 @@ public final class PolicyContext {
 	 * @throws java.lang.SecurityException if the calling AccessControlContext is not authorized by the container to call
 	 * this method. Containers may choose to authorize calls to this method by any AccessControlContext.
 	 */
-
 	public static Set getHandlerKeys() {
 		return handlerTable.keySet();
 	}
@@ -217,7 +208,6 @@ public final class PolicyContext {
 	 * PolicyContextHandler causes it to throw a checked exception that is not accounted for in the signature of this
 	 * method.
 	 */
-
 	public static Object getContext(String key) throws javax.security.jacc.PolicyContextException {
 		if (key == null)
 			throw new IllegalArgumentException("invalid key");

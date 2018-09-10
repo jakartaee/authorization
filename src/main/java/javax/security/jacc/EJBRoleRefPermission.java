@@ -38,7 +38,6 @@ import java.security.Permission;
  * @author Ron Monzillo
  * @author Gary Ellison
  */
-
 public final class EJBRoleRefPermission extends Permission {
 
 	private final String actions;
@@ -64,7 +63,6 @@ public final class EJBRoleRefPermission extends Permission {
 	 * EJB identified in the name parameter. The value of the role reference must not be <code>null</code> or the empty
 	 * string.
 	 */
-
 	public EJBRoleRefPermission(String name, String actions) {
 		super(name);
 		this.actions = actions;
@@ -81,7 +79,6 @@ public final class EJBRoleRefPermission extends Permission {
 	 * <P>
 	 * @return true if the argument EJBRoleRefPermission object is equivalent to this EJBRoleRefPermission.
 	 */
-
 	public boolean equals(Object o) {
 		if (o == null || !(o instanceof EJBRoleRefPermission))
 			return false;
@@ -100,7 +97,6 @@ public final class EJBRoleRefPermission extends Permission {
 	 * 
 	 * @return a String containing the canonicalized actions of this EJBRoleRefPermission.
 	 */
-
 	public String getActions() {
 		return this.actions;
 	}
@@ -120,7 +116,6 @@ public final class EJBRoleRefPermission extends Permission {
 	 * 
 	 * @return the integer hash code value for this object.
 	 */
-
 	public int hashCode() {
 
 		if (hashCodeValue == 0) {
@@ -148,7 +143,6 @@ public final class EJBRoleRefPermission extends Permission {
 	 * <P>
 	 * @return true if the specified permission is implied by this object, false if not.
 	 */
-
 	public boolean implies(Permission permission) {
 		return this.equals(permission);
 	}

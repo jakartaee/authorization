@@ -37,7 +37,6 @@ import java.security.PrivilegedExceptionAction;
  * @author Gary Ellison
  * @author Harpreet Singh
  */
-
 public abstract class PolicyConfigurationFactory {
 	private static String FACTORY_NAME = "javax.security.jacc.PolicyConfigurationFactory.provider";
 
@@ -65,7 +64,6 @@ public abstract class PolicyConfigurationFactory {
 	 * accounted for by the getPolicyConfigurationFactory method signature. The exception thrown by the implementation class
 	 * will be encapsulated (during construction) in the thrown PolicyContextException
 	 */
-
 	public static PolicyConfigurationFactory getPolicyConfigurationFactory()
 	        throws java.lang.ClassNotFoundException, javax.security.jacc.PolicyContextException {
 
@@ -179,7 +177,6 @@ public abstract class PolicyConfigurationFactory {
 	 * accounted for by the getPolicyConfiguration method signature. The exception thrown by the implementation class will
 	 * be encapsulated (during construction) in the thrown PolicyContextException.
 	 */
-
 	public abstract PolicyConfiguration getPolicyConfiguration(String contextID, boolean remove) throws javax.security.jacc.PolicyContextException;
 
 	/**
@@ -199,7 +196,6 @@ public abstract class PolicyConfigurationFactory {
 	 * accounted for by the inService method signature. The exception thrown by the implementation class will be
 	 * encapsulated (during construction) in the thrown PolicyContextException.
 	 */
-
 	public abstract boolean inService(String contextID) throws javax.security.jacc.PolicyContextException;
 
 }

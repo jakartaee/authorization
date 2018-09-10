@@ -25,7 +25,6 @@ package javax.security.jacc;
  *
  * @serial exclude
  */
-
 class URLPattern extends Object implements Comparable {
 
 	private static String DEFAULT_PATTERN = "/";

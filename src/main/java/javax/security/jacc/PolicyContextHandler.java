@@ -30,7 +30,6 @@ package javax.security.jacc;
  * @author Ron Monzillo
  * @author Gary Ellison
  */
-
 public interface PolicyContextHandler {
 
 	/**
@@ -46,7 +45,6 @@ public interface PolicyContextHandler {
 	 * accounted for by the method signature. The exception thrown by the implementation class will be encapsulated (during
 	 * construction) in the thrown PolicyContextException
 	 */
-
 	public boolean supports(String key) throws javax.security.jacc.PolicyContextException;
 
 	/**
@@ -61,7 +59,6 @@ public interface PolicyContextHandler {
 	 * accounted for by the method signature. The exception thrown by the implementation class will be encapsulated (during
 	 * construction) in the thrown PolicyContextException
 	 */
-
 	public String[] getKeys() throws javax.security.jacc.PolicyContextException;
 
 	/**
@@ -85,7 +82,6 @@ public interface PolicyContextHandler {
 	 * accounted for by the method signature. The exception thrown by the implementation class will be encapsulated (during
 	 * construction) in the thrown PolicyContextException
 	 */
-
 	public Object getContext(String key, Object data) throws javax.security.jacc.PolicyContextException;
 
 }

@@ -37,7 +37,6 @@ import javax.servlet.http.HttpServletRequest;
  * @author Gary Ellison
  *
  */
-
 public final class WebUserDataPermission extends Permission {
 
 	private static String transportKeys[] = { "NONE", "INTEGRAL", "CONFIDENTIAL", };
@@ -156,7 +155,6 @@ public final class WebUserDataPermission extends Permission {
 	 * through this parameter is null or the empty string, then the permission is constructed with actions corresponding to
 	 * all the possible HTTP methods and transportType "NONE".
 	 */
-
 	public WebUserDataPermission(String name, String actions) {
 		super(name);
 		this.urlPatternSpec = new URLPatternSpec(name);
@@ -181,7 +179,6 @@ public final class WebUserDataPermission extends Permission {
 	 * @param transportType a String whose value is a transportType. If the value passed through this parameter is null,
 	 * then the permission is constructed with actions corresponding to transportType "NONE".
 	 */
-
 	public WebUserDataPermission(String urlPatternSpec, String[] HTTPMethods, String transportType) {
 		super(urlPatternSpec);
 		this.urlPatternSpec = new URLPatternSpec(urlPatternSpec);
@@ -210,7 +207,6 @@ public final class WebUserDataPermission extends Permission {
 	 * from HttpServletRequest.getMethod(). The TransportType component of the permission's actions is determined by calling
 	 * HttpServletRequest.isSecure().
 	 */
-
 	public WebUserDataPermission(HttpServletRequest request) {
 		super(getUriMinusContextPath(request));
 		this.urlPatternSpec = new URLPatternSpec(super.getName());
@@ -232,7 +228,6 @@ public final class WebUserDataPermission extends Permission {
 	 * <P>
 	 * @return true if the argument WebUserDataPermission object is equivalent to this WebUserDataPermission.
 	 */
-
 	public boolean equals(Object o) {
 		if (o == null || !(o instanceof WebUserDataPermission))
 			return false;
@@ -289,7 +284,6 @@ public final class WebUserDataPermission extends Permission {
 	 * 
 	 * @return a String containing the canonicalized actions of this WebUserDataPermission (or the null value).
 	 */
-
 	public String getActions() {
 		String result;
 		String hActions = this.methodSpec.getActions();
@@ -369,7 +363,6 @@ public final class WebUserDataPermission extends Permission {
 	 * <P>
 	 * @return true if the specified permission is implied by this object, false if not.
 	 */
-
 	public boolean implies(Permission permission) {
 		if (permission == null || !(permission instanceof WebUserDataPermission))
 			return false;

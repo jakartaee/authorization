@@ -39,7 +39,6 @@ import java.util.HashMap;
  * @author Gary Ellison
  *
  */
-
 public final class EJBMethodPermission extends Permission {
 
 	private static final String interfaceKeys[] = { "Local", "LocalHome", "Remote", "Home", "ServiceEndpoint" };
@@ -131,7 +130,6 @@ public final class EJBMethodPermission extends Permission {
 	 * <P>
 	 * @param actions identifies the methods of the EJB to which the permission pertains.
 	 */
-
 	public EJBMethodPermission(String name, String actions) {
 		super(name);
 		setMethodSpec(actions);
@@ -161,7 +159,6 @@ public final class EJBMethodPermission extends Permission {
 	 * the permission pertains to all methods that match the other parameters of the permission specification without
 	 * consideration of method signature.
 	 */
-
 	public EJBMethodPermission(String EJBName, String methodName, String methodInterface, String[] methodParams) {
 		super(EJBName);
 		setMethodSpec(methodName, methodInterface, methodParams);
@@ -184,7 +181,6 @@ public final class EJBMethodPermission extends Permission {
 	 * @param method an instance of the Java.lang.reflect.Method class corresponding to the method that the container is
 	 * trying to determine whether the caller has permission to access. This value must not be null.
 	 */
-
 	public EJBMethodPermission(String EJBName, String methodInterface, Method method) {
 		super(EJBName);
 		setMethodSpec(methodInterface, method);
@@ -201,7 +197,6 @@ public final class EJBMethodPermission extends Permission {
 	 * <P>
 	 * @return true if the argument EJBMethodPermission object is equivalent to this EJBMethodPermission.
 	 */
-
 	public boolean equals(Object o) {
 		if (o == null || !(o instanceof EJBMethodPermission))
 			return false;
@@ -274,7 +269,6 @@ public final class EJBMethodPermission extends Permission {
 	 * 
 	 * @return a String containing the canonicalized actions of this EJBMethodPermission.
 	 */
-
 	public String getActions() {
 		if (this.actions == null) {
 
@@ -317,7 +311,6 @@ public final class EJBMethodPermission extends Permission {
 	 * 
 	 * @return the integer hash code value for this object.
 	 */
-
 	public int hashCode() {
 		if (hashCodeValue == 0) {
 

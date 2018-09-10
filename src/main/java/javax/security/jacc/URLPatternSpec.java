@@ -27,7 +27,6 @@ import java.util.Arrays;
  * @author Ron Monzillo
  * @author Gary Ellison
  */
-
 class URLPatternSpec extends URLPattern {
 
 	private static String EMPTY_STRING = "";
@@ -75,7 +74,6 @@ class URLPatternSpec extends URLPattern {
 	 * which the permission pertains. All URLPatterns in the URLPatternSpec are relative to the context path of the deployed
 	 * web application module, and the same URLPattern must not occur more than once in a URLPatternSpec.
 	 */
-
 	public URLPatternSpec(String urlPatternSpec) {
 		super(getFirstPattern(urlPatternSpec));
 		int colon = urlPatternSpec.indexOf(":");
@@ -122,7 +120,6 @@ class URLPatternSpec extends URLPattern {
 	 * 
 	 * @return the integer hash code value for this object.
 	 */
-
 	public int hashCode() {
 		if (hashCodeValue == 0)
 			hashCodeValue = this.toString().hashCode();
@@ -165,7 +162,6 @@ class URLPatternSpec extends URLPattern {
 	 * <P>
 	 * @return true if the specified URLPatternSpec is implied by this URLPatternSpec, false if not.
 	 */
-
 	public boolean implies(URLPatternSpec that) {
 		if (that == null)
 			return false;
@@ -216,7 +212,6 @@ class URLPatternSpec extends URLPattern {
 	 * been sorted, and pruned by setURLPatternArray, such that all this method has to do is glue them together into a
 	 * string.
 	 */
-
 	public String toString() {
 		if (canonicalSpec == null) {
 

@@ -36,7 +36,6 @@ import javax.servlet.http.HttpServletRequest;
  * @author Gary Ellison
  *
  */
-
 public final class WebResourcePermission extends Permission {
 
 	private transient HttpMethodSpec methodSpec;
@@ -130,7 +129,6 @@ public final class WebResourcePermission extends Permission {
 	 * @param actions identifies the HTTP methods to which the permission pertains. If the value passed through this
 	 * parameter is null or the empty string, then the permission pertains to all the possible HTTP methods.
 	 */
-
 	public WebResourcePermission(String name, String actions) {
 		super(name);
 		this.urlPatternSpec = new URLPatternSpec(name);
@@ -152,7 +150,6 @@ public final class WebResourcePermission extends Permission {
 	 * passed through this parameter is null or is an array with no elements, then the permission pertains to all the
 	 * possible HTTP methods.
 	 */
-
 	public WebResourcePermission(String urlPatternSpec, String[] HTTPMethods) {
 		super(urlPatternSpec);
 		this.urlPatternSpec = new URLPatternSpec(urlPatternSpec);
@@ -170,7 +167,6 @@ public final class WebResourcePermission extends Permission {
 	 * HttpServletRequest.getMethod(). The constructor must transform all colon characters occuring in the name to escaped
 	 * encoding as defined in RFC 2396.
 	 */
-
 	public WebResourcePermission(HttpServletRequest request) {
 		super(getUriMinusContextPath(request));
 		this.urlPatternSpec = new URLPatternSpec(super.getName());
@@ -191,7 +187,6 @@ public final class WebResourcePermission extends Permission {
 	 * <P>
 	 * @return true if the argument WebResourcePermission object is equivalent to this WebResourcePermission.
 	 */
-
 	public boolean equals(Object o) {
 		if (o == null || !(o instanceof WebResourcePermission))
 			return false;
@@ -213,7 +208,6 @@ public final class WebResourcePermission extends Permission {
 	 * 
 	 * @return a String containing the canonicalized actions of this WebResourcePermission (or the null value).
 	 */
-
 	public String getActions() {
 		return this.methodSpec.getActions();
 	}
@@ -233,7 +227,6 @@ public final class WebResourcePermission extends Permission {
 	 * 
 	 * @return the integer hash code value for this object.
 	 */
-
 	public int hashCode() {
 		if (this.hashCodeValue == 0) {
 			String hashInput = this.urlPatternSpec.toString() + " " + this.methodSpec.hashCode();

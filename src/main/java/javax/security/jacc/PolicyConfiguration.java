@@ -147,7 +147,6 @@ import java.security.PermissionCollection;
  * @author Ron Monzillo
  * @author Gary Ellison
  */
-
 public interface PolicyConfiguration {
 
 	/**
@@ -162,7 +161,6 @@ public interface PolicyConfiguration {
 	 * accounted for by the getContextID method signature. The exception thrown by the implementation class will be
 	 * encapsulated (during construction) in the thrown PolicyContextException.
 	 */
-
 	public String getContextID() throws javax.security.jacc.PolicyContextException;
 
 	/**

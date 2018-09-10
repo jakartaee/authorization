@@ -28,7 +28,6 @@ import java.util.HashMap;
  * @author Ron Monzillo
  * @author Gary Ellison
  */
-
 final class HttpMethodSpec {
 
 	private static final String comma = ",";
