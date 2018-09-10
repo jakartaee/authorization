@@ -44,8 +44,9 @@ public final class WebUserDataPermission extends Permission {
 
 	private static HashMap transportHash = new HashMap();
 	static {
-		for (int i = 0; i < transportKeys.length; i++)
+		for (int i = 0; i < transportKeys.length; i++) {
 			transportHash.put(transportKeys[i], Integer.valueOf(i));
+		}
 	}
 
 	private static int TT_NONE = ((Integer) transportHash.get("NONE")).intValue();
@@ -189,8 +190,9 @@ public final class WebUserDataPermission extends Permission {
 
 		if (transportType != null) {
 			Integer bit = (Integer) transportHash.get(transportType);
-			if (bit == null)
+			if (bit == null) {
 				throw new IllegalArgumentException("illegal transport value");
+			}
 			this.transportType = bit.intValue();
 		}
 
@@ -233,16 +235,19 @@ public final class WebUserDataPermission extends Permission {
 	 */
 	@Override
 	public boolean equals(Object o) {
-		if (o == null || !(o instanceof WebUserDataPermission))
+		if (o == null || !(o instanceof WebUserDataPermission)) {
 			return false;
+		}
 
 		WebUserDataPermission that = (WebUserDataPermission) o;
 
-		if (this.transportType != that.transportType)
+		if (this.transportType != that.transportType) {
 			return false;
+		}
 
-		if (!this.methodSpec.equals(that.methodSpec))
+		if (!this.methodSpec.equals(that.methodSpec)) {
 			return false;
+		}
 
 		return this.urlPatternSpec.equals(that.urlPatternSpec);
 	}
@@ -294,14 +299,15 @@ public final class WebUserDataPermission extends Permission {
 	public String getActions() {
 		String result;
 		String hActions = this.methodSpec.getActions();
-		if (this.transportType == TT_NONE && hActions == null)
+		if (this.transportType == TT_NONE && hActions == null) {
 			result = null;
-		else if (this.transportType == TT_NONE)
+		} else if (this.transportType == TT_NONE) {
 			result = hActions;
-		else if (hActions == null)
+		} else if (hActions == null) {
 			result = ":" + transportKeys[this.transportType];
-		else
+		} else {
 			result = hActions + ":" + transportKeys[this.transportType];
+		}
 		return result;
 	}
 
@@ -376,16 +382,19 @@ public final class WebUserDataPermission extends Permission {
 	 */
 	@Override
 	public boolean implies(Permission permission) {
-		if (permission == null || !(permission instanceof WebUserDataPermission))
+		if (permission == null || !(permission instanceof WebUserDataPermission)) {
 			return false;
+		}
 
 		WebUserDataPermission that = (WebUserDataPermission) permission;
 
-		if (this.transportType != TT_NONE && this.transportType != that.transportType)
+		if (this.transportType != TT_NONE && this.transportType != that.transportType) {
 			return false;
+		}
 
-		if (!this.methodSpec.implies(that.methodSpec))
+		if (!this.methodSpec.implies(that.methodSpec)) {
 			return false;
+		}
 
 		return this.urlPatternSpec.implies(that.urlPatternSpec);
 	}
@@ -432,8 +441,9 @@ public final class WebUserDataPermission extends Permission {
 					this.methodSpec = HttpMethodSpec.getSpec(actions.substring(0, colon));
 				}
 				Integer bit = (Integer) transportHash.get(actions.substring(colon + 1));
-				if (bit == null)
+				if (bit == null) {
 					throw new IllegalArgumentException("illegal transport value");
+				}
 
 				this.transportType = bit.intValue();
 			}

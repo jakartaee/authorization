@@ -83,13 +83,15 @@ public final class EJBRoleRefPermission extends Permission {
 	 */
 	@Override
 	public boolean equals(Object o) {
-		if (o == null || !(o instanceof EJBRoleRefPermission))
+		if (o == null || !(o instanceof EJBRoleRefPermission)) {
 			return false;
+		}
 
 		EJBRoleRefPermission that = (EJBRoleRefPermission) o;
 
-		if (!this.getName().equals(that.getName()))
+		if (!this.getName().equals(that.getName())) {
 			return false;
+		}
 
 		return this.actions.equals(that.actions);
 	}

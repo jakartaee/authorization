@@ -79,8 +79,9 @@ class URLPatternSpec extends URLPattern {
 		if (colon >= 0) {
 			urlPatternList = urlPatternSpec.substring(colon + 1);
 			setURLPatternArray();
-		} else
+		} else {
 			urlPatternList = null;
+		}
 	}
 
 	/**
@@ -98,8 +99,9 @@ class URLPatternSpec extends URLPattern {
 	 */
 	@Override
 	public boolean equals(Object o) {
-		if (o == null || !(o instanceof URLPatternSpec))
+		if (o == null || !(o instanceof URLPatternSpec)) {
 			return false;
+		}
 
 		URLPatternSpec that = (URLPatternSpec) o;
 
@@ -122,8 +124,9 @@ class URLPatternSpec extends URLPattern {
 	 */
 	@Override
 	public int hashCode() {
-		if (hashCodeValue == 0)
+		if (hashCodeValue == 0) {
 			hashCodeValue = this.toString().hashCode();
+		}
 
 		return hashCodeValue;
 	}
@@ -164,26 +167,31 @@ class URLPatternSpec extends URLPattern {
 	 * @return true if the specified URLPatternSpec is implied by this URLPatternSpec, false if not.
 	 */
 	public boolean implies(URLPatternSpec that) {
-		if (that == null)
+		if (that == null) {
 			return false;
+		}
 
-		if (!super.implies(that))
+		if (!super.implies(that)) {
 			return false;
+		}
 
-		for (int i = 0; urlPatternArray != null && i < urlPatternArray.length; i++)
-
-			if (urlPatternArray[i] != null && urlPatternArray[i].implies(that))
+		for (int i = 0; urlPatternArray != null && i < urlPatternArray.length; i++) {
+			if (urlPatternArray[i] != null && urlPatternArray[i].implies(that)) {
 				return false;
+			}
+		}
 
 		if (urlPatternArray != null && ((URLPattern) that).implies(this)) {
 
-			if (that.urlPatternArray == null)
+			if (that.urlPatternArray == null) {
 				return false;
+			}
 
 			boolean flags[] = new boolean[urlPatternArray.length];
 
-			for (int i = 0; i < flags.length; i++)
+			for (int i = 0; i < flags.length; i++) {
 				flags[i] = false;
+			}
 
 			int count = 0;
 
@@ -191,14 +199,16 @@ class URLPatternSpec extends URLPattern {
 
 				for (int i = 0; i < flags.length; i++) {
 
-					if (!flags[i])
+					if (!flags[i]) {
 						if (urlPatternArray[i] == null || (that.urlPatternArray[j] != null && that.urlPatternArray[j].implies(urlPatternArray[i]))) {
 
 							count += 1;
 							flags[i] = true;
-							if (count == flags.length)
+							if (count == flags.length) {
 								return true;
+							}
 						}
+					}
 				}
 			}
 
@@ -217,26 +227,27 @@ class URLPatternSpec extends URLPattern {
 	public String toString() {
 		if (canonicalSpec == null) {
 
-			if (urlPatternList == null)
+			if (urlPatternList == null) {
 				canonicalSpec = super.toString();
-
-			else {
+			} else {
 
 				StringBuffer s = null;
 
 				for (int i = 0; i < urlPatternArray.length; i++) {
 					if (urlPatternArray[i] != null) {
-						if (s == null)
+						if (s == null) {
 							s = new StringBuffer(urlPatternArray[i].toString());
-						else
+						} else {
 							s.append(":" + urlPatternArray[i].toString());
+						}
 					}
 				}
 
-				if (s == null)
+				if (s == null) {
 					canonicalSpec = super.toString();
-				else
+				} else {
 					canonicalSpec = super.toString() + ":" + s.toString();
+				}
 			}
 		}
 
@@ -246,15 +257,17 @@ class URLPatternSpec extends URLPattern {
 	// ----------------- Private Methods ---------------------
 
 	private static String getFirstPattern(String urlPatternSpec) {
-		if (urlPatternSpec == null)
+		if (urlPatternSpec == null) {
 			throw new IllegalArgumentException("Invalid URLPatternSpec");
+		}
 		int colon = urlPatternSpec.indexOf(":");
-		if (colon < 0)
+		if (colon < 0) {
 			return urlPatternSpec;
-		else if (colon > 0)
+		} else if (colon > 0) {
 			return urlPatternSpec.substring(0, colon);
-		else if (colon == 0)
+		} else if (colon == 0) {
 			return EMPTY_STRING;
+		}
 		throw new IllegalArgumentException("Invalid URLPatternSpec");
 	}
 
@@ -265,8 +278,9 @@ class URLPatternSpec extends URLPattern {
 
 			int count = tokens.length;
 
-			if (count == 0)
+			if (count == 0) {
 				throw new IllegalArgumentException("colon followed by empty URLPatternList");
+			}
 			urlPatternArray = new URLPattern[count];
 
 			int firstType = this.patternType();
@@ -275,8 +289,9 @@ class URLPatternSpec extends URLPattern {
 
 				urlPatternArray[i] = new URLPattern(tokens[i]);
 
-				if (urlPatternArray[i].implies(this))
+				if (urlPatternArray[i].implies(this)) {
 					throw new IllegalArgumentException("pattern in URLPatternList implies first pattern");
+				}
 
 				switch (firstType) {
 				case URLPattern.PT_PREFIX:
@@ -284,20 +299,23 @@ class URLPatternSpec extends URLPattern {
 					switch (urlPatternArray[i].patternType()) {
 					case URLPattern.PT_PREFIX:
 						if (firstType == URLPattern.PT_PREFIX) {
-							if (super.equals(urlPatternArray[i]) || !super.implies(urlPatternArray[i]))
+							if (super.equals(urlPatternArray[i]) || !super.implies(urlPatternArray[i])) {
 								throw new IllegalArgumentException("Invalid prefix pattern in URLPatternList");
+							}
 						}
 						break;
 					case URLPattern.PT_EXACT:
-						if (!super.implies(urlPatternArray[i]))
+						if (!super.implies(urlPatternArray[i])) {
 							throw new IllegalArgumentException("Invalid exact pattern in URLPatternList");
+						}
 						break;
 					default:
 						throw new IllegalArgumentException("Invalid pattern type in URLPatternList");
 					}
 				case URLPattern.PT_DEFAULT:
-					if (super.equals(urlPatternArray[i]))
+					if (super.equals(urlPatternArray[i])) {
 						throw new IllegalArgumentException("Invalid default pattern in URLPatternList");
+					}
 					break;
 				case URLPattern.PT_EXACT:
 					throw new IllegalArgumentException("invalid URLPatternSpec");
@@ -312,9 +330,11 @@ class URLPatternSpec extends URLPattern {
 				if (urlPatternArray[i] != null) {
 					switch (urlPatternArray[i].patternType()) {
 					case URLPattern.PT_PREFIX:
-						for (int j = i + 1; j < urlPatternArray.length; j++)
-							if (urlPatternArray[i].implies(urlPatternArray[j]))
+						for (int j = i + 1; j < urlPatternArray.length; j++) {
+							if (urlPatternArray[i].implies(urlPatternArray[j])) {
 								urlPatternArray[j] = null;
+							}
+						}
 						break;
 					default:
 						break;

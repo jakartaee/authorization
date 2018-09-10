@@ -97,8 +97,9 @@ public final class PolicyContext {
 	 */
 	public static void setContextID(String contextID) {
 		java.lang.SecurityManager sm = System.getSecurityManager();
-		if (sm != null)
+		if (sm != null) {
 			sm.checkPermission(new SecurityPermission("setPolicy"));
+		}
 
 		thisContextID.set(contextID);
 	}
@@ -134,8 +135,9 @@ public final class PolicyContext {
 	public static void setHandlerData(Object data) {
 
 		java.lang.SecurityManager sm = System.getSecurityManager();
-		if (sm != null)
+		if (sm != null) {
 			sm.checkPermission(new SecurityPermission("setPolicy"));
+		}
 
 		thisHandlerData.set(data);
 	}
@@ -165,16 +167,20 @@ public final class PolicyContext {
 	 * method.
 	 */
 	public static void registerHandler(String key, PolicyContextHandler handler, boolean replace) throws javax.security.jacc.PolicyContextException {
-		if (handler == null || key == null)
+		if (handler == null || key == null) {
 			throw new IllegalArgumentException("invalid (null) key or handler");
-		if (!handler.supports(key))
+		}
+		if (!handler.supports(key)) {
 			throw new IllegalArgumentException("handler does not support key");
+		}
 		java.lang.SecurityManager sm = System.getSecurityManager();
-		if (sm != null)
+		if (sm != null) {
 			sm.checkPermission(new SecurityPermission("setPolicy"));
+		}
 
-		if (handlerTable.containsKey(key) && replace == false)
+		if (handlerTable.containsKey(key) && replace == false) {
 			throw new IllegalArgumentException("handler exists");
+		}
 		handlerTable.put(key, handler);
 	}
 
@@ -214,15 +220,18 @@ public final class PolicyContext {
 	 * method.
 	 */
 	public static Object getContext(String key) throws javax.security.jacc.PolicyContextException {
-		if (key == null)
+		if (key == null) {
 			throw new IllegalArgumentException("invalid key");
+		}
 		PolicyContextHandler handler = (PolicyContextHandler) handlerTable.get(key);
-		if (handler == null || !handler.supports(key))
+		if (handler == null || !handler.supports(key)) {
 			throw new IllegalArgumentException("unknown handler key");
+		}
 
 		java.lang.SecurityManager sm = System.getSecurityManager();
-		if (sm != null)
+		if (sm != null) {
 			sm.checkPermission(new SecurityPermission("setPolicy"));
+		}
 
 		return handler.getContext(key, thisHandlerData.get());
 	}

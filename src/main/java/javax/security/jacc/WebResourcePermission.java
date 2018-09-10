@@ -200,13 +200,15 @@ public final class WebResourcePermission extends Permission {
 	 */
 	@Override
 	public boolean equals(Object o) {
-		if (o == null || !(o instanceof WebResourcePermission))
+		if (o == null || !(o instanceof WebResourcePermission)) {
 			return false;
+		}
 
 		WebResourcePermission that = (WebResourcePermission) o;
 
-		if (!this.methodSpec.equals(that.methodSpec))
+		if (!this.methodSpec.equals(that.methodSpec)) {
 			return false;
+		}
 
 		return this.urlPatternSpec.equals(that.urlPatternSpec);
 	}
@@ -292,13 +294,15 @@ public final class WebResourcePermission extends Permission {
 	 */
 	@Override
 	public boolean implies(Permission permission) {
-		if (permission == null || !(permission instanceof WebResourcePermission))
+		if (permission == null || !(permission instanceof WebResourcePermission)) {
 			return false;
+		}
 
 		WebResourcePermission that = (WebResourcePermission) permission;
 
-		if (!this.methodSpec.implies(that.methodSpec))
+		if (!this.methodSpec.implies(that.methodSpec)) {
 			return false;
+		}
 
 		return this.urlPatternSpec.implies(that.urlPatternSpec);
 	}

@@ -48,8 +48,9 @@ public final class EJBMethodPermission extends Permission {
 
 	private static HashMap interfaceHash = new HashMap();
 	static {
-		for (int i = 0; i < interfaceKeys.length; i++)
+		for (int i = 0; i < interfaceKeys.length; i++) {
 			interfaceHash.put(interfaceKeys[i], Integer.valueOf(i));
+		}
 	}
 
 	private transient int methodInterface;
@@ -202,31 +203,39 @@ public final class EJBMethodPermission extends Permission {
 	 */
 	@Override
 	public boolean equals(Object o) {
-		if (o == null || !(o instanceof EJBMethodPermission))
+		if (o == null || !(o instanceof EJBMethodPermission)) {
 			return false;
+		}
 
 		EJBMethodPermission that = (EJBMethodPermission) o;
 
-		if (!this.getName().equals(that.getName()))
+		if (!this.getName().equals(that.getName())) {
 			return false;
+		}
 
 		if (this.methodName != null) {
-			if (that.methodName == null || !this.methodName.equals(that.methodName))
+			if (that.methodName == null || !this.methodName.equals(that.methodName)) {
 				return false;
-		} else if (that.methodName != null)
+			}
+		} else if (that.methodName != null) {
 			return false;
+		}
 
-		if (this.methodInterface != that.methodInterface)
+		if (this.methodInterface != that.methodInterface) {
 			return false;
+		}
 
-		if (this.methodInterface == -2 && !this.otherMethodInterface.equals(that.otherMethodInterface))
+		if (this.methodInterface == -2 && !this.otherMethodInterface.equals(that.otherMethodInterface)) {
 			return false;
+		}
 
 		if (this.methodParams != null) {
-			if (that.methodParams == null || !this.methodParams.equals(that.methodParams))
+			if (that.methodParams == null || !this.methodParams.equals(that.methodParams)) {
 				return false;
-		} else if (that.methodParams != null)
+			}
+		} else if (that.methodParams != null) {
 			return false;
+		}
 
 		return true;
 	}
@@ -282,21 +291,25 @@ public final class EJBMethodPermission extends Permission {
 
 			if (this.methodName == null) {
 				if (iSpec == null) {
-					if (this.methodParams != null)
+					if (this.methodParams != null) {
 						this.actions = "," + this.methodParams;
-				} else if (this.methodParams == null)
+					}
+				} else if (this.methodParams == null) {
 					this.actions = "," + iSpec;
-				else
+				} else {
 					this.actions = "," + iSpec + this.methodParams;
+				}
 			} else if (iSpec == null) {
-				if (this.methodParams == null)
+				if (this.methodParams == null) {
 					this.actions = this.methodName;
-				else
+				} else {
 					this.actions = this.methodName + "," + this.methodParams;
+				}
 			} else if (this.methodParams == null) {
 				this.actions = this.methodName + "," + iSpec;
-			} else
+			} else {
 				this.actions = this.methodName + "," + iSpec + this.methodParams;
+			}
 		}
 
 		return this.actions;
@@ -325,10 +338,11 @@ public final class EJBMethodPermission extends Permission {
 			String hashInput;
 			String actions = this.getActions();
 
-			if (actions == null)
+			if (actions == null) {
 				hashInput = this.getName();
-			else
+			} else {
 				hashInput = this.getName() + " " + actions;
+			}
 
 			hashCodeValue = hashInput.hashCode();
 		}
@@ -367,25 +381,31 @@ public final class EJBMethodPermission extends Permission {
 	 */
 	@Override
 	public boolean implies(Permission permission) {
-		if (permission == null || !(permission instanceof EJBMethodPermission))
+		if (permission == null || !(permission instanceof EJBMethodPermission)) {
 			return false;
+		}
 
 		EJBMethodPermission that = (EJBMethodPermission) permission;
 
-		if (!this.getName().equals(that.getName()))
+		if (!this.getName().equals(that.getName())) {
 			return false;
+		}
 
-		if (this.methodName != null && (that.methodName == null || !this.methodName.equals(that.methodName)))
+		if (this.methodName != null && (that.methodName == null || !this.methodName.equals(that.methodName))) {
 			return false;
+		}
 
-		if (this.methodInterface != -1 && (that.methodInterface == -1 || this.methodInterface != that.methodInterface))
+		if (this.methodInterface != -1 && (that.methodInterface == -1 || this.methodInterface != that.methodInterface)) {
 			return false;
+		}
 
-		if (this.methodInterface == -2 && !this.otherMethodInterface.equals(that.otherMethodInterface))
+		if (this.methodInterface == -2 && !this.otherMethodInterface.equals(that.otherMethodInterface)) {
 			return false;
+		}
 
-		if (this.methodParams != null && (that.methodParams == null || !this.methodParams.equals(that.methodParams)))
+		if (this.methodParams != null && (that.methodParams == null || !this.methodParams.equals(that.methodParams))) {
 			return false;
+		}
 
 		return true;
 	}
@@ -423,27 +443,30 @@ public final class EJBMethodPermission extends Permission {
 			if (actions.length() > 0) {
 
 				int i = actions.indexOf(',');
-				if (i < 0)
+				if (i < 0) {
 					this.methodName = actions;
-				else if (i >= 0) {
+				} else if (i >= 0) {
 
-					if (i != 0)
+					if (i != 0) {
 						this.methodName = actions.substring(0, i);
+					}
 
-					if (actions.length() == i + 1)
+					if (actions.length() == i + 1) {
 						throw new IllegalArgumentException("illegal actions spec");
+					}
 
 					int j = actions.substring(i + 1).indexOf(',');
-					if (j < 0)
+					if (j < 0) {
 						mInterface = actions.substring(i + 1);
-
-					else {
-						if (j > 0)
+					} else {
+						if (j > 0) {
 							mInterface = actions.substring(i + 1, i + j + 1);
+						}
 						this.methodParams = actions.substring(i + j + 1);
 
-						if (this.methodParams.length() > 1 && this.methodParams.endsWith(","))
+						if (this.methodParams.length() > 1 && this.methodParams.endsWith(",")) {
 							throw new IllegalArgumentException("illegal methodParam");
+						}
 					}
 				}
 			} else {
@@ -454,36 +477,42 @@ public final class EJBMethodPermission extends Permission {
 
 		this.methodInterface = validateInterface(mInterface);
 
-		if (this.methodInterface < -1)
+		if (this.methodInterface < -1) {
 			this.otherMethodInterface = mInterface;
+		}
 
 		this.actions = actions;
 	}
 
 	private void setMethodSpec(String methodName, String mInterface, String[] methodParams) {
-		if (methodName != null && methodName.indexOf(',') >= 0)
+		if (methodName != null && methodName.indexOf(',') >= 0) {
 			throw new IllegalArgumentException("illegal methodName");
+		}
 
 		this.methodInterface = validateInterface(mInterface);
 
-		if (this.methodInterface < -1)
+		if (this.methodInterface < -1) {
 			this.otherMethodInterface = mInterface;
+		}
 
 		if (methodParams != null) {
 
 			StringBuffer mParams = new StringBuffer(",");
 
 			for (int i = 0; i < methodParams.length; i++) {
-				if (methodParams[i] == null || methodParams[i].indexOf(',') >= 0)
+				if (methodParams[i] == null || methodParams[i].indexOf(',') >= 0) {
 					throw new IllegalArgumentException("illegal methodParam");
-				if (i == 0)
+				}
+				if (i == 0) {
 					mParams.append(methodParams[i]);
-				else
+				} else {
 					mParams.append("," + methodParams[i]);
+				}
 			}
 			this.methodParams = mParams.toString();
-		} else
+		} else {
 			this.methodParams = null;
+		}
 
 		this.methodName = methodName;
 	}
@@ -491,8 +520,9 @@ public final class EJBMethodPermission extends Permission {
 	private void setMethodSpec(String mInterface, Method method) {
 		this.methodInterface = validateInterface(mInterface);
 
-		if (this.methodInterface < -1)
+		if (this.methodInterface < -1) {
 			this.otherMethodInterface = mInterface;
+		}
 
 		this.methodName = method.getName();
 
@@ -515,10 +545,11 @@ public final class EJBMethodPermission extends Permission {
 				pname = compType.getName() + brackets;
 			}
 
-			if (i == 0)
+			if (i == 0) {
 				mParams.append(pname);
-			else
+			} else {
 				mParams.append("," + pname);
+			}
 		}
 
 		this.methodParams = mParams.toString();
@@ -528,10 +559,11 @@ public final class EJBMethodPermission extends Permission {
 		int result = -1;
 		if (methodInterface != null && methodInterface.length() > 0) {
 			Integer i = (Integer) interfaceHash.get(methodInterface);
-			if (i != null)
+			if (i != null) {
 				result = i.intValue();
-			else
+			} else {
 				result = -2;
+			}
 		}
 		return result;
 	}

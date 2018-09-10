@@ -70,10 +70,12 @@ public abstract class PolicyConfigurationFactory {
 	        throws java.lang.ClassNotFoundException, javax.security.jacc.PolicyContextException {
 
 		SecurityManager sm = System.getSecurityManager();
-		if (sm != null)
+		if (sm != null) {
 			sm.checkPermission(new java.security.SecurityPermission("setPolicy"));
-		if (pcFactory != null)
+		}
+		if (pcFactory != null) {
 			return pcFactory;
+		}
 
 		String msg;
 		final String classname[] = { null };

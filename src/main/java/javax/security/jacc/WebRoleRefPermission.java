@@ -89,13 +89,15 @@ public final class WebRoleRefPermission extends Permission implements java.io.Se
 	 */
 	@Override
 	public boolean equals(Object o) {
-		if (o == null || !(o instanceof WebRoleRefPermission))
+		if (o == null || !(o instanceof WebRoleRefPermission)) {
 			return false;
+		}
 
 		WebRoleRefPermission that = (WebRoleRefPermission) o;
 
-		if (!this.getName().equals(that.getName()))
+		if (!this.getName().equals(that.getName())) {
 			return false;
+		}
 
 		return this.actions.equals(that.actions);
 	}
