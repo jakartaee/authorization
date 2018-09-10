@@ -46,7 +46,7 @@ public final class WebUserDataPermission extends Permission {
 	static {
 		for (int i = 0; i < transportKeys.length; i++)
 			transportHash.put(transportKeys[i], Integer.valueOf(i));
-	};
+	}
 
 	private static int TT_NONE = ((Integer) transportHash.get("NONE")).intValue();
 	private static int TT_CONFIDENTIAL = ((Integer) transportHash.get("CONFIDENTIAL")).intValue();

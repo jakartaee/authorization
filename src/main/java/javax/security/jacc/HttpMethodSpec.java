@@ -47,7 +47,7 @@ final class HttpMethodSpec {
 			methodHash.put(methodKeys[i], Integer.valueOf(b));
 			b = b << 1;
 		}
-	};
+	}
 
 	private static int allSet;
 	static {

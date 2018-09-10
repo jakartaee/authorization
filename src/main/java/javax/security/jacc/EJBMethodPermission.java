@@ -50,7 +50,7 @@ public final class EJBMethodPermission extends Permission {
 	static {
 		for (int i = 0; i < interfaceKeys.length; i++)
 			interfaceHash.put(interfaceKeys[i], Integer.valueOf(i));
-	};
+	}
 
 	private transient int methodInterface;
 

@@ -167,7 +167,7 @@ public interface PolicyConfiguration {
 	 * accounted for by the getContextID method signature. The exception thrown by the implementation class will be
 	 * encapsulated (during construction) in the thrown PolicyContextException.
 	 */
-	public String getContextID() throws javax.security.jacc.PolicyContextException;
+	String getContextID() throws javax.security.jacc.PolicyContextException;
 
 	/**
 	 * Used to add permissions to a named role in this PolicyConfiguration. If the named role does not exist in the
@@ -191,7 +191,7 @@ public interface PolicyConfiguration {
 	 * accounted for by the addToRole method signature. The exception thrown by the implementation class will be
 	 * encapsulated (during construction) in the thrown PolicyContextException.
 	 */
-	public void addToRole(String roleName, PermissionCollection permissions) throws javax.security.jacc.PolicyContextException;
+	void addToRole(String roleName, PermissionCollection permissions) throws javax.security.jacc.PolicyContextException;
 
 	/**
 	 * Used to add a single permission to a named role in this PolicyConfiguration. If the named role does not exist in the
@@ -214,7 +214,7 @@ public interface PolicyConfiguration {
 	 * accounted for by the addToRole method signature. The exception thrown by the implementation class will be
 	 * encapsulated (during construction) in the thrown PolicyContextException.
 	 */
-	public void addToRole(String roleName, Permission permission) throws javax.security.jacc.PolicyContextException;
+	void addToRole(String roleName, Permission permission) throws javax.security.jacc.PolicyContextException;
 
 	/**
 	 * Used to add unchecked policy statements to this PolicyConfiguration.
@@ -232,7 +232,7 @@ public interface PolicyConfiguration {
 	 * accounted for by the addToUncheckedPolicy method signature. The exception thrown by the implementation class will be
 	 * encapsulated (during construction) in the thrown PolicyContextException.
 	 */
-	public void addToUncheckedPolicy(PermissionCollection permissions) throws javax.security.jacc.PolicyContextException;
+	void addToUncheckedPolicy(PermissionCollection permissions) throws javax.security.jacc.PolicyContextException;
 
 	/**
 	 * Used to add a single unchecked policy statement to this PolicyConfiguration.
@@ -249,7 +249,7 @@ public interface PolicyConfiguration {
 	 * accounted for by the addToUncheckedPolicy method signature. The exception thrown by the implementation class will be
 	 * encapsulated (during construction) in the thrown PolicyContextException.
 	 */
-	public void addToUncheckedPolicy(Permission permission) throws javax.security.jacc.PolicyContextException;
+	void addToUncheckedPolicy(Permission permission) throws javax.security.jacc.PolicyContextException;
 
 	/**
 	 * Used to add excluded policy statements to this PolicyConfiguration.
@@ -267,7 +267,7 @@ public interface PolicyConfiguration {
 	 * accounted for by the addToExcludedPolicy method signature. The exception thrown by the implementation class will be
 	 * encapsulated (during construction) in the thrown PolicyContextException.
 	 */
-	public void addToExcludedPolicy(PermissionCollection permissions) throws javax.security.jacc.PolicyContextException;
+	void addToExcludedPolicy(PermissionCollection permissions) throws javax.security.jacc.PolicyContextException;
 
 	/**
 	 * Used to add a single excluded policy statement to this PolicyConfiguration.
@@ -284,7 +284,7 @@ public interface PolicyConfiguration {
 	 * accounted for by the addToExcludedPolicy method signature. The exception thrown by the implementation class will be
 	 * encapsulated (during construction) in the thrown PolicyContextException.
 	 */
-	public void addToExcludedPolicy(Permission permission) throws javax.security.jacc.PolicyContextException;
+	void addToExcludedPolicy(Permission permission) throws javax.security.jacc.PolicyContextException;
 
 	/**
 	 * Used to remove a role and all its permissions from this PolicyConfiguration. This method has no effect on the links
@@ -304,7 +304,7 @@ public interface PolicyConfiguration {
 	 * accounted for by the removeRole method signature. The exception thrown by the implementation class will be
 	 * encapsulated (during construction) in the thrown PolicyContextException.
 	 */
-	public void removeRole(String roleName) throws javax.security.jacc.PolicyContextException;
+	void removeRole(String roleName) throws javax.security.jacc.PolicyContextException;
 
 	/**
 	 * Used to remove any unchecked policy statements from this PolicyConfiguration. This method has no effect on the links
@@ -320,7 +320,7 @@ public interface PolicyConfiguration {
 	 * accounted for by the removeUncheckedPolicy method signature. The exception thrown by the implementation class will be
 	 * encapsulated (during construction) in the thrown PolicyContextException.
 	 */
-	public void removeUncheckedPolicy() throws javax.security.jacc.PolicyContextException;
+	void removeUncheckedPolicy() throws javax.security.jacc.PolicyContextException;
 
 	/**
 	 * Used to remove any excluded policy statements from this PolicyConfiguration. This method has no effect on the links
@@ -336,7 +336,7 @@ public interface PolicyConfiguration {
 	 * accounted for by the removeExcludedPolicy method signature. The exception thrown by the implementation class will be
 	 * encapsulated (during construction) in the thrown PolicyContextException.
 	 */
-	public void removeExcludedPolicy() throws javax.security.jacc.PolicyContextException;
+	void removeExcludedPolicy() throws javax.security.jacc.PolicyContextException;
 
 	/**
 	 * Creates a relationship between this configuration and another such that they share the same principal-to-role
@@ -367,7 +367,7 @@ public interface PolicyConfiguration {
 	 * accounted for by the linkConfiguration method signature. The exception thrown by the implementation class will be
 	 * encapsulated (during construction) in the thrown PolicyContextException.
 	 */
-	public void linkConfiguration(PolicyConfiguration link) throws javax.security.jacc.PolicyContextException;
+	void linkConfiguration(PolicyConfiguration link) throws javax.security.jacc.PolicyContextException;
 
 	/**
 	 * Causes all policy statements to be deleted from this PolicyConfiguration and sets its internal state such that
@@ -385,7 +385,7 @@ public interface PolicyConfiguration {
 	 * accounted for by the delete method signature. The exception thrown by the implementation class will be encapsulated
 	 * (during construction) in the thrown PolicyContextException.
 	 */
-	public void delete() throws javax.security.jacc.PolicyContextException;
+	void delete() throws javax.security.jacc.PolicyContextException;
 
 	/**
 	 * This method is used to set to "inService" the state of the policy context whose interface is this PolicyConfiguration
@@ -408,7 +408,7 @@ public interface PolicyConfiguration {
 	 * accounted for by the commit method signature. The exception thrown by the implementation class will be encapsulated
 	 * (during construction) in the thrown PolicyContextException.
 	 */
-	public void commit() throws javax.security.jacc.PolicyContextException;
+	void commit() throws javax.security.jacc.PolicyContextException;
 
 	/**
 	 * This method is used to determine if the policy context whose interface is this PolicyConfiguration Object is in the
@@ -423,5 +423,5 @@ public interface PolicyConfiguration {
 	 * accounted for by the inService method signature. The exception thrown by the implementation class will be
 	 * encapsulated (during construction) in the thrown PolicyContextException.
 	 */
-	public boolean inService() throws javax.security.jacc.PolicyContextException;
+	boolean inService() throws javax.security.jacc.PolicyContextException;
 }

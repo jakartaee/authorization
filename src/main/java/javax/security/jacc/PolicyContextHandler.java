@@ -49,7 +49,7 @@ public interface PolicyContextHandler {
 	 * accounted for by the method signature. The exception thrown by the implementation class will be encapsulated (during
 	 * construction) in the thrown PolicyContextException
 	 */
-	public boolean supports(String key) throws javax.security.jacc.PolicyContextException;
+	boolean supports(String key) throws javax.security.jacc.PolicyContextException;
 
 	/**
 	 * This public method returns the keys identifying the context objects supported by the handler. The value of each key
@@ -63,7 +63,7 @@ public interface PolicyContextHandler {
 	 * accounted for by the method signature. The exception thrown by the implementation class will be encapsulated (during
 	 * construction) in the thrown PolicyContextException
 	 */
-	public String[] getKeys() throws javax.security.jacc.PolicyContextException;
+	String[] getKeys() throws javax.security.jacc.PolicyContextException;
 
 	/**
 	 * This public method is used by the <code>PolicyContext</code> class to activate the handler and obtain from it the
@@ -86,6 +86,6 @@ public interface PolicyContextHandler {
 	 * accounted for by the method signature. The exception thrown by the implementation class will be encapsulated (during
 	 * construction) in the thrown PolicyContextException
 	 */
-	public Object getContext(String key, Object data) throws javax.security.jacc.PolicyContextException;
+	Object getContext(String key, Object data) throws javax.security.jacc.PolicyContextException;
 
 }
