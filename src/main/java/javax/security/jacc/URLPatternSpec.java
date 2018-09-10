@@ -29,13 +29,10 @@ class URLPatternSpec extends URLPattern {
 
     private static String EMPTY_STRING = "";
 
-    private transient int hashCodeValue = 0;
-
-    private String canonicalSpec = null;
-
+    private transient int hashCodeValue;
+    private String canonicalSpec;
     private final String urlPatternList;
-
-    private URLPattern[] urlPatternArray = null;
+    private URLPattern[] urlPatternArray;
 
     /**
      * Creates a new URLPatternSpec that identifies the web resources to which a WebResourcePermission or
@@ -75,6 +72,7 @@ class URLPatternSpec extends URLPattern {
      */
     public URLPatternSpec(String urlPatternSpec) {
         super(getFirstPattern(urlPatternSpec));
+        
         int colon = urlPatternSpec.indexOf(":");
         if (colon >= 0) {
             urlPatternList = urlPatternSpec.substring(colon + 1);
@@ -212,7 +210,7 @@ class URLPatternSpec extends URLPattern {
                 }
             }
 
-            return (count == flags.length);
+            return count == flags.length;
         }
 
         return true;
@@ -231,22 +229,22 @@ class URLPatternSpec extends URLPattern {
                 canonicalSpec = super.toString();
             } else {
 
-                StringBuffer s = null;
+                StringBuilder specBuilder = null;
 
-                for (int i = 0; i < urlPatternArray.length; i++) {
-                    if (urlPatternArray[i] != null) {
-                        if (s == null) {
-                            s = new StringBuffer(urlPatternArray[i].toString());
+                for (URLPattern urlPattern : urlPatternArray) {
+                    if (urlPattern != null) {
+                        if (specBuilder == null) {
+                            specBuilder = new StringBuilder(urlPattern.toString());
                         } else {
-                            s.append(":" + urlPatternArray[i].toString());
+                            specBuilder.append(":" + urlPattern.toString());
                         }
                     }
                 }
 
-                if (s == null) {
+                if (specBuilder == null) {
                     canonicalSpec = super.toString();
                 } else {
-                    canonicalSpec = super.toString() + ":" + s.toString();
+                    canonicalSpec = super.toString() + ":" + specBuilder.toString();
                 }
             }
         }
@@ -260,14 +258,21 @@ class URLPatternSpec extends URLPattern {
         if (urlPatternSpec == null) {
             throw new IllegalArgumentException("Invalid URLPatternSpec");
         }
+        
         int colon = urlPatternSpec.indexOf(":");
+        
         if (colon < 0) {
             return urlPatternSpec;
-        } else if (colon > 0) {
+        }
+        
+        if (colon > 0) {
             return urlPatternSpec.substring(0, colon);
-        } else if (colon == 0) {
+        }
+        
+        if (colon == 0) {
             return EMPTY_STRING;
         }
+        
         throw new IllegalArgumentException("Invalid URLPatternSpec");
     }
 

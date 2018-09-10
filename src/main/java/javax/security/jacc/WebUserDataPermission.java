@@ -16,12 +16,13 @@
 
 package javax.security.jacc;
 
-import java.util.HashMap;
-
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.ObjectStreamField;
-
-import java.security.*;
+import java.security.Permission;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -32,39 +33,35 @@ import javax.servlet.http.HttpServletRequest;
  * The name of a WebUserDataPermission (also referred to as the target name) identifies a Web resource by its context
  * path relative URL pattern.
  *
- * @see java.security.Permission
+ * @see Permission
  *
  * @author Ron Monzillo
  * @author Gary Ellison
  *
  */
 public final class WebUserDataPermission extends Permission {
+	
+	private static final long serialVersionUID = 1L;
+	
+	private transient static final String EMPTY_STRING = "";
+    private transient static final String ESCAPED_COLON = "%3A";
 
     private static String transportKeys[] = { "NONE", "INTEGRAL", "CONFIDENTIAL", };
-
-    private static HashMap transportHash = new HashMap();
+    private static Map<String, Integer> transportHash = new HashMap<String, Integer>();
     static {
         for (int i = 0; i < transportKeys.length; i++) {
-            transportHash.put(transportKeys[i], Integer.valueOf(i));
+            transportHash.put(transportKeys[i], i);
         }
     }
 
-    private static int TT_NONE = ((Integer) transportHash.get("NONE")).intValue();
-    private static int TT_CONFIDENTIAL = ((Integer) transportHash.get("CONFIDENTIAL")).intValue();
+    private static int TT_NONE = transportHash.get("NONE");
+    private static int TT_CONFIDENTIAL = transportHash.get("CONFIDENTIAL");
 
-    private transient URLPatternSpec urlPatternSpec = null;
-
+    private transient URLPatternSpec urlPatternSpec;
     private transient HttpMethodSpec methodSpec;
-
     private transient int transportType;
-
-    private transient int hashCodeValue = 0;
-
-    private transient static final String EMPTY_STRING = "";
-
-    private transient static final String ESCAPED_COLON = "%3A";
-
-    private static final long serialVersionUID = 1L;
+    private transient int hashCodeValue;
+    
 
     /**
      * The serialized fields of this permission are defined below. Whether or not the serialized fields correspond to actual
@@ -297,18 +294,21 @@ public final class WebUserDataPermission extends Permission {
      */
     @Override
     public String getActions() {
-        String result;
-        String hActions = this.methodSpec.getActions();
-        if (this.transportType == TT_NONE && hActions == null) {
-            result = null;
-        } else if (this.transportType == TT_NONE) {
-            result = hActions;
-        } else if (hActions == null) {
-            result = ":" + transportKeys[this.transportType];
-        } else {
-            result = hActions + ":" + transportKeys[this.transportType];
+        String methodSpecActions = methodSpec.getActions();
+        
+        if (transportType == TT_NONE && methodSpecActions == null) {
+            return null;
         }
-        return result;
+        
+        if (transportType == TT_NONE) {
+            return methodSpecActions;
+        }
+        
+        if (methodSpecActions == null) {
+            return ":" + transportKeys[transportType];
+        }
+        
+        return methodSpecActions + ":" + transportKeys[transportType];
     }
 
     /**
@@ -329,12 +329,12 @@ public final class WebUserDataPermission extends Permission {
      */
     @Override
     public int hashCode() {
-        if (this.hashCodeValue == 0) {
-            String hashInput = this.urlPatternSpec.toString() + " " + this.methodSpec.hashCode() + ":" + this.transportType;
-
-            this.hashCodeValue = hashInput.hashCode();
+        if (hashCodeValue == 0) {
+            String hashInput = urlPatternSpec.toString() + " " + methodSpec.hashCode() + ":" + transportType;
+            hashCodeValue = hashInput.hashCode();
         }
-        return this.hashCodeValue;
+        
+        return hashCodeValue;
     }
 
     /**
@@ -382,7 +382,7 @@ public final class WebUserDataPermission extends Permission {
      */
     @Override
     public boolean implies(Permission permission) {
-        if (permission == null || !(permission instanceof WebUserDataPermission)) {
+        if (!(permission instanceof WebUserDataPermission)) {
             return false;
         }
 
@@ -422,30 +422,32 @@ public final class WebUserDataPermission extends Permission {
         } else {
             uri = EMPTY_STRING;
         }
+        
         return uri;
     }
 
     private void parseActions(String actions) {
-        this.transportType = TT_NONE;
+        transportType = TT_NONE;
 
         if (actions == null || actions.equals("")) {
-            this.methodSpec = HttpMethodSpec.getSpec((String) null);
+            methodSpec = HttpMethodSpec.getSpec((String) null);
         } else {
             int colon = actions.indexOf(':');
             if (colon < 0) {
-                this.methodSpec = HttpMethodSpec.getSpec(actions);
+                methodSpec = HttpMethodSpec.getSpec(actions);
             } else {
                 if (colon == 0) {
-                    this.methodSpec = HttpMethodSpec.getSpec((String) null);
+                    methodSpec = HttpMethodSpec.getSpec((String) null);
                 } else {
-                    this.methodSpec = HttpMethodSpec.getSpec(actions.substring(0, colon));
+                    methodSpec = HttpMethodSpec.getSpec(actions.substring(0, colon));
                 }
+                
                 Integer bit = (Integer) transportHash.get(actions.substring(colon + 1));
                 if (bit == null) {
                     throw new IllegalArgumentException("illegal transport value");
                 }
 
-                this.transportType = bit.intValue();
+                transportType = bit.intValue();
             }
         }
     }
@@ -455,9 +457,9 @@ public final class WebUserDataPermission extends Permission {
      * need not be implemented if establishing the values of the serialized fields (as is done by defaultReadObject) is
      * sufficient to initialize the permission.
      */
-    private void readObject(java.io.ObjectInputStream s) throws IOException, ClassNotFoundException {
-        parseActions((String) s.readFields().get("actions", null));
-        this.urlPatternSpec = new URLPatternSpec(super.getName());
+    private void readObject(ObjectInputStream inputStream) throws IOException, ClassNotFoundException {
+        parseActions((String) inputStream.readFields().get("actions", null));
+        urlPatternSpec = new URLPatternSpec(super.getName());
     }
 
     /**
@@ -465,9 +467,9 @@ public final class WebUserDataPermission extends Permission {
      * need not be implemented if the values of the serialized fields are always available and up to date. The serialized
      * fields are written to the output stream in the same form as they would be written by defaultWriteObject.
      */
-    private synchronized void writeObject(java.io.ObjectOutputStream s) throws IOException {
-        s.putFields().put("actions", this.getActions());
-        s.writeFields();
+    private synchronized void writeObject(ObjectOutputStream outputStream) throws IOException {
+        outputStream.putFields().put("actions", this.getActions());
+        outputStream.writeFields();
     }
 
 }

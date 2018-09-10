@@ -37,7 +37,9 @@ package javax.security.jacc;
  */
 public class PolicyContextException extends Exception {
 
-    /**
+	private static final long serialVersionUID = 3925692572777572935L;
+
+	/**
      * Constructs a new PolicyContextException with <code>null</code> as its detail message. describing the cause of the
      * exception.
      */
@@ -48,25 +50,25 @@ public class PolicyContextException extends Exception {
     /**
      * Constructs a new PolicyContextException with the specified detail message
      * 
-     * @param msg - a <code>String</code> containing a detail message describing the cause of the exception.
+     * @param message - a <code>String</code> containing a detail message describing the cause of the exception.
      */
-    public PolicyContextException(String msg) {
-        super(msg);
+    public PolicyContextException(String message) {
+        super(message);
     }
 
     /**
      * Constructs a new PolicyContextException with the specified detail message and cause. The cause will be encapsulated
      * in the constructed exception.
      * 
-     * @param msg - a <code>String containing a detail message describing the 
+     * @param message - a <code>String containing a detail message describing the 
      * cause of the exception.
      * @param cause - the Throwable that is "causing" this exception to be 
      * constructed. A null value is permitted, and the value passed through
      * this parameter may subsequently be retrieved by calling 
      * <code>getCause()</code> on the constructed exception.
      */
-    public PolicyContextException(String msg, Throwable cause) {
-        super(msg, cause);
+    public PolicyContextException(String message, Throwable cause) {
+        super(message, cause);
     }
 
     /**

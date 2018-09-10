@@ -42,7 +42,7 @@ import java.security.PrivilegedExceptionAction;
 public abstract class PolicyConfigurationFactory {
     private static String FACTORY_NAME = "javax.security.jacc.PolicyConfigurationFactory.provider";
 
-    private static volatile PolicyConfigurationFactory pcFactory;
+    private static volatile PolicyConfigurationFactory policyConfigurationFactory;
 
     /**
      * This static method uses a system property to find and instantiate (via a public constructor) a provider specific
@@ -67,35 +67,33 @@ public abstract class PolicyConfigurationFactory {
      * accounted for by the getPolicyConfigurationFactory method signature. The exception thrown by the implementation class
      * will be encapsulated (during construction) in the thrown PolicyContextException
      */
-    public static PolicyConfigurationFactory getPolicyConfigurationFactory()
-            throws ClassNotFoundException, PolicyContextException {
+    public static PolicyConfigurationFactory getPolicyConfigurationFactory() throws ClassNotFoundException, PolicyContextException {
 
-        SecurityManager sm = System.getSecurityManager();
-        if (sm != null) {
-            sm.checkPermission(new java.security.SecurityPermission("setPolicy"));
+        SecurityManager securityManager = System.getSecurityManager();
+        if (securityManager != null) {
+            securityManager.checkPermission(new java.security.SecurityPermission("setPolicy"));
         }
-        if (pcFactory != null) {
-            return pcFactory;
+        
+        if (policyConfigurationFactory != null) {
+            return policyConfigurationFactory;
         }
 
-        String msg;
         final String classname[] = { null };
 
         try {
 
-            Class clazz = null;
+            Class<?> clazz = null;
 
-            if (sm != null) {
+            if (securityManager != null) {
                 try {
-                    clazz = (Class) AccessController.doPrivileged(new PrivilegedExceptionAction() {
+                    clazz = AccessController.doPrivileged(new PrivilegedExceptionAction<Class<?>>() {
                         @Override
-                        public Object run() throws Exception {
+                        public Class<?> run() throws Exception {
 
                             classname[0] = System.getProperty(FACTORY_NAME);
 
                             if (classname[0] == null) {
-                                String msg = "JACC:Error PolicyConfigurationFactory : property not set : " + FACTORY_NAME;
-                                throw new ClassNotFoundException(msg);
+                                throw new ClassNotFoundException("JACC:Error PolicyConfigurationFactory : property not set : " + FACTORY_NAME);
                             }
 
                             return Class.forName(classname[0], true, Thread.currentThread().getContextClassLoader());
@@ -103,6 +101,7 @@ public abstract class PolicyConfigurationFactory {
                     });
                 } catch (PrivilegedActionException ex) {
                     Exception e = ex.getException();
+                    
                     if (e instanceof ClassNotFoundException) {
                         throw (ClassNotFoundException) e;
                     } else if (e instanceof InstantiationException) {
@@ -115,8 +114,7 @@ public abstract class PolicyConfigurationFactory {
                 classname[0] = System.getProperty(FACTORY_NAME);
 
                 if (classname[0] == null) {
-                    msg = "JACC:Error PolicyConfigurationFactory : property not set : " + FACTORY_NAME;
-                    throw new ClassNotFoundException(msg);
+                    throw new ClassNotFoundException("JACC:Error PolicyConfigurationFactory : property not set : " + FACTORY_NAME);
                 }
 
                 clazz = Class.forName(classname[0], true, Thread.currentThread().getContextClassLoader());
@@ -125,24 +123,20 @@ public abstract class PolicyConfigurationFactory {
             if (clazz != null) {
                 Object factory = clazz.newInstance();
 
-                pcFactory = (PolicyConfigurationFactory) factory;
+                policyConfigurationFactory = (PolicyConfigurationFactory) factory;
             }
 
         } catch (ClassNotFoundException cnfe) {
-            msg = "JACC:Error PolicyConfigurationFactory : cannot find class : " + classname[0];
-            throw new ClassNotFoundException(msg, cnfe);
+            throw new ClassNotFoundException("JACC:Error PolicyConfigurationFactory : cannot find class : " + classname[0], cnfe);
         } catch (IllegalAccessException iae) {
-            msg = "JACC:Error PolicyConfigurationFactory : cannot access class : " + classname[0];
-            throw new PolicyContextException(msg, iae);
+            throw new PolicyContextException("JACC:Error PolicyConfigurationFactory : cannot access class : " + classname[0], iae);
         } catch (InstantiationException ie) {
-            msg = "JACC:Error PolicyConfigurationFactory : cannot instantiate : " + classname[0];
-            throw new PolicyContextException(msg, ie);
+            throw new PolicyContextException("JACC:Error PolicyConfigurationFactory : cannot instantiate : " + classname[0], ie);
         } catch (ClassCastException cce) {
-            msg = "JACC:Error PolicyConfigurationFactory : class not PolicyConfigurationFactory : " + classname[0];
-            throw new ClassCastException(msg);
+            throw new ClassCastException("JACC:Error PolicyConfigurationFactory : class not PolicyConfigurationFactory : " + classname[0]);
         }
 
-        return pcFactory;
+        return policyConfigurationFactory;
 
     }
 

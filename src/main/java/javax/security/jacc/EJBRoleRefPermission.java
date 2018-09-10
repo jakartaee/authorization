@@ -105,7 +105,7 @@ public final class EJBRoleRefPermission extends Permission {
 	 */
 	@Override
 	public String getActions() {
-		return this.actions;
+		return actions;
 	}
 
 	/**
@@ -126,7 +126,7 @@ public final class EJBRoleRefPermission extends Permission {
 	@Override
 	public int hashCode() {
 		if (hashCodeValue == 0) {
-			String hashInput = this.getName() + " " + this.actions;
+			String hashInput = getName() + " " + actions;
 			hashCodeValue = hashInput.hashCode();
 		}
 
@@ -150,7 +150,7 @@ public final class EJBRoleRefPermission extends Permission {
 	 */
 	@Override
 	public boolean implies(Permission permission) {
-		return this.equals(permission);
+		return equals(permission);
 	}
 
 	// ----------------- Private Methods ---------------------

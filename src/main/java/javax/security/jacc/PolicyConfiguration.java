@@ -220,7 +220,7 @@ public interface PolicyConfiguration {
      * Used to add unchecked policy statements to this PolicyConfiguration.
      * 
      * @param permissions the collection of permissions to be added as unchecked policy statements. The collection may be
-     * either a homogenous or heterogenous collection.
+     * either a homogeneous or heterogeneous collection.
      *
      * @throws SecurityException if called by an AccessControlContext that has not been granted the "setPolicy"
      * SecurityPermission.

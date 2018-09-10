@@ -41,17 +41,15 @@ import javax.servlet.http.HttpServletRequest;
  *
  */
 public final class WebResourcePermission extends Permission {
+	
+	private static final long serialVersionUID = 1L;
 
     private transient HttpMethodSpec methodSpec;
-
-    private transient URLPatternSpec urlPatternSpec = null;
-
-    private transient int hashCodeValue = 0;
+    private transient URLPatternSpec urlPatternSpec;
+    private transient int hashCodeValue;
 
     private transient static final String EMPTY_STRING = "";
     private transient static final String ESCAPED_COLON = "%3A";
-
-    private static final long serialVersionUID = 1L;
 
     /**
      * The serialized fields of this permission are defined below. Whether or not the serialized fields correspond to actual
@@ -246,12 +244,12 @@ public final class WebResourcePermission extends Permission {
      */
     @Override
     public int hashCode() {
-        if (this.hashCodeValue == 0) {
-            String hashInput = this.urlPatternSpec.toString() + " " + this.methodSpec.hashCode();
-
-            this.hashCodeValue = hashInput.hashCode();
+        if (hashCodeValue == 0) {
+            String hashInput = urlPatternSpec.toString() + " " + methodSpec.hashCode();
+            hashCodeValue = hashInput.hashCode();
         }
-        return this.hashCodeValue;
+        
+        return hashCodeValue;
     }
 
     /**
@@ -296,7 +294,7 @@ public final class WebResourcePermission extends Permission {
      */
     @Override
     public boolean implies(Permission permission) {
-        if (permission == null || !(permission instanceof WebResourcePermission)) {
+        if (!(permission instanceof WebResourcePermission)) {
             return false;
         }
 
@@ -320,18 +318,21 @@ public final class WebResourcePermission extends Permission {
         if (uri != null) {
             String contextPath = request.getContextPath();
             int contextLength = contextPath == null ? 0 : contextPath.length();
+            
             if (contextLength > 0) {
                 uri = uri.substring(contextLength);
             }
+            
             if (uri.equals("/")) {
                 uri = EMPTY_STRING;
             } else {
-                // encode all colons
+                // Encode all colons
                 uri = uri.replaceAll(":", ESCAPED_COLON);
             }
         } else {
             uri = EMPTY_STRING;
         }
+        
         return uri;
     }
 
@@ -340,9 +341,9 @@ public final class WebResourcePermission extends Permission {
      * need not be implemented if establishing the values of the serialized fields (as is done by defaultReadObject) is
      * sufficient to initialize the permission.
      */
-    private void readObject(ObjectInputStream s) throws IOException, ClassNotFoundException {
-        this.methodSpec = HttpMethodSpec.getSpec((String) s.readFields().get("actions", null));
-        this.urlPatternSpec = new URLPatternSpec(super.getName());
+    private void readObject(ObjectInputStream inputStream) throws IOException, ClassNotFoundException {
+        methodSpec = HttpMethodSpec.getSpec((String) inputStream.readFields().get("actions", null));
+        urlPatternSpec = new URLPatternSpec(super.getName());
     }
 
     /**
@@ -350,9 +351,9 @@ public final class WebResourcePermission extends Permission {
      * need not be implemented if the values of the serialized fields are always available and up to date. The serialized
      * fields are written to the output stream in the same form as they would be written by defaultWriteObject.
      */
-    private synchronized void writeObject(ObjectOutputStream s) throws IOException {
-        s.putFields().put("actions", this.getActions());
-        s.writeFields();
+    private synchronized void writeObject(ObjectOutputStream outputStream) throws IOException {
+        outputStream.putFields().put("actions", this.getActions());
+        outputStream.writeFields();
     }
 
 }

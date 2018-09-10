@@ -17,6 +17,8 @@
 package javax.security.jacc;
 
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.ObjectStreamField;
 import java.io.Serializable;
 import java.security.Permission;
@@ -45,11 +47,7 @@ import java.security.Permission;
  */
 public final class WebRoleRefPermission extends Permission implements Serializable {
 
-    private final String actions;
-
-    private transient int hashCodeValue = 0;
-
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
     /**
      * The serialized fields of this permission are defined below. Whether or not the serialized fields correspond to actual
@@ -58,6 +56,9 @@ public final class WebRoleRefPermission extends Permission implements Serializab
      * @serialField actions String the canonicalized actions string (as returned by getActions).
      */
     private static final ObjectStreamField[] serialPersistentFields = { new ObjectStreamField("actions", String.class) };
+    
+    private final String actions;
+    private transient int hashCodeValue;
 
     /**
      * Creates a new WebRoleRefPermission with the specified name and actions.
@@ -110,7 +111,7 @@ public final class WebRoleRefPermission extends Permission implements Serializab
      */
     @Override
     public String getActions() {
-        return this.actions;
+        return actions;
     }
 
     /**
@@ -132,15 +133,12 @@ public final class WebRoleRefPermission extends Permission implements Serializab
      */
     @Override
     public int hashCode() {
-
-        if (this.hashCodeValue == 0) {
-
-            String hashInput = this.getName() + " " + this.actions;
-
-            this.hashCodeValue = hashInput.hashCode();
+        if (hashCodeValue == 0) {
+            String hashInput = getName() + " " + actions;
+            hashCodeValue = hashInput.hashCode();
         }
 
-        return this.hashCodeValue;
+        return hashCodeValue;
     }
 
     /**
@@ -163,7 +161,7 @@ public final class WebRoleRefPermission extends Permission implements Serializab
      */
     @Override
     public boolean implies(Permission permission) {
-        return this.equals(permission);
+        return equals(permission);
     }
 
     // ----------------- Private Methods ---------------------
@@ -173,8 +171,8 @@ public final class WebRoleRefPermission extends Permission implements Serializab
      * need not be implemented if establishing the values of the serialized fields (as is done by defaultReadObject) is
      * sufficient to initialize the permission.
      */
-    private synchronized void readObject(java.io.ObjectInputStream s) throws IOException, ClassNotFoundException {
-        s.defaultReadObject();
+    private synchronized void readObject(ObjectInputStream inputStream) throws IOException, ClassNotFoundException {
+        inputStream.defaultReadObject();
     }
 
     /**
@@ -182,8 +180,8 @@ public final class WebRoleRefPermission extends Permission implements Serializab
      * need not be implemented if the values of the serialized fields are always available and up to date. The serialized
      * fields are written to the output stream in the same form as they would be written by defaultWriteObject.
      */
-    private synchronized void writeObject(java.io.ObjectOutputStream s) throws IOException {
-        s.defaultWriteObject();
+    private synchronized void writeObject(ObjectOutputStream outputStream) throws IOException {
+        outputStream.defaultWriteObject();
     }
 
 }
