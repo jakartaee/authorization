@@ -25,7 +25,8 @@ import java.security.PrivilegedExceptionAction;
  * PolicyConfigurationFactory of a provider. The factory will be used to instantiate PolicyConfiguration objects that
  * will be used by the deployment tools of the container to create and manage policy contexts within the Policy
  * Provider.
- * <P>
+ * 
+ * <p>
  * Implementation classes must have a public no argument constructor that may be used to create an operational instance
  * of the factory implementation class.
  *
@@ -44,13 +45,14 @@ public abstract class PolicyConfigurationFactory {
 
 	/**
 	 * This static method uses a system property to find and instantiate (via a public constructor) a provider specific
-	 * factory implementation class. The name of the provider specific factory implementation class is obtained from the
+	 * factory implementation class. 
+	 * 
+	 * <p>
+	 * The name of the provider specific factory implementation class is obtained from the
 	 * value of the system property,
-	 * <P>
-	 * <code><Pre>
+	 * <code><pre>
 	 *     javax.security.jacc.PolicyConfigurationFactory.provider.
-	 * </Pre></code>
-	 * <P>
+	 * </pre></code>
 	 *
 	 * @return the singleton instance of the provider specific PolicyConfigurationFactory implementation class.
 	 *
@@ -144,24 +146,25 @@ public abstract class PolicyConfigurationFactory {
 	 * This method is used to obtain an instance of the provider specific class that implements the PolicyConfiguration
 	 * interface that corresponds to the identified policy context within the provider. The methods of the
 	 * PolicyConfiguration interface are used to define the policy statements of the identified policy context.
-	 * <P>
+	 * 
+	 * <p>
 	 * If at the time of the call, the identified policy context does not exist in the provider, then the policy context
 	 * will be created in the provider and the Object that implements the context's PolicyConfiguration Interface will be
 	 * returned. If the state of the identified context is "deleted" or "inService" it will be transitioned to the "open"
 	 * state as a result of the call. The states in the lifecycle of a policy context are defined by the PolicyConfiguration
 	 * interface.
-	 * <P>
+	 * 
+	 * <p>
 	 * For a given value of policy context identifier, this method must always return the same instance of
 	 * PolicyConfiguration and there must be at most one actual instance of a PolicyConfiguration with a given policy
 	 * context identifier (during a process context).
-	 * <P>
+	 * 
+	 * <p>
 	 * To preserve the invariant that there be at most one PolicyConfiguration object for a given policy context, it may be
 	 * necessary for this method to be thread safe.
-	 * <P>
 	 * 
 	 * @param contextID A String identifying the policy context whose PolicyConfiguration interface is to be returned. The
 	 * value passed to this parameter must not be null.
-	 * <P>
 	 * @param remove A boolean value that establishes whether or not the policy statements and linkages of an existing
 	 * policy context are to be removed before its PolicyConfiguration object is returned. If the value passed to this
 	 * parameter is true, the policy statements and linkages of an existing policy context will be removed. If the value is
@@ -182,7 +185,6 @@ public abstract class PolicyConfigurationFactory {
 	/**
 	 * This method determines if the identified policy context exists with state "inService" in the Policy provider
 	 * associated with the factory.
-	 * <P>
 	 * 
 	 * @param contextID A string identifying a policy context
 	 *

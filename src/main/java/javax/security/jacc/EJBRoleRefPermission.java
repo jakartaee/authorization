@@ -23,13 +23,16 @@ import java.security.Permission;
 /**
  * Class for EJB <i><code>isCallerInRole (String reference)</code></i> permissions. An EJBRoleRefPermission is a named
  * permission and has actions.
- * <P>
+ * 
+ * <p>
  * The name of an EJBRoleRefPermission contains the value of the ejb-name element in the application's deployment
  * descriptor that identifies the EJB in whose context the permission is being evalutated.
- * <P>
+ * 
+ * <p>
  * the actions of an EJBRoleRefPermission identifies the role reference to which the permission applies. An
  * EJBRoleRefPermission is checked to determine if the subject is a member of the role identified by the reference.
- * <P>
+ * 
+ * <p>
  * Implementations of this class MAY implement newPermissionCollection or inherit its implementation from the super
  * class.
  *
@@ -58,7 +61,6 @@ public final class EJBRoleRefPermission extends Permission {
 	 * Creates a new EJBRoleRefPermission with the specified name and actions.
 	 * 
 	 * @param name the ejb-name that identifies the EJB in whose context the role references are to be evaluated.
-	 * <P>
 	 * @param actions identifies the role reference to which the permission pertains. The role reference is scoped to the
 	 * EJB identified in the name parameter. The value of the role reference must not be <code>null</code> or the empty
 	 * string.
@@ -71,12 +73,12 @@ public final class EJBRoleRefPermission extends Permission {
 	/**
 	 * Checks two EJBRoleRefPermission objects for equality. EJBRoleRefPermission objects are equivalent if they have case
 	 * equivalent name and actions values.
-	 * <P>
+	 * 
+	 * <p>
 	 * Two Permission objects, P1 and P2, are equivalent if and only if P1.implies(P2) && P2.implies(P1).
-	 * <P>
 	 * 
 	 * @param o the EJBRoleRefPermission object being tested for equality with this EJBRoleRefPermission.
-	 * <P>
+	 * 
 	 * @return true if the argument EJBRoleRefPermission object is equivalent to this EJBRoleRefPermission.
 	 */
 	public boolean equals(Object o) {
@@ -93,7 +95,6 @@ public final class EJBRoleRefPermission extends Permission {
 
 	/**
 	 * Returns a canonical String representation of the actions of this EJBRoleRefPermission.
-	 * <P>
 	 * 
 	 * @return a String containing the canonicalized actions of this EJBRoleRefPermission.
 	 */
@@ -102,9 +103,10 @@ public final class EJBRoleRefPermission extends Permission {
 	}
 
 	/**
-	 * Returns the hash code value for this EJBRoleRefPermission. The properties of the returned hash code must be as
-	 * follows:
+	 * Returns the hash code value for this EJBRoleRefPermission.
+	 * 
 	 * <p>
+	 * The properties of the returned hash code must be as follows:
 	 * <ul>
 	 * <li>During the lifetime of a Java application, the hashCode method must return the same integer value, every time it
 	 * is called on a EJBRoleRefPermission object. The value returned by hashCode for a particular EJBRoleRefPermission need
@@ -112,7 +114,6 @@ public final class EJBRoleRefPermission extends Permission {
 	 * <li>If two EJBRoleRefPermission objects are equal according to the equals method, then calling the hashCode method on
 	 * each of the two Permission objects must produce the same integer result (within an application).
 	 * </ul>
-	 * <P>
 	 * 
 	 * @return the integer hash code value for this object.
 	 */
@@ -129,18 +130,18 @@ public final class EJBRoleRefPermission extends Permission {
 	}
 
 	/**
-	 * Determines if the argument Permission is "implied by" this EJBRoleRefPermission. For this to be the case,
+	 * Determines if the argument Permission is "implied by" this EJBRoleRefPermission.
+	 * 
 	 * <p>
+	 * For this to be the case,
 	 * </ul>
-	 * <li>The argument must be an instanceof EJBRoleRefPermission
-	 * <li>with name equivalent to that of this EJBRoleRefPermission, and
-	 * <li>with the role reference equivalent to that of this EJBRoleRefPermission applies.
-	 * <P>
+	 * <li>The argument must be an <code>instanceof</code> <code>EJBRoleRefPermission</code>
+	 * <li>with name equivalent to that of this <code>EJBRoleRefPermission</code>, and
+	 * <li>with the role reference equivalent to that of this <code>EJBRoleRefPermission</code> applies.
+	 * <p>
 	 * The name and actions comparisons described above are case sensitive.
-	 * <P>
 	 * 
 	 * @param permission "this" EJBRoleRefPermission is checked to see if it implies the argument permission.
-	 * <P>
 	 * @return true if the specified permission is implied by this object, false if not.
 	 */
 	public boolean implies(Permission permission) {

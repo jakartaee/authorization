@@ -23,17 +23,20 @@ import java.security.PermissionCollection;
  * The methods of this interface are used by containers to create policy statements in a Policy provider. An object that
  * implements the PolicyConfiguration interface provides the policy statement configuration interface for a
  * corresponding policy context within the corresponding Policy provider.
- * <P>
+ * 
+ * <p>
  * The life cycle of a policy context is defined by three states; "open", "inService", and "deleted". A policy context
  * is in one of these three states.
- * <P>
+ * 
+ * <p>
  * A policy context in the "open" state is in the process of being configured, and may be operated on by any of the
  * methods of the PolicyConfiguration interface. A policy context in the "open" state must not be assimilated at
  * <code>Policy.refresh</code> into the policy statements used by the Policy provider in performing its access
  * decisions. In order for the policy statements of a policy context to be assimilated by the associated provider, the
  * policy context must be in the "inService" state. A policy context in the "open" state is transitioned to the
  * "inService" state by calling the commit method.
- * <P>
+ * 
+ * <p>
  * A policy context in the "inService" state is available for assimilation into the policy statements being used to
  * perform access decisions by the associated Policy provider. Providers assimilate policy contexts containing policy
  * statements when the refresh method of the provider is called. When a provider's refresh method is called, it must
@@ -41,16 +44,18 @@ import java.security.PermissionCollection;
  * into service for each policy context are only those defined in the context at the time of the call to refresh. A
  * policy context in the "inService" state is not available for additional configuration and may be returned to the
  * "open" state by calling the getPolicyConfiguration method of the PolicyConfigurationFactory.
- * <P>
+ * 
+ * <p>
  * A policy context in the "deleted" state is neither available for configuration, nor is it available for assimilation
  * into the Provider. A policy context whose state is "deleted" may be reclaimed for subsequent processing by calling
  * the getPolicyConfiguration method of the associated PolicyConfigurationFactory. A "deleted" policy context is
  * transitioned to the "open" state when it it returned as a result of a call to getPolicyConfiguration.
- * <P>
+ * 
+ * <p>
  * The following table captures the correspondence between the policy context life cycle and the methods of the
  * PolicyConfiguration interface. The rightmost 3 columns of the table correspond to the PolicyConfiguration state
  * identified at the head of the column. The values in the cells of these columns indicate the next state resulting from
- * a call to the method identifed in the leftmost column of the corresponding row, or that calling the method is
+ * a call to the method identified in the leftmost column of the corresponding row, or that calling the method is
  * unsupported in the state represented by the column (in which case the state will remain unchanged).
  *
  * <br>
@@ -134,7 +139,8 @@ import java.security.PermissionCollection;
  * </tr>
  * </table>
  * <br>
- * <P>
+ * 
+ * <p>
  * For a provider implementation to be compatible with multi-threaded environments, it may be necessary to synchronize
  * the refresh method of the provider with the methods of its PolicyConfiguration interface and with the
  * getPolicyConfiguration and inService methods of its PolicyConfigurationFactory.
@@ -166,15 +172,14 @@ public interface PolicyConfiguration {
 	/**
 	 * Used to add permissions to a named role in this PolicyConfiguration. If the named role does not exist in the
 	 * PolicyConfiguration, it is created as a result of the call to this function.
-	 * <P>
+	 * 
+	 * <p>
 	 * It is the job of the Policy provider to ensure that all the permissions added to a role are granted to principals
 	 * "mapped to the role".
-	 * <P>
 	 * 
 	 * @param roleName the name of the Role to which the permissions are to be added.
-	 * <P>
-	 * @param permissions the collection of permissions to be added to the role. The collection may be either a homogenous
-	 * or heterogenous collection.
+	 * @param permissions the collection of permissions to be added to the role. The collection may be either a homogeneous
+	 * or heterogeneous collection.
 	 *
 	 * @throws java.lang.SecurityException if called by an AccessControlContext that has not been granted the "setPolicy"
 	 * SecurityPermission.
@@ -191,13 +196,12 @@ public interface PolicyConfiguration {
 	/**
 	 * Used to add a single permission to a named role in this PolicyConfiguration. If the named role does not exist in the
 	 * PolicyConfiguration, it is created as a result of the call to this function.
-	 * <P>
+	 * 
+	 * <p>
 	 * It is the job of the Policy provider to ensure that all the permissions added to a role are granted to principals
 	 * "mapped to the role".
-	 * <P>
 	 * 
 	 * @param roleName the name of the Role to which the permission is to be added.
-	 * <P>
 	 * @param permission the permission to be added to the role.
 	 *
 	 * @throws java.lang.SecurityException if called by an AccessControlContext that has not been granted the "setPolicy"
@@ -214,7 +218,6 @@ public interface PolicyConfiguration {
 
 	/**
 	 * Used to add unchecked policy statements to this PolicyConfiguration.
-	 * <P>
 	 * 
 	 * @param permissions the collection of permissions to be added as unchecked policy statements. The collection may be
 	 * either a homogenous or heterogenous collection.
@@ -233,7 +236,6 @@ public interface PolicyConfiguration {
 
 	/**
 	 * Used to add a single unchecked policy statement to this PolicyConfiguration.
-	 * <P>
 	 * 
 	 * @param permission the permission to be added to the unchecked policy statements.
 	 *
@@ -251,10 +253,9 @@ public interface PolicyConfiguration {
 
 	/**
 	 * Used to add excluded policy statements to this PolicyConfiguration.
-	 * <P>
 	 * 
 	 * @param permissions the collection of permissions to be added to the excluded policy statements. The collection may be
-	 * either a homogenous or heterogenous collection.
+	 * either a homogeneous or heterogeneous collection.
 	 *
 	 * @throws java.lang.SecurityException if called by an AccessControlContext that has not been granted the "setPolicy"
 	 * SecurityPermission.
@@ -270,7 +271,6 @@ public interface PolicyConfiguration {
 
 	/**
 	 * Used to add a single excluded policy statement to this PolicyConfiguration.
-	 * <P>
 	 * 
 	 * @param permission the permission to be added to the excluded policy statements.
 	 *
@@ -289,7 +289,6 @@ public interface PolicyConfiguration {
 	/**
 	 * Used to remove a role and all its permissions from this PolicyConfiguration. This method has no effect on the links
 	 * between this PolicyConfiguration and others.
-	 * <P>
 	 * 
 	 * @param roleName the name of the role to remove from this PolicyConfiguration. If the value of the roleName parameter
 	 * is "*" and no role with name "*" exists in this PolicyConfiguration, then all roles must be removed from this
@@ -341,18 +340,19 @@ public interface PolicyConfiguration {
 
 	/**
 	 * Creates a relationship between this configuration and another such that they share the same principal-to-role
-	 * mappings. PolicyConfigurations are linked to apply a common principal-to-role mapping to multiple seperately
+	 * mappings. PolicyConfigurations are linked to apply a common principal-to-role mapping to multiple separately
 	 * manageable PolicyConfigurations, as is required when an application is composed of multiple modules.
-	 * <P>
+	 * 
+	 * <p>
 	 * Note that the policy statements which comprise a role, or comprise the excluded or unchecked policy collections in a
 	 * PolicyConfiguration are unaffected by the configuration being linked to another.
-	 * <P>
 	 * 
-	 * @param link a reference to a different PolicyConfiguration than this PolicyConfiguration.
-	 * <P>
-	 * The relationship formed by this method is symetric, transitive and idempotent. If the argument PolicyConfiguration
+	 * <p>
+	 * The relationship formed by this method is symmetric, transitive and idempotent. If the argument PolicyConfiguration
 	 * does not have a different Policy context identifier than this PolicyConfiguration no relationship is formed, and an
 	 * exception, as described below, is thrown.
+	 * 
+	 * @param PolicyConfiguration link a reference to a different PolicyConfiguration than this PolicyConfiguration.
 	 *
 	 * @throws java.lang.SecurityException if called by an AccessControlContext that has not been granted the "setPolicy"
 	 * SecurityPermission.
@@ -373,7 +373,8 @@ public interface PolicyConfiguration {
 	 * Causes all policy statements to be deleted from this PolicyConfiguration and sets its internal state such that
 	 * calling any method, other than delete, getContextID, or inService on the PolicyConfiguration will be rejected and
 	 * cause an UnsupportedOperationException to be thrown.
-	 * <P>
+	 * 
+	 * <p>
 	 * This operation has no affect on any linked PolicyConfigurations other than removing any links involving the deleted
 	 * PolicyConfiguration.
 	 *
@@ -392,7 +393,8 @@ public interface PolicyConfiguration {
 	 * the Policy.refresh method. A policy context whose state is "inService" may be returned to the "open" state by calling
 	 * the getPolicyConfiguration method of the PolicyConfiguration factory with the policy context identifier of the policy
 	 * context.
-	 * <P>
+	 * 
+	 * <p>
 	 * When the state of a policy context is "inService", calling any method other than commit, delete, getContextID, or
 	 * inService on its PolicyConfiguration Object will cause an UnsupportedOperationException to be thrown.
 	 *

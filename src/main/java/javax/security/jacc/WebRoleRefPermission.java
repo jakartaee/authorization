@@ -23,14 +23,17 @@ import java.security.Permission;
 /**
  * Class for Servlet <i><code>isUserInRole (String reference)</code></i> permissions. A WebRoleRefPermission is a named
  * permission and has actions.
- * <P>
+ * 
+ * <p>
  * The name of an WebRoleRefPermission (also referred to as the target name) identifies a Web resource by the servlet
  * name (in the deployment descriptor corresponding to the component from which the call to
  * <i><code>isUserInRole (String reference)</code></i> is being made.
- * <P>
+ * 
+ * <p>
  * The actions of an WebRoleRefPermission identifies the role reference to which the permission applies. A
  * WebRoleRefPermission is checked to determine if the subject is a member of the role identified by the reference.
- * <P>
+ * 
+ * <p>
  * Implementations of this class MAY implement newPermissionCollection or inherit its implementation from the super
  * class.
  *
@@ -57,11 +60,11 @@ public final class WebRoleRefPermission extends Permission implements java.io.Se
 
 	/**
 	 * Creates a new WebRoleRefPermission with the specified name and actions.
-	 * <P>
+	 * <p>
 	 * 
 	 * @param name the servlet-name that identifies the application specific web resource in whose context the role
 	 * references are to be evaluated.
-	 * <P>
+	 * <p>
 	 * @param actions identifies the role reference to which the permission pertains. The role reference is scoped to the
 	 * Web resource identified in the name parameter. The value of the role reference must not be <code>null</code> or the
 	 * empty string.
@@ -74,11 +77,12 @@ public final class WebRoleRefPermission extends Permission implements java.io.Se
 	/**
 	 * Checks two WebRoleRefPermission objects for equality. WebRoleRefPermission objects are equivalent if they have case
 	 * equivalent name and actions values.
-	 * <P>
+	 * 
+	 * <p>
 	 * Two Permission objects, P1 and P2, are equivalent if and only if P1.implies(P2) && P2.implies(P1).
-	 * <P>
+	 * 
+	 * <p>
 	 * The name and actions comparisons described above are case sensitive.
-	 * <P>
 	 * 
 	 * @param o the WebRoleRefPermission object being tested for equality with this WebRoleRefPermission.
 	 * @return true if the argument WebRoleRefPermission object is equivalent to this WebRoleRefPermission.
@@ -97,19 +101,20 @@ public final class WebRoleRefPermission extends Permission implements java.io.Se
 
 	/**
 	 * Returns a canonical String representation of the actions of this WebRoleRefPermission.
-	 * <P>
 	 * 
 	 * @return a String containing the canonicalized actions of this WebRoleRefPermission.
 	 */
-
 	public String getActions() {
 		return this.actions;
 	}
 
 	/**
-	 * Returns the hash code value for this WebRoleRefPermission. The properties of the returned hash code must be as
-	 * follows:
+	 * Returns the hash code value for this WebRoleRefPermission. 
+	 * 
 	 * <p>
+	 * The properties of the returned hash code must be as
+	 * follows:
+	 * 
 	 * <ul>
 	 * <li>During the lifetime of a Java application, the hashCode method must return the same integer value, every time it
 	 * is called on a WebRoleRefPermission object. The value returned by hashCode for a particular WebRoleRefPermission need
@@ -117,7 +122,6 @@ public final class WebRoleRefPermission extends Permission implements java.io.Se
 	 * <li>If two WebRoleRefPermission objects are equal according to the equals method, then calling the hashCode method on
 	 * each of the two Permission objects must produce the same integer result (within an application).
 	 * </ul>
-	 * <P>
 	 * 
 	 * @return the integer hash code value for this object.
 	 */
@@ -134,19 +138,21 @@ public final class WebRoleRefPermission extends Permission implements java.io.Se
 	}
 
 	/**
-	 * Determines if the argument Permission is "implied by" this WebRoleRefPermission. For this to be the case,
+	 * Determines if the argument Permission is "implied by" this WebRoleRefPermission.
+	 * 
 	 * <p>
+	 * For this to be the case,
+	 * 
 	 * <ul>
 	 * <li>The argument must be an instanceof WebRoleRefPermission
 	 * <li>with name equivalent to this WebRoleRefPermission, and
 	 * <li>with role reference equivalent to this WebRoleRefPermission (as defined in their actions).
 	 * </ul>
-	 * <P>
+	 * 
+	 * <p>
 	 * The comparisons described above are case sensitive.
-	 * <P>
 	 * 
 	 * @param permission "this" WebRoleRefPermission is checked to see if it implies the argument permission.
-	 * <P>
 	 * @return true if the specified permission is implied by this object, false if not.
 	 */
 	public boolean implies(Permission permission) {

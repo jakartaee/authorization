@@ -27,7 +27,8 @@ import javax.servlet.http.HttpServletRequest;
 
 /**
  * Class for Servlet Web user data permissions. A WebUserDataPermission is a named permission and has actions.
- * <P>
+ * 
+ * <p>
  * The name of a WebUserDataPermission (also referred to as the target name) identifies a Web resource by its context
  * path relative URL pattern.
  *
@@ -74,26 +75,27 @@ public final class WebUserDataPermission extends Permission {
 
 	/**
 	 * Creates a new WebUserDataPermission with the specified name and actions.
-	 * <P>
+	 * 
+	 * <p>
 	 * The name contains a URLPatternSpec that identifies the web resources to which the permissions applies. The syntax of
 	 * a URLPatternSpec is as follows:
-	 * <P>
 	 * 
-	 * <Pre>
+	 * <pre>
 	 *
 	 *          URLPatternList ::= URLPattern | URLPatternList colon URLPattern
 	 *
 	 *          URLPatternSpec ::= null | URLPattern | URLPattern colon URLPatternList
 	 *
-	 * </Pre>
-	 * <P>
+	 * </pre>
+	 * 
+	 * <p>
 	 * A null URLPatternSpec is translated to the default URLPattern, "/", by the permission constructor. The empty string
 	 * is an exact URLPattern, and may occur anywhere in a URLPatternSpec that an exact URLPattern may occur. The first
 	 * URLPattern in a URLPatternSpec may be any of the pattern types, exact, path-prefix, extension, or default as defined
 	 * in the <i>Java Servlet Specification)</i>. When a URLPatternSpec includes a URLPatternList, the patterns of the
 	 * URLPatternList identify the resources to which the permission does NOT apply and depend on the pattern type and value
 	 * of the first pattern as follows:
-	 * <p>
+	 * 
 	 * <ul>
 	 * <li>No pattern may exist in the URLPatternList that matches the first pattern.
 	 * <li>If the first pattern is a path-prefix pattern, only exact patterns matched by the first pattern and path-prefix
@@ -104,12 +106,12 @@ public final class WebUserDataPermission extends Permission {
 	 * URLPatternList.
 	 * <li>If the first pattern is an exact pattern a URLPatternList must not be present in the URLPatternSpec.
 	 * </ul>
-	 * <P>
+	 * 
+	 * <p>
 	 * The actions parameter contains a comma separated list of HTTP methods that may be followed by a transportType
 	 * separated from the HTTP method by a colon.
-	 * <P>
 	 * 
-	 * <Pre>
+	 * <pre>
 	 *
 	 *          ExtensionMethod ::= any token as defined by RFC 2616
 	 *                  (that is, 1*[any CHAR except CTLs or separators])
@@ -129,28 +131,31 @@ public final class WebUserDataPermission extends Permission {
 	 *          actions ::= null | HTTPMethodSpec | 
 	 *                  HTTPMethodSpec colon transportType
 	 *
-	 * </Pre>
-	 * <P>
+	 * </pre>
+	 * 
+	 * <p>
 	 * If duplicates occur in the HTTPMethodSpec they must be eliminated by the permission constructor.
-	 * <P>
+	 * 
+	 * <p>
 	 * An empty string HTTPMethodSpec is a shorthand for a List containing all the possible HTTP methods.
-	 * <P>
+	 * 
+	 * <p>
 	 * If the HTTPMethodSpec contains an HTTPMethodExceptionList (i.e., it begins with an exclaimationPoint), the permission
 	 * pertains to all methods except those occuring in the exception list.
-	 * <P>
+	 * 
+	 * <p>
 	 * An actions string without a transportType is a shorthand for a actions string with the value "NONE" as its
 	 * TransportType.
-	 * <P>
+	 * 
+	 * <p>
 	 * A granted permission representing a transportType of "NONE", indicates that the associated resources may be accessed
-	 * using any conection type.
-	 * <P>
+	 * using any connection type.
 	 * 
 	 * @param name the URLPatternSpec that identifies the application specific web resources to which the permission
 	 * pertains. All URLPatterns in the URLPatternSpec are relative to the context path of the deployed web application
 	 * module, and the same URLPattern must not occur more than once in a URLPatternSpec. A null URLPatternSpec is
 	 * translated to the default URLPattern, "/", by the permission constructor. All colons occuring within the URLPattern
 	 * elements of the URLPatternSpec must be represented in escaped encoding as defined in RFC 2396.
-	 * <P>
 	 * @param actions identifies the HTTP methods and transport type to which the permission pertains. If the value passed
 	 * through this parameter is null or the empty string, then the permission is constructed with actions corresponding to
 	 * all the possible HTTP methods and transportType "NONE".
@@ -164,18 +169,15 @@ public final class WebUserDataPermission extends Permission {
 	/**
 	 * Creates a new WebUserDataPermission with name corresponding to the URLPatternSpec, and actions composed from the
 	 * array of HTTP methods and the transport type.
-	 * <P>
 	 * 
 	 * @param urlPatternSpec the URLPatternSpec that identifies the application specific web resources to which the
 	 * permission pertains. All URLPatterns in the URLPatternSpec are relative to the context path of the deployed web
 	 * application module, and the same URLPattern must not occur more than once in a URLPatternSpec. A null URLPatternSpec
-	 * is translated to the default URLPattern, "/", by the permission constructor. All colons occuring within the
+	 * is translated to the default URLPattern, "/", by the permission constructor. All colons occurring within the
 	 * URLPattern elements of the URLPatternSpec must be represented in escaped encoding as defined in RFC 2396.
-	 * <P>
 	 * @param HTTPMethods an array of strings each element of which contains the value of an HTTP method. If the value
 	 * passed through this parameter is null or is an array with no elements, then the permission is constructed with
 	 * actions corresponding to all the possible HTTP methods.
-	 * <P>
 	 * @param transportType a String whose value is a transportType. If the value passed through this parameter is null,
 	 * then the permission is constructed with actions corresponding to transportType "NONE".
 	 */
@@ -197,12 +199,11 @@ public final class WebUserDataPermission extends Permission {
 
 	/**
 	 * Creates a new WebUserDataPermission from the HttpServletRequest object.
-	 * <P>
 	 * 
 	 * @param request the HttpServletRequest object corresponding to the Servlet operation to which the permission pertains.
 	 * The permission name is the substring of the requestURI (HttpServletRequest.getRequestURI()) that begins after the
 	 * contextPath (HttpServletRequest.getContextPath()). When the substring operation yields the string "/", the permission
-	 * is constructed with the empty string as its name. The constructor must transform all colon characters occuring in the
+	 * is constructed with the empty string as its name. The constructor must transform all colon characters occurring in the
 	 * name to escaped encoding as defined in RFC 2396. The HTTP method component of the permission's actions is as obtained
 	 * from HttpServletRequest.getMethod(). The TransportType component of the permission's actions is determined by calling
 	 * HttpServletRequest.isSecure().
@@ -216,16 +217,18 @@ public final class WebUserDataPermission extends Permission {
 
 	/**
 	 * Checks two WebUserDataPermission objects for equality. WebUserDataPermission objects are equivalent if their
-	 * URLPatternSpec and (canonicalized) actions values are equivalent. The URLPatternSpec of a reference permission is
+	 * URLPatternSpec and (canonicalized) actions values are equivalent. 
+	 * 
+	 * <p>
+	 * The URLPatternSpec of a reference permission is
 	 * equivalent to that of an argument permission if their first patterns are equivalent, and the patterns of the
 	 * URLPatternList of the reference permission collectively match exactly the same set of patterns as are matched by the
 	 * patterns of the URLPatternList of the argument permission.
-	 * <P>
+	 * 
+	 * <p>
 	 * Two Permission objects, P1 and P2, are equivalent if and only if P1.implies(P2) && P2.implies(P1).
-	 * <P>
 	 * 
 	 * @param o the WebUserDataPermission object being tested for equality with this WebUserDataPermission.
-	 * <P>
 	 * @return true if the argument WebUserDataPermission object is equivalent to this WebUserDataPermission.
 	 */
 	public boolean equals(Object o) {
@@ -244,11 +247,12 @@ public final class WebUserDataPermission extends Permission {
 	}
 
 	/**
-	 * Returns a canonical String representation of the actions of this WebUserDataPermission. The canonical form of the
-	 * actions of a WebUserDataPermission is described by the following syntax description.
-	 * <P>
+	 * Returns a canonical String representation of the actions of this WebUserDataPermission.
 	 * 
-	 * <Pre>
+	 * <p>
+	 * The canonical form of the actions of a WebUserDataPermission is described by the following syntax description.
+	 * 
+	 * <pre>
 	 *
 	 *          ExtensionMethod ::= any token as defined by RFC 2616
 	 *                   (that is, 1*[any CHAR except CTLs or separators])
@@ -268,19 +272,20 @@ public final class WebUserDataPermission extends Permission {
 	 *          actions ::= null | HTTPMethodList | 
 	 *                  HTTPMethodSpec colon transportType
 	 *
-	 * </Pre>
-	 * <P>
+	 * </pre>
+	 * 
+	 * <p>
 	 * If the permission's HTTP methods correspond to the entire HTTP method set and the permission's transport type is
 	 * "INTEGRAL" or "CONFIDENTIAL", the HTTP methods shall be represented in the canonical form by an emptyString
 	 * HTTPMethodSpec. If the permission's HTTP methods correspond to the entire HTTP method set, and the permission's
 	 * transport type is not "INTEGRAL"or "CONFIDENTIAL", the canonical actions value shall be the null value.
-	 * <P>
+	 * 
+	 * <p>
 	 * If the permission's methods do not correspond to the entire HTTP method set, duplicates must be eliminated and the
 	 * remaining elements must be ordered such that the predefined methods preceed the extension methods, and such that
 	 * within each method classification the corresponding methods occur in ascending lexical order. The resulting
 	 * (non-emptyString) HTTPMethodSpec must be included in the canonical form, and if the permission's transport type is
 	 * not "INTEGRAL" or "CONFIDENTIAL", the canonical actions value must be exactly the resulting HTTPMethodSpec.
-	 * <P>
 	 * 
 	 * @return a String containing the canonicalized actions of this WebUserDataPermission (or the null value).
 	 */
@@ -299,9 +304,11 @@ public final class WebUserDataPermission extends Permission {
 	}
 
 	/**
-	 * Returns the hash code value for this WebUserDataPermission. The properties of the returned hash code must be as
-	 * follows:
+	 * Returns the hash code value for this WebUserDataPermission.
+	 * 
 	 * <p>
+	 * The properties of the returned hash code must be as follows:
+	 * 
 	 * <ul>
 	 * <li>During the lifetime of a Java application, the hashCode method shall return the same integer value every time it
 	 * is called on a WebUserDataPermission object. The value returned by hashCode for a particular EJBMethod permission
@@ -309,11 +316,9 @@ public final class WebUserDataPermission extends Permission {
 	 * <li>If two WebUserDataPermission objects are equal according to the equals method, then calling the hashCode method
 	 * on each of the two Permission objects must produce the same integer result (within an application).
 	 * </ul>
-	 * <P>
 	 * 
 	 * @return the integer hash code value for this object.
 	 */
-
 	public int hashCode() {
 		if (this.hashCodeValue == 0) {
 			String hashInput = this.urlPatternSpec.toString() + " " + this.methodSpec.hashCode() + ":" + this.transportType;
@@ -324,9 +329,11 @@ public final class WebUserDataPermission extends Permission {
 	}
 
 	/**
-	 * Determines if the argument Permission is "implied by" this WebUserDataPermission. For this to be the case all of the
-	 * following must be true:
+	 * Determines if the argument Permission is "implied by" this WebUserDataPermission.
+	 * 
 	 * <p>
+	 * For this to be the case all of the following must be true:
+	 * 
 	 * <ul>
 	 * <li>The argument is an instanceof WebUserDataPermission.
 	 * <li>The first URLPattern in the name of the argument permission is matched by the first URLPattern in the name of
@@ -341,10 +348,11 @@ public final class WebUserDataPermission extends Permission {
 	 * <li>The transportType in the actions of this permission either corresponds to the value "NONE", or equals the
 	 * transportType in the actions of the argument permission.
 	 * </ul>
-	 * <P>
+	 * 
+	 * <p>
 	 * URLPattern matching is performed using the <i>Servlet matching rules</i> where two URL patterns match if they are
 	 * related as follows:
-	 * <p>
+	 * 
 	 * <ul>
 	 * <li>their pattern values are String equivalent, or
 	 * <li>this pattern is the path-prefix pattern "/*", or
@@ -355,12 +363,12 @@ public final class WebUserDataPermission extends Permission {
 	 * pattern, or
 	 * <li>the reference pattern is the special default pattern, "/", which matches all argument patterns.
 	 * </ul>
-	 * <P>
+	 * 
+	 * <p>
 	 * All of the comparisons described above are case sensitive.
-	 * <P>
 	 * 
 	 * @param permission "this" WebUserDataPermission is checked to see if it implies the argument permission.
-	 * <P>
+	 *
 	 * @return true if the specified permission is implied by this object, false if not.
 	 */
 	public boolean implies(Permission permission) {

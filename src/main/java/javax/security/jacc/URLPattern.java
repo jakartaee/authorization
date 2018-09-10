@@ -104,7 +104,8 @@ class URLPattern extends Object implements Comparable {
 	/**
 	 * Does this pattern imply (that is, match) the argument pattern? This method follows the same rules (in the same order)
 	 * as those used for mapping requests to servlets.
-	 * <P>
+	 * 
+	 * <p>
 	 * Two URL patterns match if they are related as follows:
 	 * <p>
 	 * <ul>

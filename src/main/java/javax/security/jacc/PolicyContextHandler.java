@@ -18,11 +18,14 @@ package javax.security.jacc;
 
 /**
  * This interface defines the methods that must be implemented by handlers that are to be registered and activated by
- * the <code>PolicyContext</code> class. The <code>PolicyContext</code> class provides methods for containers to
- * register and activate container-specific <code>PolicyContext</code> handlers. <code>Policy</code> providers use the
- * <code>PolicyContext</code> class to activate handlers to obtain (from the container) additional policy relevant
- * context to apply in their access decisions. All handlers registered and activated via the <code>PolicyContext</code>
- * class must implement the <code>PolicyContextHandler</code> interface.
+ * the <code>PolicyContext</code> class.
+ * 
+ * <p>
+ * The <code>PolicyContext</code> class provides methods for containers to register and activate container-specific
+ * <code>PolicyContext</code> handlers. <code>Policy</code> providers use the <code>PolicyContext</code> class to
+ * activate handlers to obtain (from the container) additional policy relevant context to apply in their access
+ * decisions. All handlers registered and activated via the <code>PolicyContext</code> class must implement the
+ * <code>PolicyContextHandler</code> interface.
  *
  * @see javax.security.jacc.PolicyContext
  * @see javax.security.jacc.PolicyContextException
@@ -38,6 +41,7 @@ public interface PolicyContextHandler {
 	 * 
 	 * @param key a <code>String</code> value identifying a context object that could be supported by the handler. The value
 	 * of this parameter must not be null.
+	 * 
 	 * @return a boolean indicating whether or not the context object corresponding to the argument key is handled by the
 	 * handler.
 	 *
@@ -66,10 +70,10 @@ public interface PolicyContextHandler {
 	 * context object identified by the (case-sensitive) key. In addition to the key, the handler will be activated with the
 	 * handler data value associated within the <code>PolicyContext</code> class with the thread on which the call to this
 	 * method is made.
-	 * <P>
+	 * 
+	 * <p>
 	 * Note that the policy context identifier associated with a thread is available to the handler by calling
 	 * PolicyContext.getContextID().
-	 * <P>
 	 * 
 	 * @param key a String that identifies the context object to be returned by the handler. The value of this paramter must
 	 * not be null.

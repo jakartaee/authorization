@@ -24,13 +24,15 @@ import java.util.Set;
  * This utility class is used by containers to communicate policy context identifiers and other policy relevant context
  * to <code>Policy</code> providers. <code>Policy</code> providers use the policy context identifier to select the
  * subset of policy to apply in access decisions.
- * <P>
+ * 
+ * <p>
  * The value of a policy context identifier is a <code>
  * String</code> and each thread has an independently established policy context identifier. A container will establish
  * the thread-scoped value of a policy context identifier by calling the static <code>setContextID</code> method. The
  * value of a thread-scoped policy context identifier is available (to <code>Policy</code>) by calling the static
  * <code>getContextID</code> method.
- * <P>
+ * 
+ * <p>
  * This class is also used by <code>Policy</code> providers to request additional thread-scoped policy relevant context
  * objects from the calling container. Containers register container-specific <code>PolicyContext</code> handlers using
  * the static <code>registerHandler</code> method. Handler registration is scoped to the class, such that the same
@@ -38,13 +40,16 @@ import java.util.Set;
  * <code>setHandlerData</code> to establish a thread-scoped parameter that will be passed to handlers when they are
  * activated by <code>Policy</code> providers. The static <code>getContext</code> method is used to activate a handler
  * and obtain the corresponding context object.
- * <P>
+ * 
+ * <p>
  * The static accessor functions provided by this class allow per-thread policy context values to be established and
  * communicated independent of a common reference to a particular PolicyContext instance.
- * <P>
+ * 
+ * <p>
  * The PolicyContext class may encapsulate static ThreadLocal instance variables to represent the policy context
  * identifier and handler data values.
- * <P>
+ * 
+ * <p>
  * The Application server must bundle or install the PolicyContext class, and the containers of the application server
  * must prevent the methods of the PolicyContext class from being called from calling contexts that are not authorized
  * to call these methods. With the exception of the getContextID and GetHandlerKeys methods, containers must restrict

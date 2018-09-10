@@ -24,12 +24,15 @@ import java.util.HashMap;
 
 /**
  * Class for EJB method permissions.
- * <P>
+ * 
+ * <p>
  * The name of an EJBMethodPermission contains the value of the ejb-name element in the application's deployment
  * descriptor that identifies the target EJB.
- * <P>
+ * 
+ * <p>
  * The actions of an EJBMethodPermission identifies the methods of the EJB to which the permission applies.
- * <P>
+ * 
+ * <p>
  * Implementations of this class MAY implement newPermissionCollection or inherit its implementation from the super
  * class.
  *
@@ -73,14 +76,17 @@ public final class EJBMethodPermission extends Permission {
 
 	/**
 	 * Creates a new EJBMethodPermission with the specified name and actions.
-	 * <P>
+	 * 
+	 * <p>
 	 * The name contains the value of the ejb-name element corresponding to an EJB in the application's deployment
 	 * descriptor.
-	 * <P>
-	 * The actions contains a methodSpec. The syntax of the actions parameter is defined as follows:
-	 * <P>
 	 * 
-	 * <Pre>
+	 * <p>
+	 * The actions contains a methodSpec. The syntax of the actions parameter is defined as follows:
+	 * 
+	 * <p>
+	 * 
+	 * <pre>
 	 *      methodNameSpec ::= methodName | emptyString
 	 *
 	 *      methodInterfaceName ::= String
@@ -97,37 +103,40 @@ public final class EJBMethodPermission extends Permission {
 	 *           methodNameSpec |
 	 *           methodNameSpec comma methodInterfaceName |
 	 *           methodNameSpec comma methodInterfaceSpec comma methodParamsSpec
-	 * </Pre>
-	 * <P>
+	 * </pre>
+	 * 
+	 * <p>
 	 * A MethodInterfaceName is a non-empty String and should contain a method-intf value as defined for use in EJB
 	 * deployment descriptors. An implementation must be flexible such that it supports additional interface names
 	 * especially if they are standardized by the EJB Specification. The EJB Specification currently defines the following
 	 * method-intf values:
-	 * <P>
+	 * <p>
 	 * 
-	 * <Pre>
+	 * <pre>
 	 * { "Home", "LocalHome", "Remote", "Local", "ServiceEndpoint" }
-	 * </Pre>
-	 * <P>
+	 * </pre>
+	 * 
+	 * <p>
 	 * A null or empty string methodSpec indicates that the permission applies to all methods of the EJB. A methodSpec with
 	 * a methodNameSpec of the empty string matches all methods of the EJB that match the methodInterface and methodParams
 	 * elements of the methodSpec.
-	 * <P>
+	 * 
+	 * <p>
 	 * A methodSpec with a methodInterfaceSpec of the empty string matches all methods of the EJB that match the
 	 * methodNameSpec and methodParamsSpec elements of the methodSpec.
-	 * <P>
+	 * 
+	 * <p>
 	 * A methodSpec without a methodParamsSpec matches all methods of the EJB that match the methodNameSpec and
 	 * methodInterface elements of the methodSpec.
-	 * <P>
+	 * 
+	 * <p>
 	 * The order of the typeNames in methodParams array must match the order of occurence of the corresponding parameters in
 	 * the method signature of the target method(s). Each typeName in the methodParams must contain the canonical form of
 	 * the corresponding parameter's typeName as defined by the getActions method. A methodSpec with an empty
 	 * methodParamsSpec matches all 0 argument methods of the EJB that match the methodNameSpec and methodInterfaceSpec
 	 * elements of the methodSpec.
-	 * <P>
 	 * 
 	 * @param name of the EJB to which the permission pertains.
-	 * <P>
 	 * @param actions identifies the methods of the EJB to which the permission pertains.
 	 */
 	public EJBMethodPermission(String name, String actions) {
@@ -138,19 +147,15 @@ public final class EJBMethodPermission extends Permission {
 	/**
 	 * Creates a new EJBMethodPermission with name corresponding to the EJBName and actions composed from methodName,
 	 * methodInterface, and methodParams.
-	 * <P>
 	 * 
 	 * @param EJBName The string representation of the name of the EJB as it appears in the corresponding ejb-name element
 	 * in the deployment descriptor.
-	 * <P>
 	 * @param methodName A string that may be used to indicate the method of the EJB to which the permission pertains. A
 	 * value of null or "" indicates that the permission pertains to all methods that match the other parameters of the
 	 * permission specification without consideration of method name.
-	 * <P>
 	 * @param methodInterface A string that may be used to specify the EJB interface to which the permission pertains. A
 	 * value of null or "", indicates that the permission pertains to all methods that match the other parameters of the
 	 * permission specification without consideration of the interface they occur on.
-	 * <P>
 	 * @param methodParams An array of strings that may be used to specify (by typeNames) the parameter signature of the
 	 * target methods. The order of the typeNames in methodParams array must match the order of occurence of the
 	 * corresponding parameters in the method signature of the target method(s). Each typeName in the methodParams array
@@ -167,17 +172,15 @@ public final class EJBMethodPermission extends Permission {
 	/**
 	 * Creates a new EJBMethodPermission with name corresponding to the EJBName and actions composed from methodInterface,
 	 * and the Method object.
-	 * <P>
+	 * 
+	 * <p>
 	 * A container uses this constructor prior to checking if a caller has permission to call the method of an EJB.
-	 * <P>
 	 * 
 	 * @param EJBName The string representation of the name of the EJB as it appears in the corresponding ejb-name element
 	 * in the deployment descriptor.
-	 * <P>
 	 * @param methodInterface A string that may be used to specify the EJB interface to which the permission pertains. A
 	 * value of null or "", indicates that the permission pertains to all methods that match the other parameters of the
 	 * permission specification without consideration of the interface they occur on.
-	 * <P>
 	 * @param method an instance of the Java.lang.reflect.Method class corresponding to the method that the container is
 	 * trying to determine whether the caller has permission to access. This value must not be null.
 	 */
@@ -189,12 +192,12 @@ public final class EJBMethodPermission extends Permission {
 	/**
 	 * Checks two EJBMethodPermission objects for equality. EJBMethodPermission objects are equivalent if they have case
 	 * sensitive equivalent name and actions values.
-	 * <P>
+	 * 
+	 * <p>
 	 * Two Permission objects, P1 and P2, are equivalent if and only if P1.implies(P2) && P2.implies(P1).
-	 * <P>
 	 * 
 	 * @param o the EJBMethodPermission object being tested for equality with this EJBMethodPermission
-	 * <P>
+	 * 
 	 * @return true if the argument EJBMethodPermission object is equivalent to this EJBMethodPermission.
 	 */
 	public boolean equals(Object o) {
@@ -230,9 +233,10 @@ public final class EJBMethodPermission extends Permission {
 	/**
 	 * Returns a String containing a canonical representation of the actions of this EJBMethodPermission. The Canonical form
 	 * of the actions of an EJBMethodPermission is described by the following syntax description.
-	 * <P>
 	 * 
-	 * <Pre>
+	 * <p>
+	 * 
+	 * <pre>
 	 *      methodNameSpec ::= methodName | emptyString
 	 *
 	 *      methodInterfaceName ::= String
@@ -249,23 +253,23 @@ public final class EJBMethodPermission extends Permission {
 	 *           methodName |
 	 *           methodNameSpec comma methodInterfaceName |
 	 *           methodNameSpec comma methodInterfaceSpec comma methodParamsSpec
-	 * </Pre>
-	 * <P>
+	 * </pre>
+	 * 
+	 * <p>
 	 * The canonical form of each typeName must begin with the fully qualified Java name of the corresponding parameter's
 	 * type. The canonical form of a typeName for an array parameter is the fully qualified Java name of the array's
 	 * component type followed by as many instances of the string "[]" as there are dimensions to the array. No additional
 	 * characters (e.g. blanks) may occur in the canonical form.
-	 * <P>
+	 * 
+	 * <p>
 	 * A MethodInterfaceName is a non-empty String and should contain a method-intf value as defined for use in EJB
 	 * deployment descriptors. An implementation must be flexible such that it supports additional interface names
 	 * especially if they are standardized by the EJB Specification. The EJB Specification currently defines the following
 	 * method-intf values:
-	 * <P>
 	 * 
-	 * <Pre>
+	 * <pre>
 	 * { "Home", "LocalHome", "Remote", "Local", "ServiceEndpoint" }
-	 * </Pre>
-	 * <P>
+	 * </pre>
 	 * 
 	 * @return a String containing the canonicalized actions of this EJBMethodPermission.
 	 */
@@ -297,9 +301,11 @@ public final class EJBMethodPermission extends Permission {
 	}
 
 	/**
-	 * Returns the hash code value for this EJBMethodPermission. The properties of the returned hash code must be as
-	 * follows:
+	 * Returns the hash code value for this EJBMethodPermission.
+	 * 
 	 * <p>
+	 * The properties of the returned hash code must be as follows:
+	 * 
 	 * <ul>
 	 * <li>During the lifetime of a Java application, the hashCode method must return the same integer value every time it
 	 * is called on a EJBMethodPermission object. The value returned by hashCode for a particular EJBMethodPermission need
@@ -307,7 +313,6 @@ public final class EJBMethodPermission extends Permission {
 	 * <li>If two EJBMethodPermission objects are equal according to the equals method, then calling the hashCode method on
 	 * each of the two Permission objects must produce the same integer result (within an application).
 	 * </ul>
-	 * <P>
 	 * 
 	 * @return the integer hash code value for this object.
 	 */
@@ -328,15 +333,18 @@ public final class EJBMethodPermission extends Permission {
 	}
 
 	/**
-	 * Determines if the argument Permission is "implied by" this EJBMethodPermission. For this to be the case,
+	 * Determines if the argument Permission is "implied by" this EJBMethodPermission. 
+	 * 
 	 * <p>
+	 * For this to be the case,
 	 * <ul>
 	 * <li>The argument must be an instanceof EJBMethodPermission
 	 * <li>with name equivalent to that of this EJBMethodPermission, and
 	 * <li>the methods to which the argument permission applies (as defined in its actions) must be a subset of the methods
 	 * to which this EJBMethodPermission applies (as defined in its actions).
 	 * </ul>
-	 * <P>
+	 * 
+	 * <p>
 	 * The argument permission applies to a subset of the methods to which this permission applies if all of the following
 	 * conditions are met.
 	 * <ul>
@@ -347,12 +355,11 @@ public final class EJBMethodPermission extends Permission {
 	 * <li>the method parameter list component of the methodNameSpec of this permission is null, the empty string, or
 	 * equivalent to the method parameter list of the argument permission.
 	 * </ul>
-	 * <P>
+	 * 
+	 * <p>
 	 * The name and actions comparisons described above are case sensitive.
-	 * <P>
 	 * 
 	 * @param permission "this" EJBMethodPermission is checked to see if it implies the argument permission.
-	 * <P>
 	 * @return true if the specified permission is implied by this object, false if not.
 	 */
 	public boolean implies(Permission permission) {

@@ -21,9 +21,10 @@ package javax.security.jacc;
  * Interface, the <code>javax.security.jacc.PolicyConfigurationFactory</code> abstract class, the
  * <code>javax.security.jacc.PolicyContext</code> utility class, and implementations of the
  * <code>javax.security.jacc.PolicyContextException</code> Interface.
+ * 
  * <P>
- * This exception is used by javax.security.jacc implementation classes to rethrow checked exceptions ocurring within an
- * implementation that are not declared by the interface or class being implemented.
+ * This exception is used by javax.security.jacc implementation classes to rethrow checked exceptions occurring within
+ * an implementation that are not declared by the interface or class being implemented.
  *
  * @see java.lang.Exception
  * @see javax.security.jacc.PolicyConfiguration

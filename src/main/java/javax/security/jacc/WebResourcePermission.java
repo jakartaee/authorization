@@ -23,10 +23,12 @@ import javax.servlet.http.HttpServletRequest;
 
 /**
  * Class for Servlet web resource permissions. A WebResourcePermission is a named permission and has actions.
- * <P>
+ * 
+ * <p>
  * The name of a WebResourcePermission (also referred to as the target name) identifies the Web resources to which the
  * permission pertains.
- * <P>
+ * 
+ * <p>
  * Implementations of this class MAY implement newPermissionCollection or inherit its implementation from the super
  * class.
  * 
@@ -59,25 +61,29 @@ public final class WebResourcePermission extends Permission {
 
 	/**
 	 * Creates a new WebResourcePermission with the specified name and actions.
-	 * <P>
+	 * 
+	 * <p>
 	 * The name contains a URLPatternSpec that identifies the web resources to which the permissions applies. The syntax of
 	 * a URLPatternSpec is as follows:
-	 * <P>
 	 * 
-	 * <Pre>
+	 * <p>
+	 * 
+	 * <pre>
 	 *
 	 *          URLPatternList ::= URLPattern | URLPatternList colon URLPattern
 	 *
 	 *          URLPatternSpec ::= null | URLPattern | URLPattern colon URLPatternList
 	 *
-	 * </Pre>
-	 * <P>
+	 * </pre>
+	 * 
+	 * <p>
 	 * A null URLPatternSpec is translated to the default URLPattern, "/", by the permission constructor. The empty string
 	 * is an exact URLPattern, and may occur anywhere in a URLPatternSpec that an exact URLPattern may occur. The first
 	 * URLPattern in a URLPatternSpec may be any of the pattern types, exact, path-prefix, extension, or default as defined
 	 * in the <i>Java Servlet Specification)</i>. When a URLPatternSpec includes a URLPatternList, the patterns of the
 	 * URLPatternList identify the resources to which the permission does NOT apply and depend on the pattern type and value
 	 * of the first pattern as follows:
+	 * 
 	 * <p>
 	 * <ul>
 	 * <li>No pattern may exist in the URLPatternList that matches the first pattern.
@@ -89,12 +95,14 @@ public final class WebResourcePermission extends Permission {
 	 * URLPatternList.
 	 * <li>If the first pattern is an exact pattern a URLPatternList must not be present in the URLPatternSpec.
 	 * </ul>
-	 * <P>
+	 * 
+	 * <p>
 	 * The actions parameter contains a comma seperated list of HTTP methods. The syntax of the actions parameter is defined
 	 * as follows:
-	 * <P>
 	 * 
-	 * <Pre>
+	 * <p>
+	 * 
+	 * <pre>
 	 *
 	 *          ExtensionMethod ::= any token as defined by RFC 2616
 	 *                    (that is, 1*[any CHAR except CTLs or separators])
@@ -109,23 +117,26 @@ public final class WebResourcePermission extends Permission {
 	 *          HTTPMethodSpec ::= null | HTTPMethodExceptionList | 
 	 *                   HTTPMethodList
 	 *
-	 * </Pre>
-	 * <P>
+	 * </pre>
+	 * 
+	 * <p>
 	 * If duplicates occur in the HTTPMethodSpec they must be eliminated by the permission constructor.
-	 * <P>
+	 * 
+	 * <p>
 	 * A null or empty string HTTPMethodSpec indicates that the permission applies to all HTTP methods at the resources
 	 * identified by the URL pattern.
-	 * <P>
+	 * 
+	 * <p>
 	 * If the HTTPMethodSpec contains an HTTPMethodExceptionList (i.e., it begins with an exclaimationPoint), the permission
-	 * pertains to all methods except those occuring in the exception list.
-	 * <P>
+	 * pertains to all methods except those occurring in the exception list.
+	 * 
+	 * <p>
 	 * 
 	 * @param name the URLPatternSpec that identifies the application specific web resources to which the permission
 	 * pertains. All URLPatterns in the URLPatternSpec are relative to the context path of the deployed web application
 	 * module, and the same URLPattern must not occur more than once in a URLPatternSpec. A null URLPatternSpec is
 	 * translated to the default URLPattern, "/", by the permission constructor. All colons occuring within the URLPattern
 	 * elements of the URLPatternSpec must be represented in escaped encoding as defined in RFC 2396.
-	 * <P>
 	 * @param actions identifies the HTTP methods to which the permission pertains. If the value passed through this
 	 * parameter is null or the empty string, then the permission pertains to all the possible HTTP methods.
 	 */
@@ -138,14 +149,12 @@ public final class WebResourcePermission extends Permission {
 	/**
 	 * Creates a new WebResourcePermission with name corresponding to the URLPatternSpec, and actions composed from the
 	 * array of HTTP methods.
-	 * <P>
 	 * 
 	 * @param urlPatternSpec the URLPatternSpec that identifies the application specific web resources to which the
 	 * permission pertains. All URLPatterns in the URLPatternSpec are relative to the context path of the deployed web
 	 * application module, and the same URLPattern must not occur more than once in a URLPatternSpec. A null URLPatternSpec
 	 * is translated to the default URLPattern, "/", by the permission constructor. All colons occuring within the
 	 * URLPattern elements of the URLPatternSpec must be represented in escaped encoding as defined in RFC 2396.
-	 * <P>
 	 * @param HTTPMethods an array of strings each element of which contains the value of an HTTP method. If the value
 	 * passed through this parameter is null or is an array with no elements, then the permission pertains to all the
 	 * possible HTTP methods.
@@ -158,7 +167,6 @@ public final class WebResourcePermission extends Permission {
 
 	/**
 	 * Creates a new WebResourcePermission from the HttpServletRequest object.
-	 * <P>
 	 * 
 	 * @param request the HttpServletRequest object corresponding to the Servlet operation to which the permission pertains.
 	 * The permission name is the substring of the requestURI (HttpServletRequest.getRequestURI()) that begins after the
@@ -175,16 +183,19 @@ public final class WebResourcePermission extends Permission {
 
 	/**
 	 * Checks two WebResourcePermission objects for equality. WebResourcePermission objects are equivalent if their
-	 * URLPatternSpec and (canonicalized) actions values are equivalent. The URLPatternSpec of a reference permission is
+	 * URLPatternSpec and (canonicalized) actions values are equivalent. 
+	 * 
+	 * <p>
+	 * The URLPatternSpec of a reference permission is
 	 * equivalent to that of an argument permission if their first patterns are equivalent, and the patterns of the
 	 * URLPatternList of the reference permission collectively match exactly the same set of patterns as are matched by the
 	 * patterns of the URLPatternList of the argument permission.
-	 * <P>
+	 * 
+	 * <p>
 	 * Two Permission objects, P1 and P2, are equivalent if and only if P1.implies(P2) && P2.implies(P1).
-	 * <P>
 	 * 
 	 * @param o the WebResourcePermission object being tested for equality with this WebResourcePermission.
-	 * <P>
+	 * <p>
 	 * @return true if the argument WebResourcePermission object is equivalent to this WebResourcePermission.
 	 */
 	public boolean equals(Object o) {
@@ -204,7 +215,6 @@ public final class WebResourcePermission extends Permission {
 	 * predefined methods preceed extension methods, and within each method classification the corresponding methods occur
 	 * in ascending lexical order. There may be no duplicate HTTP methods in the canonical form, and the canonical form of
 	 * the set of all HTTP methods is the value null.
-	 * <P>
 	 * 
 	 * @return a String containing the canonicalized actions of this WebResourcePermission (or the null value).
 	 */
@@ -213,9 +223,11 @@ public final class WebResourcePermission extends Permission {
 	}
 
 	/**
-	 * Returns the hash code value for this WebResourcePermission. The properties of the returned hash code must be as
-	 * follows:
+	 * Returns the hash code value for this WebResourcePermission.
+	 * 
 	 * <p>
+	 * The properties of the returned hash code must be as follows:
+	 * 
 	 * <ul>
 	 * <li>During the lifetime of a Java application, the hashCode method must return the same integer value, every time it
 	 * is called on a WebResourcePermission object. The value returned by hashCode for a particular WebResourcePermission
@@ -223,7 +235,6 @@ public final class WebResourcePermission extends Permission {
 	 * <li>If two WebResourcePermission objects are equal according to the equals method, then calling the hashCode method
 	 * on each of the two Permission objects must produce the same integer result (within an application).
 	 * </ul>
-	 * <P>
 	 * 
 	 * @return the integer hash code value for this object.
 	 */
@@ -237,9 +248,11 @@ public final class WebResourcePermission extends Permission {
 	}
 
 	/**
-	 * Determines if the argument Permission is "implied by" this WebResourcePermission. For this to be the case, all of the
-	 * following must be true:
+	 * Determines if the argument Permission is "implied by" this WebResourcePermission.
+	 * 
 	 * <p>
+	 * For this to be the case, all of the following must be true:
+	 * 
 	 * <ul>
 	 * <li>The argument is an instanceof WebResourcePermission
 	 * <li>The first URLPattern in the name of the argument permission is matched by the first URLPattern in the name of
@@ -252,10 +265,11 @@ public final class WebResourcePermission extends Permission {
 	 * <li>The HTTP methods represented by the actions of the argument permission are a subset of the HTTP methods
 	 * represented by the actions of this permission.
 	 * </ul>
-	 * <P>
+	 * 
+	 * <p>
 	 * URLPattern matching is performed using the <i>Servlet matching rules</i> where two URL patterns match if they are
 	 * related as follows:
-	 * <p>
+	 * 
 	 * <ul>
 	 * <li>their pattern values are String equivalent, or
 	 * <li>this pattern is the path-prefix pattern "/*", or
@@ -266,12 +280,11 @@ public final class WebResourcePermission extends Permission {
 	 * pattern, or
 	 * <li>the reference pattern is the special default pattern, "/", which matches all argument patterns.
 	 * </ul>
-	 * <P>
+	 * 
+	 * <p>
 	 * All of the comparisons described above are case sensitive.
-	 * <P>
 	 * 
 	 * @param permission "this" WebResourcePermission is checked to see if it implies the argument permission.
-	 * <P>
 	 * @return true if the specified permission is implied by this object, false if not.
 	 */
 	public boolean implies(Permission permission) {

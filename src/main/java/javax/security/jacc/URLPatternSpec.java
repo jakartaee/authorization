@@ -21,8 +21,6 @@ import java.util.Arrays;
 /**
  * This class extends the URLPattern class and is used to represent URLPatternSpec objects. URLPatternSpec objects occur
  * within WebResourcePermission and WebUserDataPermission objects.
- * 
- * <P>
  *
  * @author Ron Monzillo
  * @author Gary Ellison
@@ -41,23 +39,25 @@ class URLPatternSpec extends URLPattern {
 
 	/**
 	 * Creates a new URLPatternSpec that identifies the web resources to which a WebResourcePermission or
-	 * WebUserDataPermission applies. The syntax of the name parameter is as follows:
-	 * <P>
+	 * WebUserDataPermission applies. 
 	 * 
-	 * <Pre>
+	 * <p>
+	 * The syntax of the name parameter is as follows:
+	 * 
+	 * <pre>
 	 *
 	 *          URLPatternList ::= URLPattern | URLPatternList colon URLPattern
 	 *
 	 *          URLPatternSpec ::= URLPattern | URLPattern colon URLPatternList
 	 *
 	 *          name ::= URLPatternSpec
-	 * </Pre>
-	 * <P>
+	 * </pre>
+	 * 
 	 * The first URLPattern in a URLPatternSpec may be any of the pattern types, exact, path-prefix, extension, or default
 	 * as defined in the <i>Java Servlet Specification)</i>. When a URLPatternSpec includes a URLPatternList, the patterns
 	 * of the URLPatternList identify the resources to which the permission does NOT apply and depend on the pattern type
 	 * and value of the first pattern as follows:
-	 * <p>
+	 * 
 	 * <ul>
 	 * <li>No pattern may exist in the URLPatternList that matches the first pattern.
 	 * <li>If the first pattern is a path-prefix pattern, only exact patterns matched by the first pattern and path-prefix
@@ -68,7 +68,6 @@ class URLPatternSpec extends URLPattern {
 	 * URLPatternList.
 	 * <li>If the first pattern is an exact pattern a URLPatternList must not be present in the URLPatternSpec.
 	 * </ul>
-	 * <P>
 	 * 
 	 * @param urlPatternSpec a String containing a URLPatternSpec that identifies the application specific web resources to
 	 * which the permission pertains. All URLPatterns in the URLPatternSpec are relative to the context path of the deployed
@@ -116,7 +115,7 @@ class URLPatternSpec extends URLPattern {
 	 * <li>If two URLPatternSpec objects are equal according to the equals method, then calling the hashCode method on each
 	 * of the two objects must produce the same integer result (within an application).
 	 * </ul>
-	 * <P>
+	 * <p>
 	 * 
 	 * @return the integer hash code value for this object.
 	 */
@@ -128,22 +127,23 @@ class URLPatternSpec extends URLPattern {
 	}
 
 	/**
-	 * Determines if the argument URLPatternSpec is "implied by" this URLPatternSpec. For this to be the case, all of the
-	 * following must be true:
+	 * Determines if the argument URLPatternSpec is "implied by" this URLPatternSpec.
+	 * 
 	 * <p>
+	 * For this to be the case, all of the following must be true:
 	 * <ul>
-	 * <li>The argument is an instanceof URLPatternSpec, and
-	 * <li>The first Pattern in the argument URLPatternSpec is matched by the first URLPattern of this URLPatternSpec.
-	 * <li>The first Pattern in the argument URLPatternSpec is NOT matched by any URLPattern in the URLPatternList of this
-	 * URLPatternSpec.
-	 * <li>If the first Pattern in the argument URLPatternSpec matches the first Pattern in this URLPatternSpec, then every
-	 * URLPattern in the URLPatternList of this URLPatternSpec is matched by a URLPattern in the URLPatternList of the
-	 * argument URLPatternSpec.
+	 * <li>The argument is an <code>instanceof</code> <code>URLPatternSpec</code>, and
+	 * <li>The first Pattern in the argument <code>URLPatternSpec</code> is matched by the first <code>URLPattern</code> of
+	 * this <code>URLPatternSpec</code>.
+	 * <li>The first Pattern in the argument <code>URLPatternSpec</code> is NOT matched by any URLPattern in the
+	 * <code>URLPatternList</code> of this URLPatternSpec.
+	 * <li>If the first Pattern in the argument <code>URLPatternSpec</code> matches the first Pattern in this
+	 * <code>URLPatternSpec</code>, then every URLPattern in the URLPatternList of this <code>URLPatternSpec</code> is
+	 * matched by a <code>URLPattern</code> in the <code>URLPatternList</code> of the argument <code>URLPatternSpec</code>.
 	 * </ul>
-	 * <P>
+	 * 
 	 * URLPattern matching is performed using the <i>Servlet matching rules</i> where two URL patterns match if they are
 	 * related as follows:
-	 * <p>
 	 * <ul>
 	 * <li>their pattern values are String equivalent, or
 	 * <li>this pattern is the path-prefix pattern "/*", or
@@ -154,12 +154,11 @@ class URLPatternSpec extends URLPattern {
 	 * pattern, or
 	 * <li>the reference pattern is the special default pattern, "/", which matches all argument patterns.
 	 * </ul>
-	 * <P>
+	 * 
+	 * <p>
 	 * All of the comparisons described above are case sensitive.
-	 * <P>
 	 * 
 	 * @param that "this" URLPatternSpec is checked to see if it implies the argument URLPatternSpec.
-	 * <P>
 	 * @return true if the specified URLPatternSpec is implied by this URLPatternSpec, false if not.
 	 */
 	public boolean implies(URLPatternSpec that) {
