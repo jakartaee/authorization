@@ -44,145 +44,145 @@ import java.security.Permission;
  */
 public final class WebRoleRefPermission extends Permission implements java.io.Serializable {
 
-	private final String actions;
+    private final String actions;
 
-	private transient int hashCodeValue = 0;
+    private transient int hashCodeValue = 0;
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	/**
-	 * The serialized fields of this permission are defined below. Whether or not the serialized fields correspond to actual
-	 * (private) fields is an implementation decision.
-	 * 
-	 * @serialField actions String the canonicalized actions string (as returned by getActions).
-	 */
-	private static final ObjectStreamField[] serialPersistentFields = { new ObjectStreamField("actions", java.lang.String.class) };
+    /**
+     * The serialized fields of this permission are defined below. Whether or not the serialized fields correspond to actual
+     * (private) fields is an implementation decision.
+     * 
+     * @serialField actions String the canonicalized actions string (as returned by getActions).
+     */
+    private static final ObjectStreamField[] serialPersistentFields = { new ObjectStreamField("actions", java.lang.String.class) };
 
-	/**
-	 * Creates a new WebRoleRefPermission with the specified name and actions.
-	 * <p>
-	 * 
-	 * @param name the servlet-name that identifies the application specific web resource in whose context the role
-	 * references are to be evaluated.
-	 * <p>
-	 * @param actions identifies the role reference to which the permission pertains. The role reference is scoped to the
-	 * Web resource identified in the name parameter. The value of the role reference must not be <code>null</code> or the
-	 * empty string.
-	 */
-	public WebRoleRefPermission(String name, String actions) {
-		super(name);
-		this.actions = actions;
-	}
+    /**
+     * Creates a new WebRoleRefPermission with the specified name and actions.
+     * <p>
+     * 
+     * @param name the servlet-name that identifies the application specific web resource in whose context the role
+     * references are to be evaluated.
+     * <p>
+     * @param actions identifies the role reference to which the permission pertains. The role reference is scoped to the
+     * Web resource identified in the name parameter. The value of the role reference must not be <code>null</code> or the
+     * empty string.
+     */
+    public WebRoleRefPermission(String name, String actions) {
+        super(name);
+        this.actions = actions;
+    }
 
-	/**
-	 * Checks two WebRoleRefPermission objects for equality. WebRoleRefPermission objects are equivalent if they have case
-	 * equivalent name and actions values.
-	 * 
-	 * <p>
-	 * Two Permission objects, P1 and P2, are equivalent if and only if P1.implies(P2) && P2.implies(P1).
-	 * 
-	 * <p>
-	 * The name and actions comparisons described above are case sensitive.
-	 * 
-	 * @param o the WebRoleRefPermission object being tested for equality with this WebRoleRefPermission.
-	 * @return true if the argument WebRoleRefPermission object is equivalent to this WebRoleRefPermission.
-	 */
-	@Override
-	public boolean equals(Object o) {
-		if (o == null || !(o instanceof WebRoleRefPermission)) {
-			return false;
-		}
+    /**
+     * Checks two WebRoleRefPermission objects for equality. WebRoleRefPermission objects are equivalent if they have case
+     * equivalent name and actions values.
+     * 
+     * <p>
+     * Two Permission objects, P1 and P2, are equivalent if and only if P1.implies(P2) && P2.implies(P1).
+     * 
+     * <p>
+     * The name and actions comparisons described above are case sensitive.
+     * 
+     * @param o the WebRoleRefPermission object being tested for equality with this WebRoleRefPermission.
+     * @return true if the argument WebRoleRefPermission object is equivalent to this WebRoleRefPermission.
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || !(o instanceof WebRoleRefPermission)) {
+            return false;
+        }
 
-		WebRoleRefPermission that = (WebRoleRefPermission) o;
+        WebRoleRefPermission that = (WebRoleRefPermission) o;
 
-		if (!this.getName().equals(that.getName())) {
-			return false;
-		}
+        if (!this.getName().equals(that.getName())) {
+            return false;
+        }
 
-		return this.actions.equals(that.actions);
-	}
+        return this.actions.equals(that.actions);
+    }
 
-	/**
-	 * Returns a canonical String representation of the actions of this WebRoleRefPermission.
-	 * 
-	 * @return a String containing the canonicalized actions of this WebRoleRefPermission.
-	 */
-	@Override
-	public String getActions() {
-		return this.actions;
-	}
+    /**
+     * Returns a canonical String representation of the actions of this WebRoleRefPermission.
+     * 
+     * @return a String containing the canonicalized actions of this WebRoleRefPermission.
+     */
+    @Override
+    public String getActions() {
+        return this.actions;
+    }
 
-	/**
-	 * Returns the hash code value for this WebRoleRefPermission. 
-	 * 
-	 * <p>
-	 * The properties of the returned hash code must be as
-	 * follows:
-	 * 
-	 * <ul>
-	 * <li>During the lifetime of a Java application, the hashCode method must return the same integer value, every time it
-	 * is called on a WebRoleRefPermission object. The value returned by hashCode for a particular WebRoleRefPermission need
-	 * not remain consistent from one execution of an application to another.
-	 * <li>If two WebRoleRefPermission objects are equal according to the equals method, then calling the hashCode method on
-	 * each of the two Permission objects must produce the same integer result (within an application).
-	 * </ul>
-	 * 
-	 * @return the integer hash code value for this object.
-	 */
-	@Override
-	public int hashCode() {
+    /**
+     * Returns the hash code value for this WebRoleRefPermission. 
+     * 
+     * <p>
+     * The properties of the returned hash code must be as
+     * follows:
+     * 
+     * <ul>
+     * <li>During the lifetime of a Java application, the hashCode method must return the same integer value, every time it
+     * is called on a WebRoleRefPermission object. The value returned by hashCode for a particular WebRoleRefPermission need
+     * not remain consistent from one execution of an application to another.
+     * <li>If two WebRoleRefPermission objects are equal according to the equals method, then calling the hashCode method on
+     * each of the two Permission objects must produce the same integer result (within an application).
+     * </ul>
+     * 
+     * @return the integer hash code value for this object.
+     */
+    @Override
+    public int hashCode() {
 
-		if (this.hashCodeValue == 0) {
+        if (this.hashCodeValue == 0) {
 
-			String hashInput = this.getName() + " " + this.actions;
+            String hashInput = this.getName() + " " + this.actions;
 
-			this.hashCodeValue = hashInput.hashCode();
-		}
+            this.hashCodeValue = hashInput.hashCode();
+        }
 
-		return this.hashCodeValue;
-	}
+        return this.hashCodeValue;
+    }
 
-	/**
-	 * Determines if the argument Permission is "implied by" this WebRoleRefPermission.
-	 * 
-	 * <p>
-	 * For this to be the case,
-	 * 
-	 * <ul>
-	 * <li>The argument must be an instanceof WebRoleRefPermission
-	 * <li>with name equivalent to this WebRoleRefPermission, and
-	 * <li>with role reference equivalent to this WebRoleRefPermission (as defined in their actions).
-	 * </ul>
-	 * 
-	 * <p>
-	 * The comparisons described above are case sensitive.
-	 * 
-	 * @param permission "this" WebRoleRefPermission is checked to see if it implies the argument permission.
-	 * @return true if the specified permission is implied by this object, false if not.
-	 */
-	@Override
-	public boolean implies(Permission permission) {
-		return this.equals(permission);
-	}
+    /**
+     * Determines if the argument Permission is "implied by" this WebRoleRefPermission.
+     * 
+     * <p>
+     * For this to be the case,
+     * 
+     * <ul>
+     * <li>The argument must be an instanceof WebRoleRefPermission
+     * <li>with name equivalent to this WebRoleRefPermission, and
+     * <li>with role reference equivalent to this WebRoleRefPermission (as defined in their actions).
+     * </ul>
+     * 
+     * <p>
+     * The comparisons described above are case sensitive.
+     * 
+     * @param permission "this" WebRoleRefPermission is checked to see if it implies the argument permission.
+     * @return true if the specified permission is implied by this object, false if not.
+     */
+    @Override
+    public boolean implies(Permission permission) {
+        return this.equals(permission);
+    }
 
-	// ----------------- Private Methods ---------------------
+    // ----------------- Private Methods ---------------------
 
-	/**
-	 * readObject reads the serialized fields from the input stream and uses them to restore the permission. This method
-	 * need not be implemented if establishing the values of the serialized fields (as is done by defaultReadObject) is
-	 * sufficient to initialize the permission.
-	 */
-	private synchronized void readObject(java.io.ObjectInputStream s) throws IOException, ClassNotFoundException {
-		s.defaultReadObject();
-	}
+    /**
+     * readObject reads the serialized fields from the input stream and uses them to restore the permission. This method
+     * need not be implemented if establishing the values of the serialized fields (as is done by defaultReadObject) is
+     * sufficient to initialize the permission.
+     */
+    private synchronized void readObject(java.io.ObjectInputStream s) throws IOException, ClassNotFoundException {
+        s.defaultReadObject();
+    }
 
-	/**
-	 * writeObject is used to establish the values of the serialized fields before they are written to the output stream and
-	 * need not be implemented if the values of the serialized fields are always available and up to date. The serialized
-	 * fields are written to the output stream in the same form as they would be written by defaultWriteObject.
-	 */
-	private synchronized void writeObject(java.io.ObjectOutputStream s) throws IOException {
-		s.defaultWriteObject();
-	}
+    /**
+     * writeObject is used to establish the values of the serialized fields before they are written to the output stream and
+     * need not be implemented if the values of the serialized fields are always available and up to date. The serialized
+     * fields are written to the output stream in the same form as they would be written by defaultWriteObject.
+     */
+    private synchronized void writeObject(java.io.ObjectOutputStream s) throws IOException {
+        s.defaultWriteObject();
+    }
 
 }

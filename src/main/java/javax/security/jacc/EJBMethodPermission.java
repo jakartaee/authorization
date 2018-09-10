@@ -17,6 +17,8 @@
 package javax.security.jacc;
 
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.ObjectStreamField;
 import java.lang.reflect.Method;
 import java.security.Permission;
@@ -43,37 +45,33 @@ import java.util.HashMap;
  *
  */
 public final class EJBMethodPermission extends Permission {
-
-	private static final String interfaceKeys[] = { "Local", "LocalHome", "Remote", "Home", "ServiceEndpoint" };
-
-	private static HashMap interfaceHash = new HashMap();
-	static {
-		for (int i = 0; i < interfaceKeys.length; i++) {
-			interfaceHash.put(interfaceKeys[i], Integer.valueOf(i));
-		}
-	}
-
-	private transient int methodInterface;
-
-	private transient String otherMethodInterface = null;
-
-	private transient String methodName;
-
-	private transient String methodParams;
-
-	private transient String actions;
-
-	private transient int hashCodeValue = 0;
-
+	
 	private static final long serialVersionUID = 1L;
-
+	
 	/**
 	 * The serialized fields of this permission are defined below. Whether or not the serialized fields correspond to actual
 	 * (private) fields is an implementation decision.
 	 * 
 	 * @serialField actions String the canonicalized actions string (as returned by getActions).
 	 */
-	private static final ObjectStreamField[] serialPersistentFields = { new ObjectStreamField("actions", java.lang.String.class) };
+	private static final ObjectStreamField[] serialPersistentFields = { new ObjectStreamField("actions", String.class) };
+
+	private static final String interfaceKeys[] = { "Local", "LocalHome", "Remote", "Home", "ServiceEndpoint" };
+	
+	private static HashMap<String, Integer> interfaceHash = new HashMap<String, Integer>();
+	static {
+		for (int i = 0; i < interfaceKeys.length; i++) {
+			interfaceHash.put(interfaceKeys[i], i);
+		}
+	}
+
+	private transient int methodInterface;
+	private transient String otherMethodInterface;
+	private transient String methodName;
+	private transient String methodParams;
+	private transient String actions;
+	private transient int hashCodeValue;
+	
 
 	/**
 	 * Creates a new EJBMethodPermission with the specified name and actions.
@@ -346,6 +344,7 @@ public final class EJBMethodPermission extends Permission {
 
 			hashCodeValue = hashInput.hashCode();
 		}
+		
 		return this.hashCodeValue;
 	}
 
@@ -417,8 +416,8 @@ public final class EJBMethodPermission extends Permission {
 	 * need not be implemented if establishing the values of the serialized fields (as is done by defaultReadObject) is
 	 * sufficient to initialize the permission.
 	 */
-	private void readObject(java.io.ObjectInputStream s) throws IOException, ClassNotFoundException {
-		setMethodSpec((String) s.readFields().get("actions", null));
+	private void readObject(ObjectInputStream inputStream) throws IOException, ClassNotFoundException {
+		setMethodSpec((String) inputStream.readFields().get("actions", null));
 	}
 
 	/**
@@ -426,9 +425,9 @@ public final class EJBMethodPermission extends Permission {
 	 * need not be implemented if the values of the serialized fields are always available and up to date. The serialized
 	 * fields are written to the output stream in the same form as they would be written by defaultWriteObject.
 	 */
-	private synchronized void writeObject(java.io.ObjectOutputStream s) throws IOException {
-		s.putFields().put("actions", this.getActions());
-		s.writeFields();
+	private synchronized void writeObject(ObjectOutputStream inputStream) throws IOException {
+		inputStream.putFields().put("actions", this.getActions());
+		inputStream.writeFields();
 	}
 
 	private void setMethodSpec(String actions) {
@@ -526,33 +525,33 @@ public final class EJBMethodPermission extends Permission {
 
 		this.methodName = method.getName();
 
-		Class[] params = method.getParameterTypes();
+		Class<?>[] params = method.getParameterTypes();
 
-		StringBuffer mParams = new StringBuffer(",");
+		StringBuffer methodParameters = new StringBuffer(",");
 
 		for (int i = 0; i < params.length; i++) {
 
-			String pname = params[i].getName();
-			Class compType = params[i].getComponentType();
+			String parameterName = params[i].getName();
+			Class<?> componentType = params[i].getComponentType();
 
 			// Canonicalize parameter if it is an Array.
-			if (compType != null) {
+			if (componentType != null) {
 				String brackets = "[]";
-				while (compType.getComponentType() != null) {
-					compType = compType.getComponentType();
+				while (componentType.getComponentType() != null) {
+					componentType = componentType.getComponentType();
 					brackets = brackets + "[]";
 				}
-				pname = compType.getName() + brackets;
+				parameterName = componentType.getName() + brackets;
 			}
 
 			if (i == 0) {
-				mParams.append(pname);
+				methodParameters.append(parameterName);
 			} else {
-				mParams.append("," + pname);
+				methodParameters.append("," + parameterName);
 			}
 		}
 
-		this.methodParams = mParams.toString();
+		this.methodParams = methodParameters.toString();
 	}
 
 	private static int validateInterface(String methodInterface) {
@@ -565,6 +564,7 @@ public final class EJBMethodPermission extends Permission {
 				result = -2;
 			}
 		}
+		
 		return result;
 	}
 

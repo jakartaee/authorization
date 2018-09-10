@@ -17,6 +17,8 @@
 package javax.security.jacc;
 
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.ObjectStreamField;
 import java.security.Permission;
 
@@ -42,20 +44,20 @@ import java.security.Permission;
  * @author Gary Ellison
  */
 public final class EJBRoleRefPermission extends Permission {
-
-	private final String actions;
-
-	private transient int hashCodeValue = 0;
-
+	
 	private static final long serialVersionUID = 1L;
-
+	
 	/**
 	 * The serialized fields of this permission are defined below. Whether or not the serialized fields correspond to actual
 	 * (private) fields is an implementation decision.
 	 * 
 	 * @serialField actions String the canonicalized actions string (as returned by getActions).
 	 */
-	private static final ObjectStreamField[] serialPersistentFields = { new ObjectStreamField("actions", java.lang.String.class) };
+	private static final ObjectStreamField[] serialPersistentFields = { new ObjectStreamField("actions", String.class) };
+
+	private final String actions;
+	private transient int hashCodeValue;
+	
 
 	/**
 	 * Creates a new EJBRoleRefPermission with the specified name and actions.
@@ -77,17 +79,17 @@ public final class EJBRoleRefPermission extends Permission {
 	 * <p>
 	 * Two Permission objects, P1 and P2, are equivalent if and only if P1.implies(P2) && P2.implies(P1).
 	 * 
-	 * @param o the EJBRoleRefPermission object being tested for equality with this EJBRoleRefPermission.
+	 * @param other the EJBRoleRefPermission object being tested for equality with this EJBRoleRefPermission.
 	 * 
 	 * @return true if the argument EJBRoleRefPermission object is equivalent to this EJBRoleRefPermission.
 	 */
 	@Override
-	public boolean equals(Object o) {
-		if (o == null || !(o instanceof EJBRoleRefPermission)) {
+	public boolean equals(Object other) {
+		if (other == null || !(other instanceof EJBRoleRefPermission)) {
 			return false;
 		}
 
-		EJBRoleRefPermission that = (EJBRoleRefPermission) o;
+		EJBRoleRefPermission that = (EJBRoleRefPermission) other;
 
 		if (!this.getName().equals(that.getName())) {
 			return false;
@@ -123,11 +125,8 @@ public final class EJBRoleRefPermission extends Permission {
 	 */
 	@Override
 	public int hashCode() {
-
 		if (hashCodeValue == 0) {
-
 			String hashInput = this.getName() + " " + this.actions;
-
 			hashCodeValue = hashInput.hashCode();
 		}
 
@@ -161,8 +160,8 @@ public final class EJBRoleRefPermission extends Permission {
 	 * need not be implemented if establishing the values of the serialized fields (as is done by defaultReadObject) is
 	 * sufficient to initialize the permission.
 	 */
-	private void readObject(java.io.ObjectInputStream s) throws IOException, ClassNotFoundException {
-		s.defaultReadObject();
+	private void readObject(ObjectInputStream inputStream) throws IOException, ClassNotFoundException {
+		inputStream.defaultReadObject();
 	}
 
 	/**
@@ -170,8 +169,8 @@ public final class EJBRoleRefPermission extends Permission {
 	 * need not be implemented if the values of the serialized fields are always available and up to date. The serialized
 	 * fields are written to the output stream in the same form as they would be written by defaultWriteObject.
 	 */
-	private synchronized void writeObject(java.io.ObjectOutputStream s) throws IOException {
-		s.defaultWriteObject();
+	private synchronized void writeObject(ObjectOutputStream inputStream) throws IOException {
+		inputStream.defaultWriteObject();
 	}
 
 }

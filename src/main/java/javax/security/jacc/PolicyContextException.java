@@ -37,47 +37,47 @@ package javax.security.jacc;
  */
 public class PolicyContextException extends java.lang.Exception {
 
-	/**
-	 * Constructs a new PolicyContextException with <code>null</code> as its detail message. describing the cause of the
-	 * exception.
-	 */
-	public PolicyContextException() {
-		super();
-	}
+    /**
+     * Constructs a new PolicyContextException with <code>null</code> as its detail message. describing the cause of the
+     * exception.
+     */
+    public PolicyContextException() {
+        super();
+    }
 
-	/**
-	 * Constructs a new PolicyContextException with the specified detail message
-	 * 
-	 * @param msg - a <code>String</code> containing a detail message describing the cause of the exception.
-	 */
-	public PolicyContextException(String msg) {
-		super(msg);
-	}
+    /**
+     * Constructs a new PolicyContextException with the specified detail message
+     * 
+     * @param msg - a <code>String</code> containing a detail message describing the cause of the exception.
+     */
+    public PolicyContextException(String msg) {
+        super(msg);
+    }
 
-	/**
-	 * Constructs a new PolicyContextException with the specified detail message and cause. The cause will be encapsulated
-	 * in the constructed exception.
-	 * 
-	 * @param msg - a <code>String containing a detail message describing the 
-	 * cause of the exception.
-	 * &#64;param cause - the Throwable that is "causing" this exception to be 
-	 * constructed. A null value is permitted, and the value passed through
-	 * this parameter may subsequently be retrieved by calling 
-	 * <code>getCause()</code> on the constructed exception.
-	 */
-	public PolicyContextException(String msg, Throwable cause) {
-		super(msg, cause);
-	}
+    /**
+     * Constructs a new PolicyContextException with the specified detail message and cause. The cause will be encapsulated
+     * in the constructed exception.
+     * 
+     * @param msg - a <code>String containing a detail message describing the 
+     * cause of the exception.
+     * &#64;param cause - the Throwable that is "causing" this exception to be 
+     * constructed. A null value is permitted, and the value passed through
+     * this parameter may subsequently be retrieved by calling 
+     * <code>getCause()</code> on the constructed exception.
+     */
+    public PolicyContextException(String msg, Throwable cause) {
+        super(msg, cause);
+    }
 
-	/**
-	 * Constructs a new PolicyContextException with the specified cause. The cause will be encapsulated in the constructed
-	 * exception.
-	 *
-	 * @param cause - the Throwable that is "causing" this exception to be constructed. A null value is permitted, and the
-	 * value passed through this parameter may subsequently be retrieved by calling <code>getCause()</code> on the
-	 * constructed exception.
-	 */
-	public PolicyContextException(Throwable cause) {
-		super(cause);
-	}
+    /**
+     * Constructs a new PolicyContextException with the specified cause. The cause will be encapsulated in the constructed
+     * exception.
+     *
+     * @param cause - the Throwable that is "causing" this exception to be constructed. A null value is permitted, and the
+     * value passed through this parameter may subsequently be retrieved by calling <code>getCause()</code> on the
+     * constructed exception.
+     */
+    public PolicyContextException(Throwable cause) {
+        super(cause);
+    }
 }

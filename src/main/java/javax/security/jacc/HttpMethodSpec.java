@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * This class is used ...
@@ -30,354 +31,364 @@ import java.util.HashMap;
  */
 final class HttpMethodSpec {
 
-	private static final String comma = ",";
-	private static final String emptyString = "";
-	private static final String exclaimationPoint = "!";
+    private static final String comma = ",";
+    private static final String emptyString = "";
+    private static final String exclaimationPoint = "!";
+    private static final char exclaimationPointChar = '!';
 
-	private static final char exclaimationPointChar = '!';
+    private static String methodKeys[] = { "DELETE", "GET", "HEAD", "OPTIONS", "POST", "PUT", "TRACE" };
+    private static int mapSize = methodKeys.length;
 
-	private static Object methodKeys[] = { "DELETE", "GET", "HEAD", "OPTIONS", "POST", "PUT", "TRACE" };
+    private static HashMap<String, Integer> methodHash = new HashMap<String, Integer>();
+    static {
+        int b = 1;
+        for (int i = 0; i < mapSize; i++) {
+            methodHash.put(methodKeys[i], b);
+            b = b << 1;
+        }
+    }
 
-	private static int mapSize = methodKeys.length;
+    private static int allSet;
+    static {
+        allSet = 0;
+        for (int i = 0; i < mapSize; i++) {
+            allSet = allSet << 1;
+            allSet += 1;
+        }
+    }
 
-	private static HashMap methodHash = new HashMap();
-	static {
-		int b = 1;
-		for (int i = 0; i < mapSize; i++) {
-			methodHash.put(methodKeys[i], Integer.valueOf(b));
-			b = b << 1;
-		}
-	}
+    private static HttpMethodSpec specArray[] = new HttpMethodSpec[allSet + 1];
+    static {
+        for (int i = 0; i < allSet + 1; i++) {
+            specArray[i] = new HttpMethodSpec(false, i);
+        }
+    }
 
-	private static int allSet;
-	static {
-		allSet = 0;
-		for (int i = 0; i < mapSize; i++) {
-			allSet = allSet << 1;
-			allSet += 1;
-		}
-	}
+    private static HttpMethodSpec exceptionSpecArray[] = new HttpMethodSpec[allSet + 1];
+    static {
+        for (int i = 0; i < allSet + 1; i++) {
+            exceptionSpecArray[i] = new HttpMethodSpec(true, i);
+        }
+    }
 
-	private static HttpMethodSpec specArray[] = new HttpMethodSpec[allSet + 1];
-	static {
-		for (int i = 0; i < allSet + 1; i++) {
-			specArray[i] = new HttpMethodSpec(false, i);
-		}
-	}
+    private static HttpMethodSpec allSpec = new HttpMethodSpec(false, 0);
+    private static List<String> extensionMethods = new ArrayList<String>();
 
-	private static HttpMethodSpec exceptionSpecArray[] = new HttpMethodSpec[allSet + 1];
-	static {
-		for (int i = 0; i < allSet + 1; i++) {
-			exceptionSpecArray[i] = new HttpMethodSpec(true, i);
-		}
-	}
+    HttpMethodSpec standardSpec;
+    boolean exceptionList;
+    int standardMap;
+    BitSet extensionSet;
+    String actions;
 
-	private static HttpMethodSpec allSpec = new HttpMethodSpec(false, 0);
+    static HttpMethodSpec getSpec(String actions) {
+        HttpMethodSpec spec;
 
-	private static ArrayList extensionMethods = new ArrayList();
+        if (actions == null || actions.equals(emptyString)) {
+            spec = allSpec;
+        } else {
 
-	HttpMethodSpec standardSpec;
+            BitSet set = new BitSet();
+            spec = getStandardSpec(actions, set);
 
-	boolean exceptionList;
-	int standardMap;
-	BitSet extensionSet;
-	String actions;
+            if (!set.isEmpty()) {
+                spec = new HttpMethodSpec(spec, set);
+            }
+        }
+        
+        return spec;
+    }
 
-	static HttpMethodSpec getSpec(String actions) {
-		HttpMethodSpec rvalue;
+    static HttpMethodSpec getSpec(String[] methods) {
+        HttpMethodSpec spec;
 
-		if (actions == null || actions.equals(emptyString)) {
-			rvalue = allSpec;
-		} else {
+        if (methods == null || methods.length == 0) {
+            spec = allSpec;
+        } else {
 
-			BitSet set = new BitSet();
-			rvalue = getStandardSpec(actions, set);
+            int map = 0;
+            BitSet set = new BitSet();
 
-			if (!set.isEmpty()) {
-				rvalue = new HttpMethodSpec(rvalue, set);
-			}
-		}
-		return rvalue;
-	}
+            for (int i = 0; i < methods.length; i++) {
+                Integer bit = (Integer) methodHash.get(methods[i]);
+                if (bit != null) {
+                    map |= bit.intValue();
+                } else {
+                    setExtensionBit(methods[i], set);
+                }
+            }
 
-	static HttpMethodSpec getSpec(String[] methods) {
-		HttpMethodSpec rvalue;
+            if (set.isEmpty()) {
+                spec = specArray[map];
+            } else {
+                spec = new HttpMethodSpec(specArray[map], set);
+            }
+        }
+        
+        return spec;
+    }
+    
+    
+    // ### Package level methods
 
-		if (methods == null || methods.length == 0) {
-			rvalue = allSpec;
-		} else {
+    String getActions() {
+        if (standardMap == 0 && extensionSet == null) {
+            return null;
+        }
 
-			int map = 0;
-			BitSet set = new BitSet();
+        synchronized (this) {
+            if (actions != null) {
+                return actions;
+            }
 
-			for (int i = 0; i < methods.length; i++) {
-				Integer bit = (Integer) methodHash.get(methods[i]);
-				if (bit != null) {
-					map |= bit.intValue();
-				} else {
-					setExtensionBit(methods[i], set);
-				}
-			}
+            if (standardSpec != null) {
+                actions = getExtensionActions(standardSpec.getActions(), standardMap, extensionSet);
+            } else {
+                actions = getStandardActions(exceptionList, standardMap);
+            }
+        }
 
-			if (set.isEmpty()) {
-				rvalue = specArray[map];
-			} else {
-				rvalue = new HttpMethodSpec(specArray[map], set);
-			}
-		}
-		return rvalue;
-	}
+        return actions;
+    }
 
-	@Override
-	public String toString() {
-		return getActions();
-	}
+    boolean implies(HttpMethodSpec that) {
+        boolean doesImplies;
+        
+        if (this.standardMap == 0 && this.extensionSet == null) {
+            
+            // Null actions implies everything
+            
+            doesImplies = true;
+        } else if (that.standardMap == 0 && that.extensionSet == null) {
+            
+            // Only the null actions can imply the null actions
+            
+            doesImplies = false;
+        } else if (this.exceptionList && that.exceptionList) {
+            
+            // Both are an HttpMethodExceptionList
+            
+            doesImplies = (this.standardMap & that.standardMap) == this.standardMap;
+            if (doesImplies) {
+                if (this.extensionSet != null) {
+                    if (that.extensionSet == null) {
+                        doesImplies = false;
+                    } else {
+                        BitSet clone = (BitSet) that.extensionSet.clone();
+                        clone.and(this.extensionSet);
+                        doesImplies = clone.equals(this.extensionSet) ? true : false;
+                    }
+                }
+            }
+        } else if (this.exceptionList == that.exceptionList) {
+            
+            // Neither is an HttpMethodExceptionList
+            
+            doesImplies = (this.standardMap & that.standardMap) == that.standardMap;
+            if (doesImplies) {
+                if (that.extensionSet != null) {
+                    if (this.extensionSet == null) {
+                        doesImplies = false;
+                    } else {
+                        BitSet clone = (BitSet) that.extensionSet.clone();
+                        clone.and(this.extensionSet);
+                        doesImplies = clone.equals(that.extensionSet);
+                    }
+                }
+            }
+        } else if (this.exceptionList) {
+            
+            // One or the other is an HttpMethodExceptionList
+            
+            doesImplies = (this.standardMap & that.standardMap) == 0;
+            if (doesImplies) {
+                if (that.extensionSet != null) {
+                    if (this.extensionSet == null) {
+                        doesImplies = true;
+                    } else {
+                        doesImplies = this.extensionSet.intersects(that.extensionSet) ? false : true;
+                    }
+                }
+            }
+        } else {
+            
+            // An explicit list can never imply an exception list
+            
+            doesImplies = false;
+        }
 
-	String getActions() {
-		if (standardMap == 0 && extensionSet == null) {
-			return null;
-		}
+        return doesImplies;
+    }
+    
+    @Override
+    public String toString() {
+        return getActions();
+    }
 
-		synchronized (this) {
-			if (actions != null) {
-				return actions;
-			}
+    @Override
+    public int hashCode() {
+        return (this.exceptionList ? 1 : 0) + (this.standardMap << 1) + ((this.extensionSet == null ? 0 : this.extensionSet.hashCode()) << mapSize + 1);
+    }
 
-			if (standardSpec != null) {
-				actions = getExtensionActions(standardSpec.getActions(), standardMap, extensionSet);
-			} else {
-				actions = getStandardActions(exceptionList, standardMap);
-			}
-		}
+    @Override
+    public boolean equals(Object that) {
+        boolean isEqual = false;
+        
+        if (that != null && that instanceof HttpMethodSpec) {
+            if (that == this) {
+                isEqual = true;
+            } else {
+                isEqual = this.hashCode() == ((HttpMethodSpec) that).hashCode();
+            }
+        }
+        
+        return isEqual;
+    }
+    
 
-		return actions;
-	}
+    // beginning of private methods
 
-	@Override
-	public int hashCode() {
-		return (this.exceptionList ? 1 : 0) + (this.standardMap << 1) + ((this.extensionSet == null ? 0 : this.extensionSet.hashCode()) << mapSize + 1);
-	}
+    private HttpMethodSpec(boolean isExceptionList, int map) {
+        standardSpec = null;
+        exceptionList = isExceptionList;
+        standardMap = map;
+        extensionSet = null;
+        actions = null;
+    }
 
-	@Override
-	public boolean equals(Object that) {
-		boolean rvalue = false;
-		if (that != null && that instanceof HttpMethodSpec) {
-			if (that == this) {
-				rvalue = true;
-			} else {
-				rvalue = this.hashCode() == ((HttpMethodSpec) that).hashCode();
-			}
-		}
-		return rvalue;
-	}
+    private HttpMethodSpec(HttpMethodSpec spec, BitSet set) {
+        standardSpec = spec;
+        exceptionList = spec.exceptionList;
+        standardMap = spec.standardMap;
+        extensionSet = set.isEmpty() ? null : set;
+        actions = null;
+    }
 
-	boolean implies(HttpMethodSpec that) {
-		boolean rvalue;
-		// null actions implies everything
-		if (this.standardMap == 0 && this.extensionSet == null) {
-			rvalue = true;
-		}
-		// only the null actions can implie the null actions
-		else if (that.standardMap == 0 && that.extensionSet == null) {
-			rvalue = false;
-		}
-		// both are an HttpMethodExceptionList
-		else if (this.exceptionList && that.exceptionList) {
-			rvalue = (this.standardMap & that.standardMap) == this.standardMap;
-			if (rvalue) {
-				if (this.extensionSet != null) {
-					if (that.extensionSet == null) {
-						rvalue = false;
-					} else {
-						BitSet clone = (BitSet) that.extensionSet.clone();
-						clone.and(this.extensionSet);
-						rvalue = clone.equals(this.extensionSet) ? true : false;
-					}
-				}
-			}
-		}
-		// neither is an HttpMethodExceptionList
-		else if (this.exceptionList == that.exceptionList) {
-			rvalue = (this.standardMap & that.standardMap) == that.standardMap;
-			if (rvalue) {
-				if (that.extensionSet != null) {
-					if (this.extensionSet == null) {
-						rvalue = false;
-					} else {
-						BitSet clone = (BitSet) that.extensionSet.clone();
-						clone.and(this.extensionSet);
-						rvalue = clone.equals(that.extensionSet);
-					}
-				}
-			}
-		}
-		// one or the other is an HttpMethodExceptionList
-		else if (this.exceptionList) {
-			rvalue = (this.standardMap & that.standardMap) == 0;
-			if (rvalue) {
-				if (that.extensionSet != null) {
-					if (this.extensionSet == null) {
-						rvalue = true;
-					} else {
-						rvalue = this.extensionSet.intersects(that.extensionSet) ? false : true;
-					}
-				}
-			}
-		}
-		// an explicit list can never imply an exception list
-		else {
-			rvalue = false;
-		}
+    private static void setExtensionBit(String method, BitSet set) {
+        int bitPos;
+        synchronized (extensionMethods) {
+            bitPos = extensionMethods.indexOf(method);
+            if (bitPos < 0) {
+                bitPos = extensionMethods.size();
+                // *** should ensure method is syntactically legal
+                extensionMethods.add(method);
+            }
+        }
+        set.set(bitPos);
+    }
 
-		return rvalue;
-	}
+    private static String getExtensionMethod(int bitPos) {
+        synchronized (extensionMethods) {
+            if (bitPos >= 0 && bitPos < extensionMethods.size()) {
+                return (String) extensionMethods.get(bitPos);
+            } else {
+                throw new RuntimeException("invalid (extensionMethods) bit position: '" + bitPos + "' size: '" + extensionMethods.size() + " '");
+            }
+        }
+    }
 
-	// beginning of private methods
+    private static HttpMethodSpec getStandardSpec(String actions, BitSet set) {
+        boolean isExceptionList = false;
+        
+        if (actions.charAt(0) == exclaimationPointChar) {
+            isExceptionList = true;
+            if (actions.length() < 2) {
+                throw new IllegalArgumentException("illegal HTTP method Spec actions: '" + actions + "'");
+            }
+            actions = actions.substring(1);
+        }
 
-	private HttpMethodSpec(boolean isExceptionList, int map) {
-		standardSpec = null;
-		exceptionList = isExceptionList;
-		standardMap = map;
-		extensionSet = null;
-		actions = null;
-	}
+        int map = makeMethodSet(actions, set);
 
-	private HttpMethodSpec(HttpMethodSpec spec, BitSet set) {
-		standardSpec = spec;
-		exceptionList = spec.exceptionList;
-		standardMap = spec.standardMap;
-		extensionSet = set.isEmpty() ? null : set;
-		actions = null;
-	}
+        if (isExceptionList) {
+            return exceptionSpecArray[map];
+        }
+        
+        return specArray[map];
+    }
 
-	private static void setExtensionBit(String method, BitSet set) {
-		int bitPos;
-		synchronized (extensionMethods) {
-			bitPos = extensionMethods.indexOf(method);
-			if (bitPos < 0) {
-				bitPos = extensionMethods.size();
-				// *** should ensure method is syntactically legal
-				extensionMethods.add(method);
-			}
-		}
-		set.set(bitPos);
-	}
+    private static int makeMethodSet(String actions, BitSet set) {
+        int i = 0;
+        int mSet = 0;
+        int commaPos = 0;
 
-	private static String getExtensionMethod(int bitPos) {
-		synchronized (extensionMethods) {
-			if (bitPos >= 0 && bitPos < extensionMethods.size()) {
-				return (String) extensionMethods.get(bitPos);
-			} else {
-				throw new RuntimeException("invalid (extensionMethods) bit position: '" + bitPos + "' size: '" + extensionMethods.size() + " '");
-			}
-		}
-	}
+        while (commaPos >= 0 && i < actions.length()) {
 
-	private static HttpMethodSpec getStandardSpec(String actions, BitSet set) {
-		boolean isExceptionList = false;
-		if (actions.charAt(0) == exclaimationPointChar) {
-			isExceptionList = true;
-			if (actions.length() < 2) {
-				throw new IllegalArgumentException("illegal HTTP method Spec actions: '" + actions + "'");
-			}
-			actions = actions.substring(1);
-		}
+            commaPos = actions.indexOf(comma, i);
 
-		int map = makeMethodSet(actions, set);
+            if (commaPos != 0) {
 
-		HttpMethodSpec rvalue;
-		if (isExceptionList) {
-			rvalue = exceptionSpecArray[map];
-		} else {
-			rvalue = specArray[map];
-		}
+                String method;
+                if (commaPos < 0) {
+                    method = actions.substring(i);
+                } else {
+                    method = actions.substring(i, commaPos);
+                }
+                Integer bit = (Integer) methodHash.get(method);
+                if (bit != null) {
+                    mSet |= bit.intValue();
+                } else {
+                    setExtensionBit(method, set);
+                }
 
-		return rvalue;
-	}
+                i = commaPos + 1;
+            }
 
-	private static int makeMethodSet(String actions, BitSet set) {
-		int i = 0;
-		int mSet = 0;
-		int commaPos = 0;
+            else {
+                throw new IllegalArgumentException("illegal HTTP method Spec actions: '" + actions + "'");
+            }
+        }
 
-		while (commaPos >= 0 && i < actions.length()) {
+        return mSet;
+    }
 
-			commaPos = actions.indexOf(comma, i);
+    private String getExtensionActions(String standardActions, int map, BitSet set) {
+        List<String> methods = null;
+        for (int i = set.nextSetBit(0); i >= 0; i = set.nextSetBit(i + 1)) {
+            if (methods == null) {
+                methods = new ArrayList<String>();
+            }
+            methods.add(getExtensionMethod(i));
+        }
+        
+        if (methods == null) {
+            return standardActions;
+        }
+        
+        Collections.sort(methods);
+        StringBuffer actions = new StringBuffer(standardActions == null ? (exceptionList ? exclaimationPoint : emptyString) : standardActions);
+        for (int i = 0; i < methods.size(); i++) {
+            if (i > 0 || map > 0) {
+                actions.append(comma);
+            }
+            actions.append(methods.get(i));
+        }
+        
+        return actions.toString();
+    }
 
-			if (commaPos != 0) {
+    private String getStandardActions(boolean isExceptionList, int map) {
+        int bitValue = 1;
 
-				String method;
-				if (commaPos < 0) {
-					method = actions.substring(i);
-				} else {
-					method = actions.substring(i, commaPos);
-				}
-				Integer bit = (Integer) methodHash.get(method);
-				if (bit != null) {
-					mSet |= bit.intValue();
-				} else {
-					setExtensionBit(method, set);
-				}
+        StringBuffer actBuf = null;
 
-				i = commaPos + 1;
-			}
+        for (int i = 0; i < mapSize; i++) {
 
-			else {
-				throw new IllegalArgumentException("illegal HTTP method Spec actions: '" + actions + "'");
-			}
-		}
+            if ((map & bitValue) == bitValue) {
+                if (actBuf == null) {
+                    actBuf = new StringBuffer(isExceptionList ? exclaimationPoint : emptyString);
+                } else {
+                    actBuf.append(comma);
+                }
+                actBuf.append((String) methodKeys[i]);
+            }
+            bitValue = bitValue * 2;
+        }
 
-		return mSet;
-	}
-
-	private String getExtensionActions(String standardActions, int map, BitSet set) {
-		ArrayList methods = null;
-		for (int i = set.nextSetBit(0); i >= 0; i = set.nextSetBit(i + 1)) {
-			if (methods == null) {
-				methods = new ArrayList();
-			}
-			methods.add(getExtensionMethod(i));
-		}
-		String rvalue;
-		if (methods == null) {
-			rvalue = standardActions;
-		} else {
-			Collections.sort(methods);
-			StringBuffer actBuf = new StringBuffer(standardActions == null ? (exceptionList ? exclaimationPoint : emptyString) : standardActions);
-			for (int i = 0; i < methods.size(); i++) {
-				if (i > 0 || map > 0) {
-					actBuf.append(comma);
-				}
-				actBuf.append(methods.get(i));
-			}
-			rvalue = actBuf.toString();
-		}
-		return rvalue;
-	}
-
-	private String getStandardActions(boolean isExceptionList, int map) {
-		int bitValue = 1;
-
-		StringBuffer actBuf = null;
-
-		for (int i = 0; i < mapSize; i++) {
-
-			if ((map & bitValue) == bitValue) {
-				if (actBuf == null) {
-					actBuf = new StringBuffer(isExceptionList ? exclaimationPoint : emptyString);
-				} else {
-					actBuf.append(comma);
-				}
-				actBuf.append((String) methodKeys[i]);
-			}
-			bitValue = bitValue * 2;
-		}
-
-		if (actBuf == null) {
-			return isExceptionList ? exclaimationPoint : emptyString;
-		} else {
-			return actBuf.toString();
-		}
-	}
+        if (actBuf == null) {
+            return isExceptionList ? exclaimationPoint : emptyString;
+        }
+        
+        return actBuf.toString();
+    }
 
 }
