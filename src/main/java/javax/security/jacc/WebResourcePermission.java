@@ -198,6 +198,7 @@ public final class WebResourcePermission extends Permission {
 	 * <p>
 	 * @return true if the argument WebResourcePermission object is equivalent to this WebResourcePermission.
 	 */
+	@Override
 	public boolean equals(Object o) {
 		if (o == null || !(o instanceof WebResourcePermission))
 			return false;
@@ -218,6 +219,7 @@ public final class WebResourcePermission extends Permission {
 	 * 
 	 * @return a String containing the canonicalized actions of this WebResourcePermission (or the null value).
 	 */
+	@Override
 	public String getActions() {
 		return this.methodSpec.getActions();
 	}
@@ -238,6 +240,7 @@ public final class WebResourcePermission extends Permission {
 	 * 
 	 * @return the integer hash code value for this object.
 	 */
+	@Override
 	public int hashCode() {
 		if (this.hashCodeValue == 0) {
 			String hashInput = this.urlPatternSpec.toString() + " " + this.methodSpec.hashCode();
@@ -287,6 +290,7 @@ public final class WebResourcePermission extends Permission {
 	 * @param permission "this" WebResourcePermission is checked to see if it implies the argument permission.
 	 * @return true if the specified permission is implied by this object, false if not.
 	 */
+	@Override
 	public boolean implies(Permission permission) {
 		if (permission == null || !(permission instanceof WebResourcePermission))
 			return false;

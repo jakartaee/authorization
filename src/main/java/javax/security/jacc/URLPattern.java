@@ -67,6 +67,7 @@ class URLPattern extends Object implements Comparable {
 		return this.patternType;
 	}
 
+	@Override
 	public int compareTo(Object o) {
 
 		if (!(o instanceof URLPattern))
@@ -163,12 +164,14 @@ class URLPattern extends Object implements Comparable {
 		return (false);
 	}
 
+	@Override
 	public boolean equals(Object obj) {
 		if (!(obj instanceof URLPattern))
 			return false;
 		return this.pattern.equals(((URLPattern) obj).pattern);
 	}
 
+	@Override
 	public String toString() {
 		return this.pattern;
 	}

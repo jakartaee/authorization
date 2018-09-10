@@ -87,6 +87,7 @@ public final class WebRoleRefPermission extends Permission implements java.io.Se
 	 * @param o the WebRoleRefPermission object being tested for equality with this WebRoleRefPermission.
 	 * @return true if the argument WebRoleRefPermission object is equivalent to this WebRoleRefPermission.
 	 */
+	@Override
 	public boolean equals(Object o) {
 		if (o == null || !(o instanceof WebRoleRefPermission))
 			return false;
@@ -104,6 +105,7 @@ public final class WebRoleRefPermission extends Permission implements java.io.Se
 	 * 
 	 * @return a String containing the canonicalized actions of this WebRoleRefPermission.
 	 */
+	@Override
 	public String getActions() {
 		return this.actions;
 	}
@@ -125,6 +127,7 @@ public final class WebRoleRefPermission extends Permission implements java.io.Se
 	 * 
 	 * @return the integer hash code value for this object.
 	 */
+	@Override
 	public int hashCode() {
 
 		if (this.hashCodeValue == 0) {
@@ -155,6 +158,7 @@ public final class WebRoleRefPermission extends Permission implements java.io.Se
 	 * @param permission "this" WebRoleRefPermission is checked to see if it implies the argument permission.
 	 * @return true if the specified permission is implied by this object, false if not.
 	 */
+	@Override
 	public boolean implies(Permission permission) {
 		return this.equals(permission);
 	}

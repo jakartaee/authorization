@@ -231,6 +231,7 @@ public final class WebUserDataPermission extends Permission {
 	 * @param o the WebUserDataPermission object being tested for equality with this WebUserDataPermission.
 	 * @return true if the argument WebUserDataPermission object is equivalent to this WebUserDataPermission.
 	 */
+	@Override
 	public boolean equals(Object o) {
 		if (o == null || !(o instanceof WebUserDataPermission))
 			return false;
@@ -289,6 +290,7 @@ public final class WebUserDataPermission extends Permission {
 	 * 
 	 * @return a String containing the canonicalized actions of this WebUserDataPermission (or the null value).
 	 */
+	@Override
 	public String getActions() {
 		String result;
 		String hActions = this.methodSpec.getActions();
@@ -319,6 +321,7 @@ public final class WebUserDataPermission extends Permission {
 	 * 
 	 * @return the integer hash code value for this object.
 	 */
+	@Override
 	public int hashCode() {
 		if (this.hashCodeValue == 0) {
 			String hashInput = this.urlPatternSpec.toString() + " " + this.methodSpec.hashCode() + ":" + this.transportType;
@@ -371,6 +374,7 @@ public final class WebUserDataPermission extends Permission {
 	 *
 	 * @return true if the specified permission is implied by this object, false if not.
 	 */
+	@Override
 	public boolean implies(Permission permission) {
 		if (permission == null || !(permission instanceof WebUserDataPermission))
 			return false;

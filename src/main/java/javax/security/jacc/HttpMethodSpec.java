@@ -128,6 +128,7 @@ final class HttpMethodSpec {
 		return rvalue;
 	}
 
+	@Override
 	public String toString() {
 		return getActions();
 	}
@@ -152,10 +153,12 @@ final class HttpMethodSpec {
 		return actions;
 	}
 
+	@Override
 	public int hashCode() {
 		return (this.exceptionList ? 1 : 0) + (this.standardMap << 1) + ((this.extensionSet == null ? 0 : this.extensionSet.hashCode()) << mapSize + 1);
 	}
 
+	@Override
 	public boolean equals(Object that) {
 		boolean rvalue = false;
 		if (that != null && that instanceof HttpMethodSpec) {

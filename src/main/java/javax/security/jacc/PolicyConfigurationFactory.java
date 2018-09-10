@@ -85,6 +85,7 @@ public abstract class PolicyConfigurationFactory {
 			if (sm != null) {
 				try {
 					clazz = (Class) AccessController.doPrivileged(new PrivilegedExceptionAction() {
+						@Override
 						public Object run() throws java.lang.Exception {
 
 							classname[0] = System.getProperty(FACTORY_NAME);

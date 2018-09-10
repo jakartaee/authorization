@@ -96,6 +96,7 @@ class URLPatternSpec extends URLPattern {
 	 * URLPatternSpec if their first patterns are equivalent, and the patterns of its URLPatternList collectively match
 	 * exactly the same set of patterns as are matched by the patterns of the URLPatternList of the argument URLPatternSpec.
 	 */
+	@Override
 	public boolean equals(Object o) {
 		if (o == null || !(o instanceof URLPatternSpec))
 			return false;
@@ -119,6 +120,7 @@ class URLPatternSpec extends URLPattern {
 	 * 
 	 * @return the integer hash code value for this object.
 	 */
+	@Override
 	public int hashCode() {
 		if (hashCodeValue == 0)
 			hashCodeValue = this.toString().hashCode();
@@ -211,6 +213,7 @@ class URLPatternSpec extends URLPattern {
 	 * been sorted, and pruned by setURLPatternArray, such that all this method has to do is glue them together into a
 	 * string.
 	 */
+	@Override
 	public String toString() {
 		if (canonicalSpec == null) {
 

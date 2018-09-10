@@ -81,6 +81,7 @@ public final class EJBRoleRefPermission extends Permission {
 	 * 
 	 * @return true if the argument EJBRoleRefPermission object is equivalent to this EJBRoleRefPermission.
 	 */
+	@Override
 	public boolean equals(Object o) {
 		if (o == null || !(o instanceof EJBRoleRefPermission))
 			return false;
@@ -98,6 +99,7 @@ public final class EJBRoleRefPermission extends Permission {
 	 * 
 	 * @return a String containing the canonicalized actions of this EJBRoleRefPermission.
 	 */
+	@Override
 	public String getActions() {
 		return this.actions;
 	}
@@ -117,6 +119,7 @@ public final class EJBRoleRefPermission extends Permission {
 	 * 
 	 * @return the integer hash code value for this object.
 	 */
+	@Override
 	public int hashCode() {
 
 		if (hashCodeValue == 0) {
@@ -144,6 +147,7 @@ public final class EJBRoleRefPermission extends Permission {
 	 * @param permission "this" EJBRoleRefPermission is checked to see if it implies the argument permission.
 	 * @return true if the specified permission is implied by this object, false if not.
 	 */
+	@Override
 	public boolean implies(Permission permission) {
 		return this.equals(permission);
 	}
