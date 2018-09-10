@@ -27,8 +27,8 @@ package javax.security.jacc;
  * decisions. All handlers registered and activated via the <code>PolicyContext</code> class must implement the
  * <code>PolicyContextHandler</code> interface.
  *
- * @see javax.security.jacc.PolicyContext
- * @see javax.security.jacc.PolicyContextException
+ * @see PolicyContext
+ * @see PolicyContextException
  *
  * @author Ron Monzillo
  * @author Gary Ellison
@@ -45,25 +45,25 @@ public interface PolicyContextHandler {
      * @return a boolean indicating whether or not the context object corresponding to the argument key is handled by the
      * handler.
      *
-     * @throws javax.security.jacc.PolicyContextException if the implementation throws a checked exception that has not been
+     * @throws PolicyContextException if the implementation throws a checked exception that has not been
      * accounted for by the method signature. The exception thrown by the implementation class will be encapsulated (during
      * construction) in the thrown PolicyContextException
      */
-    boolean supports(String key) throws javax.security.jacc.PolicyContextException;
+    boolean supports(String key) throws PolicyContextException;
 
     /**
      * This public method returns the keys identifying the context objects supported by the handler. The value of each key
      * supported by a handler must be a non-null <code>String</code> value.
      * 
-     * @return an array containing <code>String</code> values identifing the context objects supported by the handler. The
+     * @return an array containing <code>String</code> values identifying the context objects supported by the handler. The
      * array must not contain duplicate key values. In the unlikely case that the Handler supports no keys, the handler must
      * return a zero length array. The value null must never be returned by this method.
      *
-     * @throws javax.security.jacc.PolicyContextException if the implementation throws a checked exception that has not been
+     * @throws PolicyContextException if the implementation throws a checked exception that has not been
      * accounted for by the method signature. The exception thrown by the implementation class will be encapsulated (during
      * construction) in the thrown PolicyContextException
      */
-    String[] getKeys() throws javax.security.jacc.PolicyContextException;
+    String[] getKeys() throws PolicyContextException;
 
     /**
      * This public method is used by the <code>PolicyContext</code> class to activate the handler and obtain from it the
@@ -75,17 +75,17 @@ public interface PolicyContextHandler {
      * Note that the policy context identifier associated with a thread is available to the handler by calling
      * PolicyContext.getContextID().
      * 
-     * @param key a String that identifies the context object to be returned by the handler. The value of this paramter must
+     * @param key a String that identifies the context object to be returned by the handler. The value of this parameter must
      * not be null.
      * @param data the handler data <code>Object</code> associated with the thread on which the call to this method has been
      * made. Note that the value passed through this parameter may be <code>null</code>.
      * @return The container and handler specific <code>Object</code> containing the desired context. A <code>null</code>
      * value may be returned if the value of the corresponding context is null.
      *
-     * @throws javax.security.jacc.PolicyContextException if the implementation throws a checked exception that has not been
+     * @throws PolicyContextException if the implementation throws a checked exception that has not been
      * accounted for by the method signature. The exception thrown by the implementation class will be encapsulated (during
      * construction) in the thrown PolicyContextException
      */
-    Object getContext(String key, Object data) throws javax.security.jacc.PolicyContextException;
+    Object getContext(String key, Object data) throws PolicyContextException;
 
 }

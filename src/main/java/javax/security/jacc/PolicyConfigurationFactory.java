@@ -17,6 +17,7 @@
 package javax.security.jacc;
 
 import java.security.AccessController;
+import java.security.Permission;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 
@@ -30,9 +31,9 @@ import java.security.PrivilegedExceptionAction;
  * Implementation classes must have a public no argument constructor that may be used to create an operational instance
  * of the factory implementation class.
  *
- * @see java.security.Permission
- * @see javax.security.jacc.PolicyConfiguration
- * @see javax.security.jacc.PolicyContextException
+ * @see Permission
+ * @see PolicyConfiguration
+ * @see PolicyContextException
  *
  * @author Ron Monzillo
  * @author Gary Ellison
@@ -56,18 +57,18 @@ public abstract class PolicyConfigurationFactory {
      *
      * @return the singleton instance of the provider specific PolicyConfigurationFactory implementation class.
      *
-     * @throws java.lang.SecurityException when called by an AccessControlContext that has not been granted the "setPolicy"
+     * @throws SecurityException when called by an AccessControlContext that has not been granted the "setPolicy"
      * SecurityPermission.
      *
-     * @throws java.lang.ClassNotFoundException when the class named by the system property could not be found including
+     * @throws ClassNotFoundException when the class named by the system property could not be found including
      * because the value of the system property has not be set.
      *
-     * @throws javax.security.jacc.PolicyContextException if the implementation throws a checked exception that has not been
+     * @throws PolicyContextException if the implementation throws a checked exception that has not been
      * accounted for by the getPolicyConfigurationFactory method signature. The exception thrown by the implementation class
      * will be encapsulated (during construction) in the thrown PolicyContextException
      */
     public static PolicyConfigurationFactory getPolicyConfigurationFactory()
-            throws java.lang.ClassNotFoundException, javax.security.jacc.PolicyContextException {
+            throws ClassNotFoundException, PolicyContextException {
 
         SecurityManager sm = System.getSecurityManager();
         if (sm != null) {
@@ -88,7 +89,7 @@ public abstract class PolicyConfigurationFactory {
                 try {
                     clazz = (Class) AccessController.doPrivileged(new PrivilegedExceptionAction() {
                         @Override
-                        public Object run() throws java.lang.Exception {
+                        public Object run() throws Exception {
 
                             classname[0] = System.getProperty(FACTORY_NAME);
 
@@ -102,12 +103,12 @@ public abstract class PolicyConfigurationFactory {
                     });
                 } catch (PrivilegedActionException ex) {
                     Exception e = ex.getException();
-                    if (e instanceof java.lang.ClassNotFoundException) {
-                        throw (java.lang.ClassNotFoundException) e;
-                    } else if (e instanceof java.lang.InstantiationException) {
-                        throw (java.lang.InstantiationException) e;
-                    } else if (e instanceof java.lang.IllegalAccessException) {
-                        throw (java.lang.IllegalAccessException) e;
+                    if (e instanceof ClassNotFoundException) {
+                        throw (ClassNotFoundException) e;
+                    } else if (e instanceof InstantiationException) {
+                        throw (InstantiationException) e;
+                    } else if (e instanceof IllegalAccessException) {
+                        throw (IllegalAccessException) e;
                     }
                 }
             } else {
@@ -127,16 +128,16 @@ public abstract class PolicyConfigurationFactory {
                 pcFactory = (PolicyConfigurationFactory) factory;
             }
 
-        } catch (java.lang.ClassNotFoundException cnfe) {
+        } catch (ClassNotFoundException cnfe) {
             msg = "JACC:Error PolicyConfigurationFactory : cannot find class : " + classname[0];
             throw new ClassNotFoundException(msg, cnfe);
-        } catch (java.lang.IllegalAccessException iae) {
+        } catch (IllegalAccessException iae) {
             msg = "JACC:Error PolicyConfigurationFactory : cannot access class : " + classname[0];
             throw new PolicyContextException(msg, iae);
-        } catch (java.lang.InstantiationException ie) {
+        } catch (InstantiationException ie) {
             msg = "JACC:Error PolicyConfigurationFactory : cannot instantiate : " + classname[0];
             throw new PolicyContextException(msg, ie);
-        } catch (java.lang.ClassCastException cce) {
+        } catch (ClassCastException cce) {
             msg = "JACC:Error PolicyConfigurationFactory : class not PolicyConfigurationFactory : " + classname[0];
             throw new ClassCastException(msg);
         }
@@ -176,14 +177,14 @@ public abstract class PolicyConfigurationFactory {
      * @return an Object that implements the PolicyConfiguration Interface matched to the Policy provider and corresponding
      * to the identified policy context.
      *
-     * @throws java.lang.SecurityException when called by an AccessControlContext that has not been granted the "setPolicy"
+     * @throws SecurityException when called by an AccessControlContext that has not been granted the "setPolicy"
      * SecurityPermission.
      *
-     * @throws javax.security.jacc.PolicyContextException if the implementation throws a checked exception that has not been
+     * @throws PolicyContextException if the implementation throws a checked exception that has not been
      * accounted for by the getPolicyConfiguration method signature. The exception thrown by the implementation class will
      * be encapsulated (during construction) in the thrown PolicyContextException.
      */
-    public abstract PolicyConfiguration getPolicyConfiguration(String contextID, boolean remove) throws javax.security.jacc.PolicyContextException;
+    public abstract PolicyConfiguration getPolicyConfiguration(String contextID, boolean remove) throws PolicyContextException;
 
     /**
      * This method determines if the identified policy context exists with state "inService" in the Policy provider
@@ -194,13 +195,13 @@ public abstract class PolicyConfigurationFactory {
      * @return true if the identified policy context exists within the provider and its state is "inService", false
      * otherwise.
      *
-     * @throws java.lang.SecurityException when called by an AccessControlContext that has not been granted the "setPolicy"
+     * @throws SecurityException when called by an AccessControlContext that has not been granted the "setPolicy"
      * SecurityPermission.
      *
-     * @throws javax.security.jacc.PolicyContextException if the implementation throws a checked exception that has not been
+     * @throws PolicyContextException if the implementation throws a checked exception that has not been
      * accounted for by the inService method signature. The exception thrown by the implementation class will be
      * encapsulated (during construction) in the thrown PolicyContextException.
      */
-    public abstract boolean inService(String contextID) throws javax.security.jacc.PolicyContextException;
+    public abstract boolean inService(String contextID) throws PolicyContextException;
 
 }

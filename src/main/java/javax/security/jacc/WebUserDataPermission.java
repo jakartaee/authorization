@@ -72,7 +72,7 @@ public final class WebUserDataPermission extends Permission {
      * 
      * @serialField actions String the canonicalized actions string (as returned by getActions).
      */
-    private static final ObjectStreamField[] serialPersistentFields = { new ObjectStreamField("actions", java.lang.String.class) };
+    private static final ObjectStreamField[] serialPersistentFields = { new ObjectStreamField("actions", String.class) };
 
     /**
      * Creates a new WebUserDataPermission with the specified name and actions.

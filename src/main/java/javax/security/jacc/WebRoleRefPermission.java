@@ -18,6 +18,7 @@ package javax.security.jacc;
 
 import java.io.IOException;
 import java.io.ObjectStreamField;
+import java.io.Serializable;
 import java.security.Permission;
 
 /**
@@ -42,7 +43,7 @@ import java.security.Permission;
  * @author Ron Monzillo
  * @author Gary Ellison
  */
-public final class WebRoleRefPermission extends Permission implements java.io.Serializable {
+public final class WebRoleRefPermission extends Permission implements Serializable {
 
     private final String actions;
 
@@ -56,7 +57,7 @@ public final class WebRoleRefPermission extends Permission implements java.io.Se
      * 
      * @serialField actions String the canonicalized actions string (as returned by getActions).
      */
-    private static final ObjectStreamField[] serialPersistentFields = { new ObjectStreamField("actions", java.lang.String.class) };
+    private static final ObjectStreamField[] serialPersistentFields = { new ObjectStreamField("actions", String.class) };
 
     /**
      * Creates a new WebRoleRefPermission with the specified name and actions.

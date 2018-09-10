@@ -17,6 +17,8 @@
 package javax.security.jacc;
 
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.ObjectStreamField;
 import java.security.Permission;
 import javax.servlet.http.HttpServletRequest;
@@ -32,7 +34,7 @@ import javax.servlet.http.HttpServletRequest;
  * Implementations of this class MAY implement newPermissionCollection or inherit its implementation from the super
  * class.
  * 
- * @see java.security.Permission
+ * @see Permission
  *
  * @author Ron Monzillo
  * @author Gary Ellison
@@ -57,7 +59,7 @@ public final class WebResourcePermission extends Permission {
      * 
      * @serialField actions String the canonicalized actions string (as returned by getActions).
      */
-    private static final ObjectStreamField[] serialPersistentFields = { new ObjectStreamField("actions", java.lang.String.class) };
+    private static final ObjectStreamField[] serialPersistentFields = { new ObjectStreamField("actions", String.class) };
 
     /**
      * Creates a new WebResourcePermission with the specified name and actions.
@@ -338,7 +340,7 @@ public final class WebResourcePermission extends Permission {
      * need not be implemented if establishing the values of the serialized fields (as is done by defaultReadObject) is
      * sufficient to initialize the permission.
      */
-    private void readObject(java.io.ObjectInputStream s) throws IOException, ClassNotFoundException {
+    private void readObject(ObjectInputStream s) throws IOException, ClassNotFoundException {
         this.methodSpec = HttpMethodSpec.getSpec((String) s.readFields().get("actions", null));
         this.urlPatternSpec = new URLPatternSpec(super.getName());
     }
@@ -348,7 +350,7 @@ public final class WebResourcePermission extends Permission {
      * need not be implemented if the values of the serialized fields are always available and up to date. The serialized
      * fields are written to the output stream in the same form as they would be written by defaultWriteObject.
      */
-    private synchronized void writeObject(java.io.ObjectOutputStream s) throws IOException {
+    private synchronized void writeObject(ObjectOutputStream s) throws IOException {
         s.putFields().put("actions", this.getActions());
         s.writeFields();
     }
