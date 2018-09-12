@@ -56,17 +56,15 @@ public class PolicyContextException extends Exception {
         super(message);
     }
 
-    /**
-     * Constructs a new PolicyContextException with the specified detail message and cause. The cause will be encapsulated
-     * in the constructed exception.
-     * 
-     * @param message - a <code>String containing a detail message describing the 
-     * cause of the exception.
-     * @param cause - the Throwable that is "causing" this exception to be 
-     * constructed. A null value is permitted, and the value passed through
-     * this parameter may subsequently be retrieved by calling 
-     * <code>getCause()</code> on the constructed exception.
-     */
+	/**
+	 * Constructs a new PolicyContextException with the specified detail message and cause. The cause will be encapsulated
+	 * in the constructed exception.
+	 * 
+	 * @param message - A <code>String</code> containing a detail message describing the cause of the exception.
+	 * @param cause - The Throwable that is "causing" this exception to be constructed. A null value is permitted, and the
+	 * value passed through this parameter may subsequently be retrieved by calling <code>getCause()</code> on the
+	 * constructed exception.
+	 */
     public PolicyContextException(String message, Throwable cause) {
         super(message, cause);
     }

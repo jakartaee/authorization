@@ -60,82 +60,82 @@ import java.security.PermissionCollection;
  *
  * <br>
  * <br>
- * <table border="1" width="90%" nosave="" align="center">
+ * <table border="1">
  * <caption>PolicyConfiguration State Table</caption>
  * <tr>
- * <th valign="middle" rowspan="2" colspan="1" align="center"><font size="-2">Method</font></th>
- * <th valign="top" rowspan="1" colspan="3" align="center"><font size="-2">Current State to Next State</font></th>
+ * <th valign="middle" rowspan="2" colspan="1" >Method</th>
+ * <th valign="top" rowspan="1" colspan="3" >Current State to Next State</th>
  * </tr>
  * <tr>
- * <th width="25%" align="center"><font size="-2">deleted</font></th>
- * <th width="12%" align="center"><font size="-2">open</font></th>
- * <th width="25%" align="center"><font size="-2">inService</font></th>
+ * <th>deleted</th>
+ * <th>open</th>
+ * <th>inService</th>
  * </tr>
  * <tr>
- * <td width="28%"><font size="-2">addToExcludedPolicy</font></td>
- * <td width="25%" align="center"><font size="-2">Unsupported Operation</font></td>
- * <td width="12%" align="center"><font size="-2">open</font></td>
- * <td width="25%" align="center"><font size="-2">Unsupported Operation</font></td>
+ * <td>addToExcludedPolicy</td>
+ * <td>Unsupported Operation</td>
+ * <td>open</td>
+ * <td>Unsupported Operation</td>
  * </tr>
  * <tr>
- * <td width="28%"><font size="-2">addToRole</font></td>
- * <td width="25%" align="center"><font size="-2">Unsupported Operation</font></td>
- * <td width="12%" align="center"><font size="-2">open</font></td>
- * <td width="25%" align="center"><font size="-2">Unsupported Operation</font></td>
+ * <td>addToRole</td>
+ * <td>Unsupported Operation</td>
+ * <td>open</td>
+ * <td>Unsupported Operation</td>
  * </tr>
  * <tr>
- * <td width="28%"><font size="-2">addToUncheckedPolicy</font></td>
- * <td width="25%" align="center"><font size="-2">Unsupported Operation</font></td>
- * <td width="12%" align="center"><font size="-2">open</font></td>
- * <td width="25%" align="center"><font size="-2">Unsupported Operation</font></td>
+ * <td>addToUncheckedPolicy</td>
+ * <td>Unsupported Operation</td>
+ * <td>open</td>
+ * <td>Unsupported Operation</td>
  * </tr>
  * <tr>
- * <td width="28%"><font size="-2">commit</font></td>
- * <td width="25%" align="center"><font size="-2">Unsupported Operation</font></td>
- * <td width="12%" align="center"><font size="-2">inService</font></td>
- * <td width="25%" align="center"><font size="-2">inService</font></td>
+ * <td>commit</td>
+ * <td>Unsupported Operation</td>
+ * <td>inService</td>
+ * <td>inService</td>
  * </tr>
  * <tr>
- * <td width="28%"><font size="-2">delete</font></td>
- * <td width="25%" align="center"><font size="-2">deleted</font></td>
- * <td width="12%" align="center"><font size="-2">deleted</font></td>
- * <td width="25%" align="center"><font size="-2">deleted</font></td>
+ * <td>delete</td>
+ * <td>deleted</td>
+ * <td>deleted</td>
+ * <td>deleted</td>
  * </tr>
  * <tr>
- * <td width="28%"><font size="-2">getContextID</font></td>
- * <td width="25%" align="center"><font size="-2">deleted</font></td>
- * <td width="12%" align="center"><font size="-2">open</font></td>
- * <td width="25%" align="center"><font size="-2">inService</font></td>
+ * <td>getContextID</td>
+ * <td>deleted</td>
+ * <td>open</td>
+ * <td>inService</td>
  * </tr>
  * <tr>
- * <td width="28%"><font size="-2">inService</font></td>
- * <td width="25%" align="center"><font size="-2">deleted</font></td>
- * <td width="12%" align="center"><font size="-2">open</font></td>
- * <td width="25%" align="center"><font size="-2">inService</font></td>
+ * <td>inService</td>
+ * <td>deleted</td>
+ * <td>open</td>
+ * <td>inService</td>
  * </tr>
  * <tr>
- * <td width="28%"><font size="-2">linkConfiguration</font></td>
- * <td width="25%" align="center"><font size="-2">Unsupported Operation</font></td>
- * <td width="12%" align="center"><font size="-2">open</font></td>
- * <td width="25%" align="center"><font size="-2">Unsupported Operation</font></td>
+ * <td>linkConfiguration</td>
+ * <td>Unsupported Operation</td>
+ * <td>open</td>
+ * <td>Unsupported Operation</td>
  * </tr>
  * <tr>
- * <td width="28%"><font size="-2">removeExcludedPolicy</font></td>
- * <td width="25%" align="center"><font size="-2">Unsupported Operation</font></td>
- * <td width="12%" align="center"><font size="-2"> open</font></td>
- * <td width="25%" align="center"><font size="-2">Unsupported Operation</font></td>
+ * <td>removeExcludedPolicy</td>
+ * <td>Unsupported Operation</td>
+ * <td> open</td>
+ * <td>Unsupported Operation</td>
  * </tr>
  * <tr>
- * <td width="28%"><font size="-2">removeRole</font></td>
- * <td width="25%" align="center"><font size="-2">Unsupported Operation</font></td>
- * <td width="12%" align="center"><font size="-2">open</font></td>
- * <td width="25%" align="center"><font size="-2">Unsupported Operation</font></td>
+ * <td>removeRole</td>
+ * <td>Unsupported Operation</td>
+ * <td>open</td>
+ * <td>Unsupported Operation</td>
  * </tr>
  * <tr>
- * <td width="28%"><font size="-2">removeUncheckedPolicy</font></td>
- * <td width="25%" align="center"><font size="-2">Unsupported Operation</font></td>
- * <td width="12%" align="center"><font size="-2">open</font></td>
- * <td width="25%" align="center"><font size="-2">Unsupported Operation</font></td>
+ * <td>removeUncheckedPolicy</td>
+ * <td>Unsupported Operation</td>
+ * <td>open</td>
+ * <td>Unsupported Operation</td>
  * </tr>
  * </table>
  * <br>
@@ -352,7 +352,7 @@ public interface PolicyConfiguration {
      * does not have a different Policy context identifier than this PolicyConfiguration no relationship is formed, and an
      * exception, as described below, is thrown.
      * 
-     * @param PolicyConfiguration link a reference to a different PolicyConfiguration than this PolicyConfiguration.
+     * @param link A reference to a different PolicyConfiguration than this PolicyConfiguration.
      *
      * @throws SecurityException if called by an AccessControlContext that has not been granted the "setPolicy"
      * SecurityPermission.

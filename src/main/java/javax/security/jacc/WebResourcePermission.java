@@ -66,8 +66,6 @@ public final class WebResourcePermission extends Permission {
      * The name contains a URLPatternSpec that identifies the web resources to which the permissions applies. The syntax of
      * a URLPatternSpec is as follows:
      * 
-     * <p>
-     * 
      * <pre>
      *
      *          URLPatternList ::= URLPattern | URLPatternList colon URLPattern
@@ -84,7 +82,6 @@ public final class WebResourcePermission extends Permission {
      * URLPatternList identify the resources to which the permission does NOT apply and depend on the pattern type and value
      * of the first pattern as follows:
      * 
-     * <p>
      * <ul>
      * <li>No pattern may exist in the URLPatternList that matches the first pattern.
      * <li>If the first pattern is a path-prefix pattern, only exact patterns matched by the first pattern and path-prefix
@@ -97,10 +94,8 @@ public final class WebResourcePermission extends Permission {
      * </ul>
      * 
      * <p>
-     * The actions parameter contains a comma seperated list of HTTP methods. The syntax of the actions parameter is defined
+     * The actions parameter contains a comma separated list of HTTP methods. The syntax of the actions parameter is defined
      * as follows:
-     * 
-     * <p>
      * 
      * <pre>
      *
@@ -192,7 +187,7 @@ public final class WebResourcePermission extends Permission {
      * patterns of the URLPatternList of the argument permission.
      * 
      * <p>
-     * Two Permission objects, P1 and P2, are equivalent if and only if P1.implies(P2) && P2.implies(P1).
+     * Two Permission objects, P1 and P2, are equivalent if and only if P1.implies(P2) AND P2.implies(P1).
      * 
      * @param o the WebResourcePermission object being tested for equality with this WebResourcePermission.
      * <p>
@@ -340,6 +335,11 @@ public final class WebResourcePermission extends Permission {
      * readObject reads the serialized fields from the input stream and uses them to restore the permission. This method
      * need not be implemented if establishing the values of the serialized fields (as is done by defaultReadObject) is
      * sufficient to initialize the permission.
+     *
+     * @param inputStream The stream from which the fields are read
+     * 
+     * @throws ClassNotFoundException If the class of an object couldn't be found
+     * @throws IOException If an I/O error occurs
      */
     private void readObject(ObjectInputStream inputStream) throws IOException, ClassNotFoundException {
         methodSpec = HttpMethodSpec.getSpec((String) inputStream.readFields().get("actions", null));
@@ -350,6 +350,10 @@ public final class WebResourcePermission extends Permission {
      * writeObject is used to establish the values of the serialized fields before they are written to the output stream and
      * need not be implemented if the values of the serialized fields are always available and up to date. The serialized
      * fields are written to the output stream in the same form as they would be written by defaultWriteObject.
+     * 
+     * @param outputStream The stream to which the serialized fields are written
+     * 
+     * @throws IOException If an I/O error occurs while writing to the underlying stream
      */
     private synchronized void writeObject(ObjectOutputStream outputStream) throws IOException {
         outputStream.putFields().put("actions", this.getActions());

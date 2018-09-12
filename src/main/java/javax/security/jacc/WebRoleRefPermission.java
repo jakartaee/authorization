@@ -81,7 +81,7 @@ public final class WebRoleRefPermission extends Permission implements Serializab
      * equivalent name and actions values.
      * 
      * <p>
-     * Two Permission objects, P1 and P2, are equivalent if and only if P1.implies(P2) && P2.implies(P1).
+     * Two Permission objects, P1 and P2, are equivalent if and only if P1.implies(P2) AND P2.implies(P1).
      * 
      * <p>
      * The name and actions comparisons described above are case sensitive.
@@ -170,6 +170,11 @@ public final class WebRoleRefPermission extends Permission implements Serializab
      * readObject reads the serialized fields from the input stream and uses them to restore the permission. This method
      * need not be implemented if establishing the values of the serialized fields (as is done by defaultReadObject) is
      * sufficient to initialize the permission.
+     *
+     * @param inputStream The stream from which the fields are read
+     * 
+     * @throws ClassNotFoundException If the class of an object couldn't be found
+     * @throws IOException If an I/O error occurs
      */
     private synchronized void readObject(ObjectInputStream inputStream) throws IOException, ClassNotFoundException {
         inputStream.defaultReadObject();
@@ -179,6 +184,10 @@ public final class WebRoleRefPermission extends Permission implements Serializab
      * writeObject is used to establish the values of the serialized fields before they are written to the output stream and
      * need not be implemented if the values of the serialized fields are always available and up to date. The serialized
      * fields are written to the output stream in the same form as they would be written by defaultWriteObject.
+     * 
+     * @param outputStream The stream to which the serialized fields are written
+     * 
+     * @throws IOException If an I/O error occurs while writing to the underlying stream
      */
     private synchronized void writeObject(ObjectOutputStream outputStream) throws IOException {
         outputStream.defaultWriteObject();

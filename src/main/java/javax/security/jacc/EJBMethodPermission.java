@@ -83,8 +83,6 @@ public final class EJBMethodPermission extends Permission {
 	 * <p>
 	 * The actions contains a methodSpec. The syntax of the actions parameter is defined as follows:
 	 * 
-	 * <p>
-	 * 
 	 * <pre>
 	 *      methodNameSpec ::= methodName | emptyString
 	 *
@@ -109,7 +107,6 @@ public final class EJBMethodPermission extends Permission {
 	 * deployment descriptors. An implementation must be flexible such that it supports additional interface names
 	 * especially if they are standardized by the EJB Specification. The EJB Specification currently defines the following
 	 * method-intf values:
-	 * <p>
 	 * 
 	 * <pre>
 	 * { "Home", "LocalHome", "Remote", "Local", "ServiceEndpoint" }
@@ -156,7 +153,7 @@ public final class EJBMethodPermission extends Permission {
 	 * value of null or "", indicates that the permission pertains to all methods that match the other parameters of the
 	 * permission specification without consideration of the interface they occur on.
 	 * @param methodParams An array of strings that may be used to specify (by typeNames) the parameter signature of the
-	 * target methods. The order of the typeNames in methodParams array must match the order of occurence of the
+	 * target methods. The order of the typeNames in methodParams array must match the order of occurrence of the
 	 * corresponding parameters in the method signature of the target method(s). Each typeName in the methodParams array
 	 * must contain the canonical form of the corresponding parameter's typeName as defined by the getActions method. An
 	 * empty methodParams array is used to represent a method signature with no arguments. A value of null indicates that
@@ -193,7 +190,7 @@ public final class EJBMethodPermission extends Permission {
 	 * sensitive equivalent name and actions values.
 	 * 
 	 * <p>
-	 * Two Permission objects, P1 and P2, are equivalent if and only if P1.implies(P2) && P2.implies(P1).
+	 * Two Permission objects, P1 and P2, are equivalent if and only if P1.implies(P2) AND P2.implies(P1).
 	 * 
 	 * @param o the EJBMethodPermission object being tested for equality with this EJBMethodPermission
 	 * 
@@ -241,8 +238,6 @@ public final class EJBMethodPermission extends Permission {
 	/**
 	 * Returns a String containing a canonical representation of the actions of this EJBMethodPermission. The Canonical form
 	 * of the actions of an EJBMethodPermission is described by the following syntax description.
-	 * 
-	 * <p>
 	 * 
 	 * <pre>
 	 *      methodNameSpec ::= methodName | emptyString
@@ -415,6 +410,11 @@ public final class EJBMethodPermission extends Permission {
 	 * readObject reads the serialized fields from the input stream and uses them to restore the permission. This method
 	 * need not be implemented if establishing the values of the serialized fields (as is done by defaultReadObject) is
 	 * sufficient to initialize the permission.
+	 * 
+	 * @param inputStream The stream from which the fields are read
+	 * 
+	 * @throws ClassNotFoundException If the class of an object couldn't be found
+     * @throws IOException If an I/O error occurs
 	 */
 	private void readObject(ObjectInputStream inputStream) throws IOException, ClassNotFoundException {
 		setMethodSpec((String) inputStream.readFields().get("actions", null));
@@ -424,10 +424,15 @@ public final class EJBMethodPermission extends Permission {
 	 * writeObject is used to establish the values of the serialized fields before they are written to the output stream and
 	 * need not be implemented if the values of the serialized fields are always available and up to date. The serialized
 	 * fields are written to the output stream in the same form as they would be written by defaultWriteObject.
+	 * 
+	 * @param outputStream The stream to which the serialized fields are written
+	 * 
+	 * @throws IOException If an I/O error occurs while writing to the underlying stream
+	 * 
 	 */
-	private synchronized void writeObject(ObjectOutputStream inputStream) throws IOException {
-		inputStream.putFields().put("actions", this.getActions());
-		inputStream.writeFields();
+	private synchronized void writeObject(ObjectOutputStream outputStream) throws IOException {
+		outputStream.putFields().put("actions", this.getActions());
+		outputStream.writeFields();
 	}
 
 	private void setMethodSpec(String actions) {

@@ -51,9 +51,10 @@ public abstract class PolicyConfigurationFactory {
      * <p>
      * The name of the provider specific factory implementation class is obtained from the
      * value of the system property,
-     * <code><pre>
+     * <pre>{@code
      *     javax.security.jacc.PolicyConfigurationFactory.provider.
-     * </pre></code>
+     * }
+     * </pre>
      *
      * @return the singleton instance of the provider specific PolicyConfigurationFactory implementation class.
      *
