@@ -36,11 +36,11 @@ class URLPatternSpec extends URLPattern {
 
     /**
      * Creates a new URLPatternSpec that identifies the web resources to which a WebResourcePermission or
-     * WebUserDataPermission applies. 
-     * 
+     * WebUserDataPermission applies.
+     *
      * <p>
      * The syntax of the name parameter is as follows:
-     * 
+     *
      * <pre>
      *
      *          URLPatternList ::= URLPattern | URLPatternList colon URLPattern
@@ -49,12 +49,12 @@ class URLPatternSpec extends URLPattern {
      *
      *          name ::= URLPatternSpec
      * </pre>
-     * 
+     *
      * The first URLPattern in a URLPatternSpec may be any of the pattern types, exact, path-prefix, extension, or default
      * as defined in the <i>Java Servlet Specification)</i>. When a URLPatternSpec includes a URLPatternList, the patterns
      * of the URLPatternList identify the resources to which the permission does NOT apply and depend on the pattern type
      * and value of the first pattern as follows:
-     * 
+     *
      * <ul>
      * <li>No pattern may exist in the URLPatternList that matches the first pattern.
      * <li>If the first pattern is a path-prefix pattern, only exact patterns matched by the first pattern and path-prefix
@@ -65,14 +65,14 @@ class URLPatternSpec extends URLPattern {
      * URLPatternList.
      * <li>If the first pattern is an exact pattern a URLPatternList must not be present in the URLPatternSpec.
      * </ul>
-     * 
+     *
      * @param urlPatternSpec a String containing a URLPatternSpec that identifies the application specific web resources to
      * which the permission pertains. All URLPatterns in the URLPatternSpec are relative to the context path of the deployed
      * web application module, and the same URLPattern must not occur more than once in a URLPatternSpec.
      */
     public URLPatternSpec(String urlPatternSpec) {
         super(getFirstPattern(urlPatternSpec));
-        
+
         int colon = urlPatternSpec.indexOf(":");
         if (colon >= 0) {
             urlPatternList = urlPatternSpec.substring(colon + 1);
@@ -117,7 +117,7 @@ class URLPatternSpec extends URLPattern {
      * of the two objects must produce the same integer result (within an application).
      * </ul>
      * <p>
-     * 
+     *
      * @return the integer hash code value for this object.
      */
     @Override
@@ -131,7 +131,7 @@ class URLPatternSpec extends URLPattern {
 
     /**
      * Determines if the argument URLPatternSpec is "implied by" this URLPatternSpec.
-     * 
+     *
      * <p>
      * For this to be the case, all of the following must be true:
      * <ul>
@@ -144,7 +144,7 @@ class URLPatternSpec extends URLPattern {
      * <code>URLPatternSpec</code>, then every URLPattern in the URLPatternList of this <code>URLPatternSpec</code> is
      * matched by a <code>URLPattern</code> in the <code>URLPatternList</code> of the argument <code>URLPatternSpec</code>.
      * </ul>
-     * 
+     *
      * URLPattern matching is performed using the <i>Servlet matching rules</i> where two URL patterns match if they are
      * related as follows:
      * <ul>
@@ -157,10 +157,10 @@ class URLPatternSpec extends URLPattern {
      * pattern, or
      * <li>the reference pattern is the special default pattern, "/", which matches all argument patterns.
      * </ul>
-     * 
+     *
      * <p>
      * All of the comparisons described above are case sensitive.
-     * 
+     *
      * @param that "this" URLPatternSpec is checked to see if it implies the argument URLPatternSpec.
      * @return true if the specified URLPatternSpec is implied by this URLPatternSpec, false if not.
      */
@@ -258,21 +258,21 @@ class URLPatternSpec extends URLPattern {
         if (urlPatternSpec == null) {
             throw new IllegalArgumentException("Invalid URLPatternSpec");
         }
-        
+
         int colon = urlPatternSpec.indexOf(":");
-        
+
         if (colon < 0) {
             return urlPatternSpec;
         }
-        
+
         if (colon > 0) {
             return urlPatternSpec.substring(0, colon);
         }
-        
+
         if (colon == 0) {
             return EMPTY_STRING;
         }
-        
+
         throw new IllegalArgumentException("Invalid URLPatternSpec");
     }
 
@@ -282,10 +282,10 @@ class URLPatternSpec extends URLPattern {
             String[] tokens = urlPatternList.split(":", -1);
 
             int count = tokens.length;
-
             if (count == 0) {
                 throw new IllegalArgumentException("colon followed by empty URLPatternList");
             }
+
             urlPatternArray = new URLPattern[count];
 
             int firstType = this.patternType();

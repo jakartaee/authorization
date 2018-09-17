@@ -28,7 +28,7 @@ package javax.security.jacc;
 class URLPattern extends Object implements Comparable<URLPattern> {
 
     private static String DEFAULT_PATTERN = "/";
-    
+
     /* changed to order default pattern / below extension */
     public static final int PT_DEFAULT = 0;
     public static final int PT_EXTENSION = 1;
@@ -59,13 +59,13 @@ class URLPattern extends Object implements Comparable<URLPattern> {
                 patternType = PT_EXTENSION;
             } else if (pattern.startsWith("/") && pattern.endsWith("/*")) {
                 patternType = PT_PREFIX;
-            } else if (pattern.equals(DEFAULT_PATTERN)) {
+            } else if (DEFAULT_PATTERN.equals(pattern)) {
                 patternType = PT_DEFAULT;
             } else {
                 patternType = PT_EXACT;
             }
         }
-        
+
         return patternType;
     }
 
@@ -101,7 +101,7 @@ class URLPattern extends Object implements Comparable<URLPattern> {
     /**
      * Does this pattern imply (that is, match) the argument pattern? This method follows the same rules (in the same order)
      * as those used for mapping requests to servlets.
-     * 
+     *
      * <p>
      * Two URL patterns match if they are related as follows:
      * <p>
@@ -115,7 +115,7 @@ class URLPattern extends Object implements Comparable<URLPattern> {
      * pattern, or
      * <li>the reference pattern is the special default pattern, "/", which matches all argument patterns.
      * </ul>
-     * 
+     *
      * @param that URLPattern to determine if implied by (matched by) this URLPattern to
      */
     public boolean implies(URLPattern that) {
@@ -153,7 +153,7 @@ class URLPattern extends Object implements Comparable<URLPattern> {
             if ((slash >= 0) && (period > slash) && thatPattern.endsWith(thisPattern.substring(1))) {
                 return true;
             }
-            
+
             return false;
         }
 

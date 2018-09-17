@@ -21,19 +21,20 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.ObjectStreamField;
 import java.security.Permission;
+
 import javax.servlet.http.HttpServletRequest;
 
 /**
  * Class for Servlet web resource permissions. A WebResourcePermission is a named permission and has actions.
- * 
+ *
  * <p>
  * The name of a WebResourcePermission (also referred to as the target name) identifies the Web resources to which the
  * permission pertains.
- * 
+ *
  * <p>
  * Implementations of this class MAY implement newPermissionCollection or inherit its implementation from the super
  * class.
- * 
+ *
  * @see Permission
  *
  * @author Ron Monzillo
@@ -41,7 +42,7 @@ import javax.servlet.http.HttpServletRequest;
  *
  */
 public final class WebResourcePermission extends Permission {
-	
+
 	private static final long serialVersionUID = 1L;
 
     private transient HttpMethodSpec methodSpec;
@@ -54,18 +55,18 @@ public final class WebResourcePermission extends Permission {
     /**
      * The serialized fields of this permission are defined below. Whether or not the serialized fields correspond to actual
      * (private) fields is an implementation decision.
-     * 
+     *
      * @serialField actions String the canonicalized actions string (as returned by getActions).
      */
     private static final ObjectStreamField[] serialPersistentFields = { new ObjectStreamField("actions", String.class) };
 
     /**
      * Creates a new WebResourcePermission with the specified name and actions.
-     * 
+     *
      * <p>
      * The name contains a URLPatternSpec that identifies the web resources to which the permissions applies. The syntax of
      * a URLPatternSpec is as follows:
-     * 
+     *
      * <pre>
      *
      *          URLPatternList ::= URLPattern | URLPatternList colon URLPattern
@@ -73,7 +74,7 @@ public final class WebResourcePermission extends Permission {
      *          URLPatternSpec ::= null | URLPattern | URLPattern colon URLPatternList
      *
      * </pre>
-     * 
+     *
      * <p>
      * A null URLPatternSpec is translated to the default URLPattern, "/", by the permission constructor. The empty string
      * is an exact URLPattern, and may occur anywhere in a URLPatternSpec that an exact URLPattern may occur. The first
@@ -81,7 +82,7 @@ public final class WebResourcePermission extends Permission {
      * in the <i>Java Servlet Specification)</i>. When a URLPatternSpec includes a URLPatternList, the patterns of the
      * URLPatternList identify the resources to which the permission does NOT apply and depend on the pattern type and value
      * of the first pattern as follows:
-     * 
+     *
      * <ul>
      * <li>No pattern may exist in the URLPatternList that matches the first pattern.
      * <li>If the first pattern is a path-prefix pattern, only exact patterns matched by the first pattern and path-prefix
@@ -92,11 +93,11 @@ public final class WebResourcePermission extends Permission {
      * URLPatternList.
      * <li>If the first pattern is an exact pattern a URLPatternList must not be present in the URLPatternSpec.
      * </ul>
-     * 
+     *
      * <p>
      * The actions parameter contains a comma separated list of HTTP methods. The syntax of the actions parameter is defined
      * as follows:
-     * 
+     *
      * <pre>
      *
      *          ExtensionMethod ::= any token as defined by RFC 2616
@@ -104,29 +105,29 @@ public final class WebResourcePermission extends Permission {
      *
      *          HTTPMethod ::= "GET" | "POST" | "PUT" | "DELETE" | "HEAD" |
      *                   "OPTIONS" | "TRACE" | ExtensionMethod
-     *          
+     *
      *          HTTPMethodList ::= HTTPMethod | HTTPMethodList comma HTTPMethod
-     *  
+     *
      *          HTTPMethodExceptionList ::= exclaimationPoint HTTPMethodList
-     * 
-     *          HTTPMethodSpec ::= null | HTTPMethodExceptionList | 
+     *
+     *          HTTPMethodSpec ::= null | HTTPMethodExceptionList |
      *                   HTTPMethodList
      *
      * </pre>
-     * 
+     *
      * <p>
      * If duplicates occur in the HTTPMethodSpec they must be eliminated by the permission constructor.
-     * 
+     *
      * <p>
      * A null or empty string HTTPMethodSpec indicates that the permission applies to all HTTP methods at the resources
      * identified by the URL pattern.
-     * 
+     *
      * <p>
      * If the HTTPMethodSpec contains an HTTPMethodExceptionList (i.e., it begins with an exclaimationPoint), the permission
      * pertains to all methods except those occurring in the exception list.
-     * 
+     *
      * <p>
-     * 
+     *
      * @param name the URLPatternSpec that identifies the application specific web resources to which the permission
      * pertains. All URLPatterns in the URLPatternSpec are relative to the context path of the deployed web application
      * module, and the same URLPattern must not occur more than once in a URLPatternSpec. A null URLPatternSpec is
@@ -144,7 +145,7 @@ public final class WebResourcePermission extends Permission {
     /**
      * Creates a new WebResourcePermission with name corresponding to the URLPatternSpec, and actions composed from the
      * array of HTTP methods.
-     * 
+     *
      * @param urlPatternSpec the URLPatternSpec that identifies the application specific web resources to which the
      * permission pertains. All URLPatterns in the URLPatternSpec are relative to the context path of the deployed web
      * application module, and the same URLPattern must not occur more than once in a URLPatternSpec. A null URLPatternSpec
@@ -162,7 +163,7 @@ public final class WebResourcePermission extends Permission {
 
     /**
      * Creates a new WebResourcePermission from the HttpServletRequest object.
-     * 
+     *
      * @param request the HttpServletRequest object corresponding to the Servlet operation to which the permission pertains.
      * The permission name is the substring of the requestURI (HttpServletRequest.getRequestURI()) that begins after the
      * contextPath (HttpServletRequest.getContextPath()). When the substring operation yields the string "/", the permission
@@ -178,17 +179,17 @@ public final class WebResourcePermission extends Permission {
 
     /**
      * Checks two WebResourcePermission objects for equality. WebResourcePermission objects are equivalent if their
-     * URLPatternSpec and (canonicalized) actions values are equivalent. 
-     * 
+     * URLPatternSpec and (canonicalized) actions values are equivalent.
+     *
      * <p>
      * The URLPatternSpec of a reference permission is
      * equivalent to that of an argument permission if their first patterns are equivalent, and the patterns of the
      * URLPatternList of the reference permission collectively match exactly the same set of patterns as are matched by the
      * patterns of the URLPatternList of the argument permission.
-     * 
+     *
      * <p>
      * Two Permission objects, P1 and P2, are equivalent if and only if P1.implies(P2) AND P2.implies(P1).
-     * 
+     *
      * @param o the WebResourcePermission object being tested for equality with this WebResourcePermission.
      * <p>
      * @return true if the argument WebResourcePermission object is equivalent to this WebResourcePermission.
@@ -213,7 +214,7 @@ public final class WebResourcePermission extends Permission {
      * predefined methods preceed extension methods, and within each method classification the corresponding methods occur
      * in ascending lexical order. There may be no duplicate HTTP methods in the canonical form, and the canonical form of
      * the set of all HTTP methods is the value null.
-     * 
+     *
      * @return a String containing the canonicalized actions of this WebResourcePermission (or the null value).
      */
     @Override
@@ -223,10 +224,10 @@ public final class WebResourcePermission extends Permission {
 
     /**
      * Returns the hash code value for this WebResourcePermission.
-     * 
+     *
      * <p>
      * The properties of the returned hash code must be as follows:
-     * 
+     *
      * <ul>
      * <li>During the lifetime of a Java application, the hashCode method must return the same integer value, every time it
      * is called on a WebResourcePermission object. The value returned by hashCode for a particular WebResourcePermission
@@ -234,7 +235,7 @@ public final class WebResourcePermission extends Permission {
      * <li>If two WebResourcePermission objects are equal according to the equals method, then calling the hashCode method
      * on each of the two Permission objects must produce the same integer result (within an application).
      * </ul>
-     * 
+     *
      * @return the integer hash code value for this object.
      */
     @Override
@@ -243,16 +244,16 @@ public final class WebResourcePermission extends Permission {
             String hashInput = urlPatternSpec.toString() + " " + methodSpec.hashCode();
             hashCodeValue = hashInput.hashCode();
         }
-        
+
         return hashCodeValue;
     }
 
     /**
      * Determines if the argument Permission is "implied by" this WebResourcePermission.
-     * 
+     *
      * <p>
      * For this to be the case, all of the following must be true:
-     * 
+     *
      * <ul>
      * <li>The argument is an instanceof WebResourcePermission
      * <li>The first URLPattern in the name of the argument permission is matched by the first URLPattern in the name of
@@ -265,11 +266,11 @@ public final class WebResourcePermission extends Permission {
      * <li>The HTTP methods represented by the actions of the argument permission are a subset of the HTTP methods
      * represented by the actions of this permission.
      * </ul>
-     * 
+     *
      * <p>
      * URLPattern matching is performed using the <i>Servlet matching rules</i> where two URL patterns match if they are
      * related as follows:
-     * 
+     *
      * <ul>
      * <li>their pattern values are String equivalent, or
      * <li>this pattern is the path-prefix pattern "/*", or
@@ -280,10 +281,10 @@ public final class WebResourcePermission extends Permission {
      * pattern, or
      * <li>the reference pattern is the special default pattern, "/", which matches all argument patterns.
      * </ul>
-     * 
+     *
      * <p>
      * All of the comparisons described above are case sensitive.
-     * 
+     *
      * @param permission "this" WebResourcePermission is checked to see if it implies the argument permission.
      * @return true if the specified permission is implied by this object, false if not.
      */
@@ -310,25 +311,24 @@ public final class WebResourcePermission extends Permission {
      */
     private static String getUriMinusContextPath(HttpServletRequest request) {
         String uri = request.getRequestURI();
-        if (uri != null) {
-            String contextPath = request.getContextPath();
-            int contextLength = contextPath == null ? 0 : contextPath.length();
-            
-            if (contextLength > 0) {
-                uri = uri.substring(contextLength);
-            }
-            
-            if (uri.equals("/")) {
-                uri = EMPTY_STRING;
-            } else {
-                // Encode all colons
-                uri = uri.replaceAll(":", ESCAPED_COLON);
-            }
-        } else {
-            uri = EMPTY_STRING;
+
+        if (uri == null) {
+            return EMPTY_STRING;
         }
-        
-        return uri;
+
+        String contextPath = request.getContextPath();
+        int contextLength = contextPath == null ? 0 : contextPath.length();
+
+        if (contextLength > 0) {
+            uri = uri.substring(contextLength);
+        }
+
+        if (uri.equals("/")) {
+            return EMPTY_STRING;
+        }
+
+        // Encode all colons
+        return uri.replaceAll(":", ESCAPED_COLON);
     }
 
     /**
@@ -337,7 +337,7 @@ public final class WebResourcePermission extends Permission {
      * sufficient to initialize the permission.
      *
      * @param inputStream The stream from which the fields are read
-     * 
+     *
      * @throws ClassNotFoundException If the class of an object couldn't be found
      * @throws IOException If an I/O error occurs
      */
@@ -350,9 +350,9 @@ public final class WebResourcePermission extends Permission {
      * writeObject is used to establish the values of the serialized fields before they are written to the output stream and
      * need not be implemented if the values of the serialized fields are always available and up to date. The serialized
      * fields are written to the output stream in the same form as they would be written by defaultWriteObject.
-     * 
+     *
      * @param outputStream The stream to which the serialized fields are written
-     * 
+     *
      * @throws IOException If an I/O error occurs while writing to the underlying stream
      */
     private synchronized void writeObject(ObjectOutputStream outputStream) throws IOException {

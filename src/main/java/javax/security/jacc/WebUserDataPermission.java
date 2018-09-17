@@ -28,7 +28,7 @@ import javax.servlet.http.HttpServletRequest;
 
 /**
  * Class for Servlet Web user data permissions. A WebUserDataPermission is a named permission and has actions.
- * 
+ *
  * <p>
  * The name of a WebUserDataPermission (also referred to as the target name) identifies a Web resource by its context
  * path relative URL pattern.
@@ -40,10 +40,10 @@ import javax.servlet.http.HttpServletRequest;
  *
  */
 public final class WebUserDataPermission extends Permission {
-	
-	private static final long serialVersionUID = 1L;
-	
-	private transient static final String EMPTY_STRING = "";
+
+    private static final long serialVersionUID = -970193775626385011L;
+
+    private transient static final String EMPTY_STRING = "";
     private transient static final String ESCAPED_COLON = "%3A";
 
     private static String transportKeys[] = { "NONE", "INTEGRAL", "CONFIDENTIAL", };
@@ -61,23 +61,23 @@ public final class WebUserDataPermission extends Permission {
     private transient HttpMethodSpec methodSpec;
     private transient int transportType;
     private transient int hashCodeValue;
-    
+
 
     /**
      * The serialized fields of this permission are defined below. Whether or not the serialized fields correspond to actual
      * (private) fields is an implementation decision.
-     * 
+     *
      * @serialField actions String the canonicalized actions string (as returned by getActions).
      */
     private static final ObjectStreamField[] serialPersistentFields = { new ObjectStreamField("actions", String.class) };
 
     /**
      * Creates a new WebUserDataPermission with the specified name and actions.
-     * 
+     *
      * <p>
      * The name contains a URLPatternSpec that identifies the web resources to which the permissions applies. The syntax of
      * a URLPatternSpec is as follows:
-     * 
+     *
      * <pre>
      *
      *          URLPatternList ::= URLPattern | URLPatternList colon URLPattern
@@ -85,7 +85,7 @@ public final class WebUserDataPermission extends Permission {
      *          URLPatternSpec ::= null | URLPattern | URLPattern colon URLPatternList
      *
      * </pre>
-     * 
+     *
      * <p>
      * A null URLPatternSpec is translated to the default URLPattern, "/", by the permission constructor. The empty string
      * is an exact URLPattern, and may occur anywhere in a URLPatternSpec that an exact URLPattern may occur. The first
@@ -93,7 +93,7 @@ public final class WebUserDataPermission extends Permission {
      * in the <i>Java Servlet Specification)</i>. When a URLPatternSpec includes a URLPatternList, the patterns of the
      * URLPatternList identify the resources to which the permission does NOT apply and depend on the pattern type and value
      * of the first pattern as follows:
-     * 
+     *
      * <ul>
      * <li>No pattern may exist in the URLPatternList that matches the first pattern.
      * <li>If the first pattern is a path-prefix pattern, only exact patterns matched by the first pattern and path-prefix
@@ -104,11 +104,11 @@ public final class WebUserDataPermission extends Permission {
      * URLPatternList.
      * <li>If the first pattern is an exact pattern a URLPatternList must not be present in the URLPatternSpec.
      * </ul>
-     * 
+     *
      * <p>
      * The actions parameter contains a comma separated list of HTTP methods that may be followed by a transportType
      * separated from the HTTP method by a colon.
-     * 
+     *
      * <pre>
      *
      *          ExtensionMethod ::= any token as defined by RFC 2616
@@ -126,29 +126,29 @@ public final class WebUserDataPermission extends Permission {
      *
      *          transportType ::= "INTEGRAL" | "CONFIDENTIAL" | "NONE"
      *
-     *          actions ::= null | HTTPMethodSpec | 
+     *          actions ::= null | HTTPMethodSpec |
      *                  HTTPMethodSpec colon transportType
      *
      * </pre>
-     * 
+     *
      * <p>
      * If duplicates occur in the HTTPMethodSpec they must be eliminated by the permission constructor.
-     * 
+     *
      * <p>
      * An empty string HTTPMethodSpec is a shorthand for a List containing all the possible HTTP methods.
-     * 
+     *
      * <p>
      * If the HTTPMethodSpec contains an HTTPMethodExceptionList (i.e., it begins with an exclaimationPoint), the permission
      * pertains to all methods except those occuring in the exception list.
-     * 
+     *
      * <p>
      * An actions string without a transportType is a shorthand for a actions string with the value "NONE" as its
      * TransportType.
-     * 
+     *
      * <p>
      * A granted permission representing a transportType of "NONE", indicates that the associated resources may be accessed
      * using any connection type.
-     * 
+     *
      * @param name the URLPatternSpec that identifies the application specific web resources to which the permission
      * pertains. All URLPatterns in the URLPatternSpec are relative to the context path of the deployed web application
      * module, and the same URLPattern must not occur more than once in a URLPatternSpec. A null URLPatternSpec is
@@ -167,7 +167,7 @@ public final class WebUserDataPermission extends Permission {
     /**
      * Creates a new WebUserDataPermission with name corresponding to the URLPatternSpec, and actions composed from the
      * array of HTTP methods and the transport type.
-     * 
+     *
      * @param urlPatternSpec the URLPatternSpec that identifies the application specific web resources to which the
      * permission pertains. All URLPatterns in the URLPatternSpec are relative to the context path of the deployed web
      * application module, and the same URLPattern must not occur more than once in a URLPatternSpec. A null URLPatternSpec
@@ -186,7 +186,7 @@ public final class WebUserDataPermission extends Permission {
         this.transportType = TT_NONE;
 
         if (transportType != null) {
-            Integer bit = (Integer) transportHash.get(transportType);
+            Integer bit = transportHash.get(transportType);
             if (bit == null) {
                 throw new IllegalArgumentException("illegal transport value");
             }
@@ -198,7 +198,7 @@ public final class WebUserDataPermission extends Permission {
 
     /**
      * Creates a new WebUserDataPermission from the HttpServletRequest object.
-     * 
+     *
      * @param request the HttpServletRequest object corresponding to the Servlet operation to which the permission pertains.
      * The permission name is the substring of the requestURI (HttpServletRequest.getRequestURI()) that begins after the
      * contextPath (HttpServletRequest.getContextPath()). When the substring operation yields the string "/", the permission
@@ -216,17 +216,17 @@ public final class WebUserDataPermission extends Permission {
 
     /**
      * Checks two WebUserDataPermission objects for equality. WebUserDataPermission objects are equivalent if their
-     * URLPatternSpec and (canonicalized) actions values are equivalent. 
-     * 
+     * URLPatternSpec and (canonicalized) actions values are equivalent.
+     *
      * <p>
      * The URLPatternSpec of a reference permission is
      * equivalent to that of an argument permission if their first patterns are equivalent, and the patterns of the
      * URLPatternList of the reference permission collectively match exactly the same set of patterns as are matched by the
      * patterns of the URLPatternList of the argument permission.
-     * 
+     *
      * <p>
      * Two Permission objects, P1 and P2, are equivalent if and only if P1.implies(P2) AND P2.implies(P1).
-     * 
+     *
      * @param o the WebUserDataPermission object being tested for equality with this WebUserDataPermission.
      * @return true if the argument WebUserDataPermission object is equivalent to this WebUserDataPermission.
      */
@@ -251,10 +251,10 @@ public final class WebUserDataPermission extends Permission {
 
     /**
      * Returns a canonical String representation of the actions of this WebUserDataPermission.
-     * 
+     *
      * <p>
      * The canonical form of the actions of a WebUserDataPermission is described by the following syntax description.
-     * 
+     *
      * <pre>
      *
      *          ExtensionMethod ::= any token as defined by RFC 2616
@@ -262,7 +262,7 @@ public final class WebUserDataPermission extends Permission {
      *
      *          HTTPMethod ::= "GET" | "POST" | "PUT" | "DELETE" | "HEAD" |
      *                   "OPTIONS" | "TRACE" | ExtensionMethod
-     *          
+     *
      *          HTTPMethodList ::= HTTPMethod | HTTPMethodList comma HTTPMethod
      *
      *          HTTPMethodExceptionList ::= exclaimationPoint HTTPMethodList
@@ -272,51 +272,51 @@ public final class WebUserDataPermission extends Permission {
      *
      *          transportType ::= "INTEGRAL" | "CONFIDENTIAL" | "NONE"
      *
-     *          actions ::= null | HTTPMethodList | 
+     *          actions ::= null | HTTPMethodList |
      *                  HTTPMethodSpec colon transportType
      *
      * </pre>
-     * 
+     *
      * <p>
      * If the permission's HTTP methods correspond to the entire HTTP method set and the permission's transport type is
      * "INTEGRAL" or "CONFIDENTIAL", the HTTP methods shall be represented in the canonical form by an emptyString
      * HTTPMethodSpec. If the permission's HTTP methods correspond to the entire HTTP method set, and the permission's
      * transport type is not "INTEGRAL"or "CONFIDENTIAL", the canonical actions value shall be the null value.
-     * 
+     *
      * <p>
      * If the permission's methods do not correspond to the entire HTTP method set, duplicates must be eliminated and the
      * remaining elements must be ordered such that the predefined methods preceed the extension methods, and such that
      * within each method classification the corresponding methods occur in ascending lexical order. The resulting
      * (non-emptyString) HTTPMethodSpec must be included in the canonical form, and if the permission's transport type is
      * not "INTEGRAL" or "CONFIDENTIAL", the canonical actions value must be exactly the resulting HTTPMethodSpec.
-     * 
+     *
      * @return a String containing the canonicalized actions of this WebUserDataPermission (or the null value).
      */
     @Override
     public String getActions() {
         String methodSpecActions = methodSpec.getActions();
-        
+
         if (transportType == TT_NONE && methodSpecActions == null) {
             return null;
         }
-        
+
         if (transportType == TT_NONE) {
             return methodSpecActions;
         }
-        
+
         if (methodSpecActions == null) {
             return ":" + transportKeys[transportType];
         }
-        
+
         return methodSpecActions + ":" + transportKeys[transportType];
     }
 
     /**
      * Returns the hash code value for this WebUserDataPermission.
-     * 
+     *
      * <p>
      * The properties of the returned hash code must be as follows:
-     * 
+     *
      * <ul>
      * <li>During the lifetime of a Java application, the hashCode method shall return the same integer value every time it
      * is called on a WebUserDataPermission object. The value returned by hashCode for a particular EJBMethod permission
@@ -324,7 +324,7 @@ public final class WebUserDataPermission extends Permission {
      * <li>If two WebUserDataPermission objects are equal according to the equals method, then calling the hashCode method
      * on each of the two Permission objects must produce the same integer result (within an application).
      * </ul>
-     * 
+     *
      * @return the integer hash code value for this object.
      */
     @Override
@@ -333,16 +333,16 @@ public final class WebUserDataPermission extends Permission {
             String hashInput = urlPatternSpec.toString() + " " + methodSpec.hashCode() + ":" + transportType;
             hashCodeValue = hashInput.hashCode();
         }
-        
+
         return hashCodeValue;
     }
 
     /**
      * Determines if the argument Permission is "implied by" this WebUserDataPermission.
-     * 
+     *
      * <p>
      * For this to be the case all of the following must be true:
-     * 
+     *
      * <ul>
      * <li>The argument is an instanceof WebUserDataPermission.
      * <li>The first URLPattern in the name of the argument permission is matched by the first URLPattern in the name of
@@ -357,11 +357,11 @@ public final class WebUserDataPermission extends Permission {
      * <li>The transportType in the actions of this permission either corresponds to the value "NONE", or equals the
      * transportType in the actions of the argument permission.
      * </ul>
-     * 
+     *
      * <p>
      * URLPattern matching is performed using the <i>Servlet matching rules</i> where two URL patterns match if they are
      * related as follows:
-     * 
+     *
      * <ul>
      * <li>their pattern values are String equivalent, or
      * <li>this pattern is the path-prefix pattern "/*", or
@@ -372,10 +372,10 @@ public final class WebUserDataPermission extends Permission {
      * pattern, or
      * <li>the reference pattern is the special default pattern, "/", which matches all argument patterns.
      * </ul>
-     * 
+     *
      * <p>
      * All of the comparisons described above are case sensitive.
-     * 
+     *
      * @param permission "this" WebUserDataPermission is checked to see if it implies the argument permission.
      *
      * @return true if the specified permission is implied by this object, false if not.
@@ -407,23 +407,24 @@ public final class WebUserDataPermission extends Permission {
      */
     private static String getUriMinusContextPath(HttpServletRequest request) {
         String uri = request.getRequestURI();
-        if (uri != null) {
-            String contextPath = request.getContextPath();
-            int contextLength = contextPath == null ? 0 : contextPath.length();
-            if (contextLength > 0) {
-                uri = uri.substring(contextLength);
-            }
-            if (uri.equals("/")) {
-                uri = EMPTY_STRING;
-            } else {
-                // encode all colons
-                uri = uri.replaceAll(":", ESCAPED_COLON);
-            }
-        } else {
-            uri = EMPTY_STRING;
+
+        if (uri == null) {
+            return EMPTY_STRING;
         }
-        
-        return uri;
+
+        String contextPath = request.getContextPath();
+        int contextLength = contextPath == null ? 0 : contextPath.length();
+
+        if (contextLength > 0) {
+            uri = uri.substring(contextLength);
+        }
+
+        if (uri.equals("/")) {
+            return EMPTY_STRING;
+        }
+
+        // Encode all colons
+        return uri.replaceAll(":", ESCAPED_COLON);
     }
 
     private void parseActions(String actions) {
@@ -441,8 +442,8 @@ public final class WebUserDataPermission extends Permission {
                 } else {
                     methodSpec = HttpMethodSpec.getSpec(actions.substring(0, colon));
                 }
-                
-                Integer bit = (Integer) transportHash.get(actions.substring(colon + 1));
+
+                Integer bit = transportHash.get(actions.substring(colon + 1));
                 if (bit == null) {
                     throw new IllegalArgumentException("illegal transport value");
                 }
@@ -458,7 +459,7 @@ public final class WebUserDataPermission extends Permission {
      * sufficient to initialize the permission.
      *
      * @param inputStream The stream from which the fields are read
-     * 
+     *
      * @throws ClassNotFoundException If the class of an object couldn't be found
      * @throws IOException If an I/O error occurs
      */
@@ -471,9 +472,9 @@ public final class WebUserDataPermission extends Permission {
      * writeObject is used to establish the values of the serialized fields before they are written to the output stream and
      * need not be implemented if the values of the serialized fields are always available and up to date. The serialized
      * fields are written to the output stream in the same form as they would be written by defaultWriteObject.
-     * 
+     *
      * @param outputStream The stream to which the serialized fields are written
-     * 
+     *
      * @throws IOException If an I/O error occurs while writing to the underlying stream
      */
     private synchronized void writeObject(ObjectOutputStream outputStream) throws IOException {
