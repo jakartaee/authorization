@@ -22,11 +22,11 @@
     <parent>
         <groupId>org.eclipse.ee4j</groupId>
         <artifactId>project</artifactId>
-        <version>1.0</version>
+        <version>1.0.1</version>
     </parent>
 
-    <groupId>javax.security.jacc</groupId>
-    <artifactId>javax.security.jacc-api</artifactId>
+    <groupId>jakarta.security.jacc</groupId>
+    <artifactId>jakarta.security.jacc-api</artifactId>
     <version>1.7-SNAPSHOT</version>
     
     <properties>
