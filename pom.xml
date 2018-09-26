@@ -36,7 +36,7 @@
     
     <properties>
         <non.final>false</non.final>
-        <extension.name>javax.security.jacc</extension.name>
+        <extension.name>jakarta.security.jacc</extension.name>
         <spec.version>1.7</spec.version>
         <findbugs.version>2.4.0</findbugs.version>
         <findbugs.skip>false</findbugs.skip>
@@ -133,9 +133,10 @@
         	<plugin>
                 <groupId>org.glassfish.build</groupId>
                 <artifactId>spec-version-maven-plugin</artifactId>
-                <version>1.3</version>
+                <version>1.4</version>
                 <configuration>
                     <spec>
+                        <groupIdPrefix>jakarta.</groupIdPrefix>
                         <nonFinal>${non.final}</nonFinal>
                         <jarType>api</jarType>
                         <specVersion>${spec.version}</specVersion>
@@ -330,22 +331,33 @@
                     </reporting>
                 </configuration>
             </plugin>
-            
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-gpg-plugin</artifactId>
-                <version>1.6</version>
-                <executions>
-                    <execution>
-                        <id>sign-artifacts</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>sign</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <!-- Release deploy: mvn clean deploy -P release -->
+        <profile>
+            <id>release</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>1.6</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+            
    
 </project>
