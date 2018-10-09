@@ -19,192 +19,183 @@ package javax.security.jacc;
 
 /**
  *
- * @see 
+ * @see
  *
  * @author Ron Monzillo
  *
  * @serial exclude
  */
+class URLPattern extends Object implements Comparable<URLPattern> {
 
+    private static String DEFAULT_PATTERN = "/";
 
-class URLPattern extends Object implements Comparable
-{
-
-    private static String DEFAULT_PATTERN  = "/";
+    /* changed to order default pattern / below extension */
+    public static final int PT_DEFAULT = 0;
+    public static final int PT_EXTENSION = 1;
+    public static final int PT_PREFIX = 2;
+    public static final int PT_EXACT = 3;
 
     private int patternType = -1;
-
     private final String pattern;
 
-    public URLPattern ()
-    {
+    public URLPattern() {
         this.pattern = DEFAULT_PATTERN;
         this.patternType = PT_DEFAULT;
     }
 
-    // note tht the EMPTY_STRING is  legitimte URL_PATTERN
-    public URLPattern (String p)
-    {
-        if (p == null) { 
-	    this.pattern = DEFAULT_PATTERN;
-	    this.patternType = PT_DEFAULT;
-	}
-	else this.pattern = p;
+    // Note that the EMPTY_STRING is a legitimate URL_PATTERN
+    public URLPattern(String pattern) {
+        if (pattern == null) {
+            this.pattern = DEFAULT_PATTERN;
+            this.patternType = PT_DEFAULT;
+        } else {
+            this.pattern = pattern;
+        }
     }
-
-    /* changed to order default pattern / below extension */
-    public static final int PT_DEFAULT       = 0;
-    public static final int PT_EXTENSION     = 1;
-    public static final int PT_PREFIX	     = 2;
-    public static final int PT_EXACT 	     = 3;
 
     public int patternType() {
-	if (this.patternType < 0) {
-	    if (this.pattern.startsWith("*.")) 
-		this.patternType = PT_EXTENSION;
-	    else if (this.pattern.startsWith("/") && 
-		     this.pattern.endsWith("/*")) this.patternType = PT_PREFIX;
-	    else if (this.pattern.equals(DEFAULT_PATTERN)) 
-		this.patternType = PT_DEFAULT;
-	    else this.patternType = PT_EXACT;
-	}
-        return this.patternType;
+        if (patternType < 0) {
+            if (pattern.startsWith("*.")) {
+                patternType = PT_EXTENSION;
+            } else if (pattern.startsWith("/") && pattern.endsWith("/*")) {
+                patternType = PT_PREFIX;
+            } else if (DEFAULT_PATTERN.equals(pattern)) {
+                patternType = PT_DEFAULT;
+            } else {
+                patternType = PT_EXACT;
+            }
+        }
+
+        return patternType;
     }
 
-    public int compareTo(Object o) {
-
-	if (!(o instanceof URLPattern))
-	    throw new ClassCastException("argument must be URLPattern");
-	
-	URLPattern p = (URLPattern) o;
-	    
+    @Override
+    public int compareTo(URLPattern that) {
         int refPatternType = this.patternType();
 
-	/* The comparison yields increasing sort order
-	 * by pattern type. That is, prefix patterns sort before exact
-	 * patterns. Also shorter length patterns precede longer
-	 * length patterns. This is important for the URLPatternList
-	 * canonicalization done by URLPatternSpec.setURLPatternArray
-	 */
-	int result = refPatternType - p.patternType();
+        /*
+         * The comparison yields increasing sort order by pattern type. That is, prefix patterns sort before exact patterns.
+         * Also shorter length patterns precede longer length patterns. This is important for the URLPatternList
+         * canonicalization done by URLPatternSpec.setURLPatternArray
+         */
+        int result = refPatternType - that.patternType();
 
-	if (result == 0) {
+        if (result == 0) {
 
             if (refPatternType == PT_PREFIX || refPatternType == PT_EXACT) {
 
-                result = this.getPatternDepth() - p.getPatternDepth();
+                result = this.getPatternDepth() - that.getPatternDepth();
 
-                if (result == 0) result = this.pattern.compareTo(p.pattern);
+                if (result == 0) {
+                    result = this.pattern.compareTo(that.pattern);
+                }
 
+            } else {
+                result = this.pattern.compareTo(that.pattern);
             }
+        }
 
-            else result = this.pattern.compareTo(p.pattern);
-	}
-	
-	return (result > 0 ? 1 : (result < 0 ? -1 : 0));
+        return result > 0 ? 1 : (result < 0 ? -1 : 0);
     }
 
     /**
-     * Does this pattern imply (that is, match) the argument pattern?
-     * This method follows the same rules (in the same order) as those used
-     * for mapping requests to servlets.
-     *<P>
-     * Two URL patterns match if they are related as follows: <p>
+     * Does this pattern imply (that is, match) the argument pattern? This method follows the same rules (in the same order)
+     * as those used for mapping requests to servlets.
+     *
+     * <p>
+     * Two URL patterns match if they are related as follows:
+     * <p>
      * <ul>
-     * <li> their pattern values are String equivalent, or
-     * <li> this pattern is the path-prefix pattern "/*", or
-     * <li> this pattern is a path-prefix pattern (that is, it starts with 
-     *      "/" and ends with "/*") and the argument pattern starts with the 
-     *      substring of this pattern, minus its last 2 characters, and the
-     *      next character of the argument pattern, if there is one, is "/", or
-     * <li> this pattern is an extension pattern (that is, it starts with 
-     *      "*.") and the argument pattern ends with this pattern, or
-     * <li> the reference pattern is the special default pattern, "/",
-     *      which matches all argument patterns.
+     * <li>their pattern values are String equivalent, or
+     * <li>this pattern is the path-prefix pattern "/*", or
+     * <li>this pattern is a path-prefix pattern (that is, it starts with "/" and ends with "/*") and the argument pattern
+     * starts with the substring of this pattern, minus its last 2 characters, and the next character of the argument
+     * pattern, if there is one, is "/", or
+     * <li>this pattern is an extension pattern (that is, it starts with "*.") and the argument pattern ends with this
+     * pattern, or
+     * <li>the reference pattern is the special default pattern, "/", which matches all argument patterns.
      * </ul>
-
-     * @param p URLPattern to determine if implied by (matched by) 
-     * this URLPattern to
+     *
+     * @param that URLPattern to determine if implied by (matched by) this URLPattern to
      */
-    public boolean implies(URLPattern p) {
+    public boolean implies(URLPattern that) {
 
         // Normalize the argument
-	if (p == null) p = new URLPattern(null);
+        if (that == null) {
+            that = new URLPattern(null);
+        }
 
-        String path = p.pattern;
-        String pattern = this.pattern;
+        String thatPattern = that.pattern;
+        String thisPattern = this.pattern;
 
         // Check for exact match
-        if (pattern.equals(path))
-            return (true);
+        if (thisPattern.equals(thatPattern)) {
+            return true;
+        }
 
         // Check for path prefix matching
-        if (pattern.startsWith("/") && pattern.endsWith("/*")) {
-            pattern = pattern.substring(0, pattern.length() - 2);
+        if (thisPattern.startsWith("/") && thisPattern.endsWith("/*")) {
+            thisPattern = thisPattern.substring(0, thisPattern.length() - 2);
 
-	    int length = pattern.length();
+            int length = thisPattern.length();
 
-            if (length == 0) return (true);  // "/*" is the same as the DEFAULT_PATTERN
+            if (length == 0) {
+                return true; // "/*" is the same as the DEFAULT_PATTERN
+            }
 
-	    return (path.startsWith(pattern) && 
-		    (path.length() == length || 
-		     path.substring(length).startsWith("/")));
+            return thatPattern.startsWith(thisPattern) && (thatPattern.length() == length || thatPattern.substring(length).startsWith("/"));
         }
 
         // Check for suffix matching
-        if (pattern.startsWith("*.")) {
-            int slash = path.lastIndexOf('/');
-            int period = path.lastIndexOf('.');
-            if ((slash >= 0) && (period > slash) &&
-                path.endsWith(pattern.substring(1))) {
-                return (true);
+        if (thisPattern.startsWith("*.")) {
+            int slash = thatPattern.lastIndexOf('/');
+            int period = thatPattern.lastIndexOf('.');
+            if ((slash >= 0) && (period > slash) && thatPattern.endsWith(thisPattern.substring(1))) {
+                return true;
             }
-            return (false);
+
+            return false;
         }
 
         // Check for universal mapping
-        if (pattern.equals(DEFAULT_PATTERN))
-            return (true);
+        if (thisPattern.equals(DEFAULT_PATTERN)) {
+            return true;
+        }
 
-        return (false);
+        return false;
     }
 
+    @Override
     public boolean equals(Object obj) {
-	if (! (obj instanceof URLPattern)) return false;
-	return this.pattern.equals(((URLPattern) obj).pattern);
+        if (!(obj instanceof URLPattern)) {
+            return false;
+        }
+        return this.pattern.equals(((URLPattern) obj).pattern);
     }
 
+    @Override
     public String toString() {
-     	return this.pattern;
+        return pattern;
     }
 
     public int getPatternDepth() {
+        int i = 0;
+        int depth = 1;
 
-	int i = 0;
-	int depth = 1;
+        while (i >= 0) {
 
-	while (i >= 0) {
+            i = pattern.indexOf("/", i);
 
-	    i = this.pattern.indexOf("/",i);
+            if (i >= 0) {
 
-	    if (i >= 0 ) {
+                if (i == 0 && depth != 1) {
+                    throw new IllegalArgumentException("// in pattern");
+                }
 
-		if (i == 0 && depth != 1) 
-		    throw new IllegalArgumentException("// in pattern");
+                i += 1;
+            }
+        }
 
-		i += 1;
-	    }
-	}
-
-	return depth;
+        return depth;
     }
 }
-
-
-
-
-
-
-
-
-
