@@ -22,7 +22,7 @@
     <parent>
         <groupId>org.eclipse.ee4j</groupId>
         <artifactId>project</artifactId>
-        <version>1.0.1</version>
+        <version>1.0.5</version>
     </parent>
 
     <groupId>jakarta.security.jacc</groupId>
@@ -154,25 +154,6 @@
                 </executions>
 		    </plugin>
 		
-			<!-- Adds META-INF/LICENSE.txt -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-remote-resources-plugin</artifactId>
-				<version>1.2.1</version>
-				<executions>
-					<execution>
-						<goals>
-							<goal>process</goal>
-						</goals>
-						<configuration>
-							<resourceBundles>
-								<resourceBundle>org.glassfish:legal:1.1</resourceBundle>
-							</resourceBundles>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-        
         	<!-- Restricts the Java version to 1.6 -->
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -237,24 +218,6 @@
                 </configuration>
             </plugin>
          
-         	<!-- Creates the source jar -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-source-plugin</artifactId>
-                <version>2.1</version>
-                <configuration>
-                    <includePom>true</includePom>
-                </configuration>
-                <executions>
-                    <execution>
-                       <id>attach-sources</id>
-                       <goals>
-                           <goal>jar-no-fork</goal> 
-                       </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            
             <!-- Creates the javadoc jar -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -334,30 +297,4 @@
         </plugins>
     </build>
 
-    <profiles>
-        <!-- Release deploy: mvn clean deploy -P release -->
-        <profile>
-            <id>release</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-gpg-plugin</artifactId>
-                        <version>1.6</version>
-                        <executions>
-                            <execution>
-                                <id>sign-artifacts</id>
-                                <phase>verify</phase>
-                                <goals>
-                                    <goal>sign</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
-            
-   
 </project>
