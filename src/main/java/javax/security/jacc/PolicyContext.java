@@ -188,7 +188,7 @@ public final class PolicyContext {
      * @throws SecurityException if the calling AccessControlContext is not authorized by the container to call
      * this method. Containers may choose to authorize calls to this method by any AccessControlContext.
      */
-    public static Set<String> getHandlerKeys() {
+    public static Set getHandlerKeys() {
         return handlerTable.keySet();
     }
 
