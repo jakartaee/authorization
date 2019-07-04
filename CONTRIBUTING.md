@@ -1,10 +1,10 @@
-# Contributing to Eclipse Project for JACC
+# Contributing to Jakarta Authorization
 
 Thanks for your interest in this project.
 
 ## Project description
 
-The Java Authorization Contract for Containers (JACC) defines a contract between
+Jakarta Authorization defines a contract between
 a Jakarta EE application server and an authorization policy provider.
 
 * https://projects.eclipse.org/projects/ee4j.jacc
