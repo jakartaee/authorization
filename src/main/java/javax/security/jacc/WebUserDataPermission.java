@@ -27,7 +27,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * Class for Servlet Web user data permissions. A WebUserDataPermission is a named permission and has actions.
+ * Class for Jakarta Servlet Web user data permissions. A WebUserDataPermission is a named permission and has actions.
  *
  * <p>
  * The name of a WebUserDataPermission (also referred to as the target name) identifies a Web resource by its context
@@ -90,7 +90,7 @@ public final class WebUserDataPermission extends Permission {
      * A null URLPatternSpec is translated to the default URLPattern, "/", by the permission constructor. The empty string
      * is an exact URLPattern, and may occur anywhere in a URLPatternSpec that an exact URLPattern may occur. The first
      * URLPattern in a URLPatternSpec may be any of the pattern types, exact, path-prefix, extension, or default as defined
-     * in the <i>Java Servlet Specification)</i>. When a URLPatternSpec includes a URLPatternList, the patterns of the
+     * in the <i>Jakarta Servlet Specification)</i>. When a URLPatternSpec includes a URLPatternList, the patterns of the
      * URLPatternList identify the resources to which the permission does NOT apply and depend on the pattern type and value
      * of the first pattern as follows:
      *
@@ -199,7 +199,7 @@ public final class WebUserDataPermission extends Permission {
     /**
      * Creates a new WebUserDataPermission from the HttpServletRequest object.
      *
-     * @param request the HttpServletRequest object corresponding to the Servlet operation to which the permission pertains.
+     * @param request the HttpServletRequest object corresponding to the Jakarta Servlet operation to which the permission pertains.
      * The permission name is the substring of the requestURI (HttpServletRequest.getRequestURI()) that begins after the
      * contextPath (HttpServletRequest.getContextPath()). When the substring operation yields the string "/", the permission
      * is constructed with the empty string as its name. The constructor must transform all colon characters occurring in the
@@ -359,7 +359,7 @@ public final class WebUserDataPermission extends Permission {
      * </ul>
      *
      * <p>
-     * URLPattern matching is performed using the <i>Servlet matching rules</i> where two URL patterns match if they are
+     * URLPattern matching is performed using the <i>Jakarta Servlet matching rules</i> where two URL patterns match if they are
      * related as follows:
      *
      * <ul>
