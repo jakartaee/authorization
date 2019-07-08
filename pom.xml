@@ -29,8 +29,8 @@
     <artifactId>jakarta.security.jacc-api</artifactId>
     <version>1.7-SNAPSHOT</version>
     
-    <name>JACC API</name>
-    <description>Eclipse Project for JACC</description>
+    <name>Jakarta Authorization API</name>
+    <description>Jakarta Authorization</description>
     <inceptionYear>2013</inceptionYear>
     <url>https://github.com/eclipse-ee4j/jacc</url>
     
@@ -86,7 +86,7 @@
 
     <mailingLists>
         <mailingList>
-            <name>JACC mailing list</name>
+            <name>Jakarta Authorization mailing list</name>
             <post>jacc-dev@eclipse.org</post>
             <subscribe>https://dev.eclipse.org/mailman/listinfo/jacc-dev</subscribe>
             <unsubscribe>https://dev.eclipse.org/mailman/listinfo/jacc-dev</unsubscribe>
@@ -199,7 +199,7 @@
                         <Implementation-Version>${spec.implementation.version}</Implementation-Version>
                         <Specification-Version>${spec.specification.version}</Specification-Version>
                         <Bundle-Description>
-                            JACC API ${spec.version} Design Specification
+                            Jakarta Authorization ${spec.version} Specification
                         </Bundle-Description>
                         <Specification-Vendor>Oracle Corporation</Specification-Vendor>
                         <Implementation-Vendor>${project.organization.name}</Implementation-Vendor>
@@ -251,7 +251,7 @@
                 <configuration>
                     <groups>
                         <group>
-                            <title>JACC API Documentation</title>
+                            <title>Jakarta Authorization API Documentation</title>
                             <packages>
                                 javax.security.jacc
                             </packages>

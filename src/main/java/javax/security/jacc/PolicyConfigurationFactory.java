@@ -95,7 +95,7 @@ public abstract class PolicyConfigurationFactory {
                             className[0] = System.getProperty(FACTORY_NAME);
 
                             if (className[0] == null) {
-                                throw new ClassNotFoundException("JACC:Error PolicyConfigurationFactory : property not set : " + FACTORY_NAME);
+                                throw new ClassNotFoundException("Jakarta Authorization:Error PolicyConfigurationFactory : property not set : " + FACTORY_NAME);
                             }
 
                             return Class.forName(className[0], true, Thread.currentThread().getContextClassLoader());
@@ -116,7 +116,7 @@ public abstract class PolicyConfigurationFactory {
                 className[0] = System.getProperty(FACTORY_NAME);
 
                 if (className[0] == null) {
-                    throw new ClassNotFoundException("JACC:Error PolicyConfigurationFactory : property not set : " + FACTORY_NAME);
+                    throw new ClassNotFoundException("Jakarta Authorization:Error PolicyConfigurationFactory : property not set : " + FACTORY_NAME);
                 }
 
                 clazz = Class.forName(className[0], true, Thread.currentThread().getContextClassLoader());
@@ -129,13 +129,13 @@ public abstract class PolicyConfigurationFactory {
             }
 
         } catch (ClassNotFoundException cnfe) {
-            throw new ClassNotFoundException("JACC:Error PolicyConfigurationFactory : cannot find class : " + className[0], cnfe);
+            throw new ClassNotFoundException("Jakarta Authorization:Error PolicyConfigurationFactory : cannot find class : " + className[0], cnfe);
         } catch (IllegalAccessException iae) {
-            throw new PolicyContextException("JACC:Error PolicyConfigurationFactory : cannot access class : " + className[0], iae);
+            throw new PolicyContextException("Jakarta Authorization:Error PolicyConfigurationFactory : cannot access class : " + className[0], iae);
         } catch (InstantiationException ie) {
-            throw new PolicyContextException("JACC:Error PolicyConfigurationFactory : cannot instantiate : " + className[0], ie);
+            throw new PolicyContextException("Jakarta Authorization:Error PolicyConfigurationFactory : cannot instantiate : " + className[0], ie);
         } catch (ClassCastException cce) {
-            throw new ClassCastException("JACC:Error PolicyConfigurationFactory : class not PolicyConfigurationFactory : " + className[0]);
+            throw new ClassCastException("Jakarta Authorization:Error PolicyConfigurationFactory : class not PolicyConfigurationFactory : " + className[0]);
         }
 
         return policyConfigurationFactory;

@@ -1,12 +1,12 @@
-# Notices for Eclipse Project for JACC
+# Notices for Jakarta Authorization
 
-This content is produced and maintained by the Eclipse Project for JACC project.
+This content is produced and maintained by the Jakarta Authorization project.
 
 * Project home: https://projects.eclipse.org/projects/ee4j.jacc
 
 ## Trademarks
 
-Eclipse Project for JACC is a trademark of the Eclipse Foundation.
+Jakarta Authorization is a trademark of the Eclipse Foundation.
 
 ## Copyright
 
