@@ -51,7 +51,7 @@ class URLPatternSpec extends URLPattern {
      * </pre>
      *
      * The first URLPattern in a URLPatternSpec may be any of the pattern types, exact, path-prefix, extension, or default
-     * as defined in the <i>Java Servlet Specification)</i>. When a URLPatternSpec includes a URLPatternList, the patterns
+     * as defined in the <i>Jakarta Servlet Specification)</i>. When a URLPatternSpec includes a URLPatternList, the patterns
      * of the URLPatternList identify the resources to which the permission does NOT apply and depend on the pattern type
      * and value of the first pattern as follows:
      *
@@ -145,7 +145,7 @@ class URLPatternSpec extends URLPattern {
      * matched by a <code>URLPattern</code> in the <code>URLPatternList</code> of the argument <code>URLPatternSpec</code>.
      * </ul>
      *
-     * URLPattern matching is performed using the <i>Servlet matching rules</i> where two URL patterns match if they are
+     * URLPattern matching is performed using the <i>Jakarta Servlet matching rules</i> where two URL patterns match if they are
      * related as follows:
      * <ul>
      * <li>their pattern values are String equivalent, or

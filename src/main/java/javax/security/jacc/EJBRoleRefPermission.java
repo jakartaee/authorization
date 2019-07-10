@@ -23,15 +23,15 @@ import java.io.ObjectStreamField;
 import java.security.Permission;
 
 /**
- * Class for EJB <i><code>isCallerInRole (String reference)</code></i> permissions. An EJBRoleRefPermission is a named
- * permission and has actions.
+ * Class for Jakarta Enterprise Beans <i><code>isCallerInRole (String reference)</code></i> permissions. 
+ * An EJBRoleRefPermission is a named permission and has actions.
  * 
  * <p>
  * The name of an EJBRoleRefPermission contains the value of the ejb-name element in the application's deployment
- * descriptor that identifies the EJB in whose context the permission is being evalutated.
+ * descriptor that identifies the Jakarta Enterprise Bean in whose context the permission is being evalutated.
  * 
  * <p>
- * the actions of an EJBRoleRefPermission identifies the role reference to which the permission applies. An
+ * The actions of an EJBRoleRefPermission identifies the role reference to which the permission applies. An
  * EJBRoleRefPermission is checked to determine if the subject is a member of the role identified by the reference.
  * 
  * <p>
@@ -62,9 +62,9 @@ public final class EJBRoleRefPermission extends Permission {
     /**
      * Creates a new EJBRoleRefPermission with the specified name and actions.
      * 
-     * @param name the ejb-name that identifies the EJB in whose context the role references are to be evaluated.
+     * @param name the ejb-name that identifies the Jakarta Enterprise Bean in whose context the role references are to be evaluated.
      * @param actions identifies the role reference to which the permission pertains. The role reference is scoped to the
-     * EJB identified in the name parameter. The value of the role reference must not be <code>null</code> or the empty
+     * Jakarta Enterprise Bean identified in the name parameter. The value of the role reference must not be <code>null</code> or the empty
      * string.
      */
     public EJBRoleRefPermission(String name, String actions) {

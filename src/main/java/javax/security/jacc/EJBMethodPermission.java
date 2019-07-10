@@ -25,14 +25,14 @@ import java.security.Permission;
 import java.util.HashMap;
 
 /**
- * Class for EJB method permissions.
+ * Class for Jakarta Enterprise Beans method permissions.
  * 
  * <p>
  * The name of an EJBMethodPermission contains the value of the ejb-name element in the application's deployment
- * descriptor that identifies the target EJB.
+ * descriptor that identifies the target Jakarta Enterprise Bean.
  * 
  * <p>
- * The actions of an EJBMethodPermission identifies the methods of the EJB to which the permission applies.
+ * The actions of an EJBMethodPermission identifies the methods of the Jakarta Enterprise Bean to which the permission applies.
  * 
  * <p>
  * Implementations of this class MAY implement newPermissionCollection or inherit its implementation from the super
@@ -77,7 +77,7 @@ public final class EJBMethodPermission extends Permission {
      * Creates a new EJBMethodPermission with the specified name and actions.
      * 
      * <p>
-     * The name contains the value of the ejb-name element corresponding to an EJB in the application's deployment
+     * The name contains the value of the ejb-name element corresponding to an Jakarta Enterprise Bean in the application's deployment
      * descriptor.
      * 
      * <p>
@@ -103,37 +103,37 @@ public final class EJBMethodPermission extends Permission {
      * </pre>
      * 
      * <p>
-     * A MethodInterfaceName is a non-empty String and should contain a method-intf value as defined for use in EJB
+     * A MethodInterfaceName is a non-empty String and should contain a method-intf value as defined for use in Jakarta Enterprise Beans
      * deployment descriptors. An implementation must be flexible such that it supports additional interface names
-     * especially if they are standardized by the EJB Specification. The EJB Specification currently defines the following
-     * method-intf values:
+     * especially if they are standardized by the Jakarta Enterprise Beans Specification. The Jakarta Enterprise Beans Specification 
+     * currently defines the following method-intf values:
      * 
      * <pre>
      * { "Home", "LocalHome", "Remote", "Local", "ServiceEndpoint" }
      * </pre>
      * 
      * <p>
-     * A null or empty string methodSpec indicates that the permission applies to all methods of the EJB. A methodSpec with
-     * a methodNameSpec of the empty string matches all methods of the EJB that match the methodInterface and methodParams
-     * elements of the methodSpec.
+     * A null or empty string methodSpec indicates that the permission applies to all methods of the Jakarta Enterprise Bean. 
+     * A methodSpec with a methodNameSpec of the empty string matches all methods of the Jakarta Enterprise Bean that match the 
+     * methodInterface and methodParams elements of the methodSpec.
      * 
      * <p>
-     * A methodSpec with a methodInterfaceSpec of the empty string matches all methods of the EJB that match the
+     * A methodSpec with a methodInterfaceSpec of the empty string matches all methods of the Jakarta Enterprise Bean that match the
      * methodNameSpec and methodParamsSpec elements of the methodSpec.
      * 
      * <p>
-     * A methodSpec without a methodParamsSpec matches all methods of the EJB that match the methodNameSpec and
+     * A methodSpec without a methodParamsSpec matches all methods of the Jakarta Enterprise Bean that match the methodNameSpec and
      * methodInterface elements of the methodSpec.
      * 
      * <p>
      * The order of the typeNames in methodParams array must match the order of occurence of the corresponding parameters in
      * the method signature of the target method(s). Each typeName in the methodParams must contain the canonical form of
      * the corresponding parameter's typeName as defined by the getActions method. A methodSpec with an empty
-     * methodParamsSpec matches all 0 argument methods of the EJB that match the methodNameSpec and methodInterfaceSpec
-     * elements of the methodSpec.
+     * methodParamsSpec matches all 0 argument methods of the Jakarta Enterprise Bean that match the methodNameSpec and 
+     * methodInterfaceSpec elements of the methodSpec.
      * 
-     * @param name of the EJB to which the permission pertains.
-     * @param actions identifies the methods of the EJB to which the permission pertains.
+     * @param name of the Jakarta Enterprise Bean to which the permission pertains.
+     * @param actions identifies the methods of the Jakarta Enterprise Bean to which the permission pertains.
      */
     public EJBMethodPermission(String name, String actions) {
         super(name);
@@ -144,14 +144,15 @@ public final class EJBMethodPermission extends Permission {
      * Creates a new EJBMethodPermission with name corresponding to the EJBName and actions composed from methodName,
      * methodInterface, and methodParams.
      * 
-     * @param EJBName The string representation of the name of the EJB as it appears in the corresponding ejb-name element
+     * @param EJBName The string representation of the name of the Jakarta Enterprise Bean as it appears in the corresponding 
+     * ejb-name element
      * in the deployment descriptor.
-     * @param methodName A string that may be used to indicate the method of the EJB to which the permission pertains. A
-     * value of null or "" indicates that the permission pertains to all methods that match the other parameters of the
-     * permission specification without consideration of method name.
-     * @param methodInterface A string that may be used to specify the EJB interface to which the permission pertains. A
-     * value of null or "", indicates that the permission pertains to all methods that match the other parameters of the
-     * permission specification without consideration of the interface they occur on.
+     * @param methodName A string that may be used to indicate the method of the Jakarta Enterprise Bean to which the permission 
+     * pertains. A value of null or "" indicates that the permission pertains to all methods that match the other parameters of 
+     * the permission specification without consideration of method name.
+     * @param methodInterface A string that may be used to specify the Jakarta Enterprise Bean interface to which the permission 
+     * pertains. A value of null or "", indicates that the permission pertains to all methods that match the other parameters of 
+     * the permission specification without consideration of the interface they occur on.
      * @param methodParams An array of strings that may be used to specify (by typeNames) the parameter signature of the
      * target methods. The order of the typeNames in methodParams array must match the order of occurrence of the
      * corresponding parameters in the method signature of the target method(s). Each typeName in the methodParams array
@@ -170,13 +171,14 @@ public final class EJBMethodPermission extends Permission {
      * and the Method object.
      * 
      * <p>
-     * A container uses this constructor prior to checking if a caller has permission to call the method of an EJB.
+     * A container uses this constructor prior to checking if a caller has permission to call the method of an Jakarta 
+     * Enterprise Bean.
      * 
-     * @param EJBName The string representation of the name of the EJB as it appears in the corresponding ejb-name element
-     * in the deployment descriptor.
-     * @param methodInterface A string that may be used to specify the EJB interface to which the permission pertains. A
-     * value of null or "", indicates that the permission pertains to all methods that match the other parameters of the
-     * permission specification without consideration of the interface they occur on.
+     * @param EJBName The string representation of the name of the Jakarta Enterprise Bean as it appears in the 
+     * corresponding ejb-name element in the deployment descriptor.
+     * @param methodInterface A string that may be used to specify the Jakarta Enterprise Bean interface to which the 
+     * permission pertains. A value of null or "", indicates that the permission pertains to all methods that match 
+     * the other parameters of the permission specification without consideration of the interface they occur on.
      * @param method an instance of the Java.lang.reflect.Method class corresponding to the method that the container is
      * trying to determine whether the caller has permission to access. This value must not be null.
      */
@@ -265,10 +267,10 @@ public final class EJBMethodPermission extends Permission {
      * characters (e.g. blanks) may occur in the canonical form.
      * 
      * <p>
-     * A MethodInterfaceName is a non-empty String and should contain a method-intf value as defined for use in EJB
-     * deployment descriptors. An implementation must be flexible such that it supports additional interface names
-     * especially if they are standardized by the EJB Specification. The EJB Specification currently defines the following
-     * method-intf values:
+     * A MethodInterfaceName is a non-empty String and should contain a method-intf value as defined for use in Jakarta 
+     * Enterprise Beans deployment descriptors. An implementation must be flexible such that it supports additional interface 
+     * names especially if they are standardized by the Jakarta Enterprise Beans Specification. The Jakarta Enterprise Beans 
+     * Specification currently defines the following method-intf values:
      * 
      * <pre>
      * { "Home", "LocalHome", "Remote", "Local", "ServiceEndpoint" }

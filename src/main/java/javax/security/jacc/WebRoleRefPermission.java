@@ -24,11 +24,11 @@ import java.io.Serializable;
 import java.security.Permission;
 
 /**
- * Class for Servlet <i><code>isUserInRole (String reference)</code></i> permissions. A WebRoleRefPermission is a named
+ * Class for Jakarta Servlet <i><code>isUserInRole (String reference)</code></i> permissions. A WebRoleRefPermission is a named
  * permission and has actions.
  * 
  * <p>
- * The name of an WebRoleRefPermission (also referred to as the target name) identifies a Web resource by the servlet
+ * The name of an WebRoleRefPermission (also referred to as the target name) identifies a Web resource by the Jakarta Servlet
  * name (in the deployment descriptor corresponding to the component from which the call to
  * <i><code>isUserInRole (String reference)</code></i> is being made.
  * 
