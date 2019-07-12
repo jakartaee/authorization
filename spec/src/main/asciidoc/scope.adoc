@@ -1,0 +1,3 @@
+== Specification Scope
+
+Jakarta Authorization defines the installation and configuration of authorization providers for use by containers. The specification defines the interfaces that a provider must make available to allow container deployment tools to create and manage permission collections corresponding to roles.
