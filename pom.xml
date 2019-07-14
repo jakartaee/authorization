@@ -29,8 +29,9 @@
     <groupId>org.eclipse.ee4j.jacc</groupId>
     <artifactId>jacc-parent</artifactId>
     <packaging>pom</packaging>
-    <version>1.7-SNAPSHOT</version>
-    <name>Jakarta Authorization</name>
+    <version>1.6.2-SNAPSHOT</version>
+    
+    <name>Jakarta Authorization Parent</name>
     <description>
         Jakarta Authorization defines a low-level SPI for authorization modules, which are repositories of permissions 
         facilitating subject based security by determining whether a given subject has a given permission, and algorithms
@@ -48,7 +49,7 @@
     <properties>
         <non.final>false</non.final>
         <extension.name>javax.security.jacc</extension.name>
-        <spec.version>1.7</spec.version>
+        <spec.version>1.6</spec.version>
         <findbugs.version>2.4.0</findbugs.version>
         <findbugs.skip>false</findbugs.skip>
         <findbugs.exclude>exclude-common.xml</findbugs.exclude>
