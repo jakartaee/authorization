@@ -2,7 +2,7 @@
 // Copyright (c) 2017, 2019 Contributors to the Eclipse Foundation
 //
 
-= Jakarta Authorization 1.6
+= Jakarta Authorization
 :authors: Jakarta Authorization Team, https://projects.eclipse.org/projects/ee4j.jacc
 :email: https://dev.eclipse.org/mailman/listinfo/jacc-dev
 :version-label!:
