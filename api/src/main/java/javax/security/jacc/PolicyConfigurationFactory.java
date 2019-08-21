@@ -80,62 +80,69 @@ public abstract class PolicyConfigurationFactory {
             return policyConfigurationFactory;
         }
 
-        final String className[] = { null };
+        synchronized(PolicyConfigurationFactory.class) {
 
-        try {
+            if (policyConfigurationFactory != null) {
+                return policyConfigurationFactory;
+            }
 
-            Class<?> clazz = null;
+            final String className[] = { null };
 
-            if (securityManager != null) {
-                try {
-                    clazz = AccessController.doPrivileged(new PrivilegedExceptionAction<Class<?>>() {
-                        @Override
-                        public Class<?> run() throws Exception {
+            try {
 
-                            className[0] = System.getProperty(FACTORY_NAME);
+                Class<?> clazz = null;
 
-                            if (className[0] == null) {
-                                throw new ClassNotFoundException("Jakarta Authorization:Error PolicyConfigurationFactory : property not set : " + FACTORY_NAME);
+                if (securityManager != null) {
+                    try {
+                        clazz = AccessController.doPrivileged(new PrivilegedExceptionAction<Class<?>>() {
+                            @Override
+                            public Class<?> run() throws Exception {
+
+                                className[0] = System.getProperty(FACTORY_NAME);
+
+                                if (className[0] == null) {
+                                    throw new ClassNotFoundException("Jakarta Authorization:Error PolicyConfigurationFactory : property not set : " + FACTORY_NAME);
+                                }
+
+                                return Class.forName(className[0], true, Thread.currentThread().getContextClassLoader());
                             }
+                        });
+                    } catch (PrivilegedActionException ex) {
+                        Exception e = ex.getException();
 
-                            return Class.forName(className[0], true, Thread.currentThread().getContextClassLoader());
+                        if (e instanceof ClassNotFoundException) {
+                            throw (ClassNotFoundException) e;
+                        } else if (e instanceof InstantiationException) {
+                            throw (InstantiationException) e;
+                        } else if (e instanceof IllegalAccessException) {
+                            throw (IllegalAccessException) e;
                         }
-                    });
-                } catch (PrivilegedActionException ex) {
-                    Exception e = ex.getException();
-
-                    if (e instanceof ClassNotFoundException) {
-                        throw (ClassNotFoundException) e;
-                    } else if (e instanceof InstantiationException) {
-                        throw (InstantiationException) e;
-                    } else if (e instanceof IllegalAccessException) {
-                        throw (IllegalAccessException) e;
                     }
+                } else {
+                    className[0] = System.getProperty(FACTORY_NAME);
+
+                    if (className[0] == null) {
+                        throw new ClassNotFoundException("Jakarta Authorization:Error PolicyConfigurationFactory : property not set : " + FACTORY_NAME);
+                    }
+
+                    clazz = Class.forName(className[0], true, Thread.currentThread().getContextClassLoader());
                 }
-            } else {
-                className[0] = System.getProperty(FACTORY_NAME);
 
-                if (className[0] == null) {
-                    throw new ClassNotFoundException("Jakarta Authorization:Error PolicyConfigurationFactory : property not set : " + FACTORY_NAME);
+                if (clazz != null) {
+                    Object factory = clazz.newInstance();
+
+                    policyConfigurationFactory = (PolicyConfigurationFactory) factory;
                 }
 
-                clazz = Class.forName(className[0], true, Thread.currentThread().getContextClassLoader());
+            } catch (ClassNotFoundException cnfe) {
+                throw new ClassNotFoundException("Jakarta Authorization:Error PolicyConfigurationFactory : cannot find class : " + className[0], cnfe);
+            } catch (IllegalAccessException iae) {
+                throw new PolicyContextException("Jakarta Authorization:Error PolicyConfigurationFactory : cannot access class : " + className[0], iae);
+            } catch (InstantiationException ie) {
+                throw new PolicyContextException("Jakarta Authorization:Error PolicyConfigurationFactory : cannot instantiate : " + className[0], ie);
+            } catch (ClassCastException cce) {
+                throw new ClassCastException("Jakarta Authorization:Error PolicyConfigurationFactory : class not PolicyConfigurationFactory : " + className[0]);
             }
-
-            if (clazz != null) {
-                Object factory = clazz.newInstance();
-
-                policyConfigurationFactory = (PolicyConfigurationFactory) factory;
-            }
-
-        } catch (ClassNotFoundException cnfe) {
-            throw new ClassNotFoundException("Jakarta Authorization:Error PolicyConfigurationFactory : cannot find class : " + className[0], cnfe);
-        } catch (IllegalAccessException iae) {
-            throw new PolicyContextException("Jakarta Authorization:Error PolicyConfigurationFactory : cannot access class : " + className[0], iae);
-        } catch (InstantiationException ie) {
-            throw new PolicyContextException("Jakarta Authorization:Error PolicyConfigurationFactory : cannot instantiate : " + className[0], ie);
-        } catch (ClassCastException cce) {
-            throw new ClassCastException("Jakarta Authorization:Error PolicyConfigurationFactory : class not PolicyConfigurationFactory : " + className[0]);
         }
 
         return policyConfigurationFactory;
