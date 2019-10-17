@@ -304,7 +304,7 @@ class URLPatternSpec extends URLPattern {
                     switch (urlPatternArray[i].patternType()) {
                     case URLPattern.PT_PREFIX:
                         if (firstType == URLPattern.PT_PREFIX) {
-                            if (super.equals(urlPatternArray[i]) || !super.implies(urlPatternArray[i])) {
+                            if (super.equals(urlPatternArray[i]) || super.implies(urlPatternArray[i])) {
                                 throw new IllegalArgumentException("Invalid prefix pattern in URLPatternList");
                             }
                         }
