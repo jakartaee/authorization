@@ -1,5 +1,5 @@
 Jakarta Authorization Specification
-============================
+===================================
 
 This project generates the Jakarta Authorization Specification.
 
@@ -16,7 +16,7 @@ Run the full build:
 `mvn install`
 
 Locate the html files:
-- `target/generated-docs/authorization-spec-<version>.html`
+- target/generated-docs/Authorization.html
 
 Locate the PDF files:
-- `target/generated-docs/authorization-spec-<version>.pdf`
+- target/generated-docs/Authorization.pdf
