@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1997, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -14,26 +14,24 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  */
 
-package javax.security.jacc;
+package jakarta.security.jacc;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.ObjectStreamField;
 import java.security.Permission;
+import java.util.HashMap;
+import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
- * Class for Jakarta Servlet web resource permissions. A WebResourcePermission is a named permission and has actions.
+ * Class for Jakarta Servlet Web user data permissions. A WebUserDataPermission is a named permission and has actions.
  *
  * <p>
- * The name of a WebResourcePermission (also referred to as the target name) identifies the Web resources to which the
- * permission pertains.
- *
- * <p>
- * Implementations of this class MAY implement newPermissionCollection or inherit its implementation from the super
- * class.
+ * The name of a WebUserDataPermission (also referred to as the target name) identifies a Web resource by its context
+ * path relative URL pattern.
  *
  * @see Permission
  *
@@ -41,16 +39,29 @@ import javax.servlet.http.HttpServletRequest;
  * @author Gary Ellison
  *
  */
-public final class WebResourcePermission extends Permission {
+public final class WebUserDataPermission extends Permission {
 
-	private static final long serialVersionUID = 1L;
-
-    private transient HttpMethodSpec methodSpec;
-    private transient URLPatternSpec urlPatternSpec;
-    private transient int hashCodeValue;
+    private static final long serialVersionUID = -970193775626385011L;
 
     private transient static final String EMPTY_STRING = "";
     private transient static final String ESCAPED_COLON = "%3A";
+
+    private static String transportKeys[] = { "NONE", "INTEGRAL", "CONFIDENTIAL", };
+    private static Map<String, Integer> transportHash = new HashMap<String, Integer>();
+    static {
+        for (int i = 0; i < transportKeys.length; i++) {
+            transportHash.put(transportKeys[i], i);
+        }
+    }
+
+    private static int TT_NONE = transportHash.get("NONE");
+    private static int TT_CONFIDENTIAL = transportHash.get("CONFIDENTIAL");
+
+    private transient URLPatternSpec urlPatternSpec;
+    private transient HttpMethodSpec methodSpec;
+    private transient int transportType;
+    private transient int hashCodeValue;
+
 
     /**
      * The serialized fields of this permission are defined below. Whether or not the serialized fields correspond to actual
@@ -61,7 +72,7 @@ public final class WebResourcePermission extends Permission {
     private static final ObjectStreamField[] serialPersistentFields = { new ObjectStreamField("actions", String.class) };
 
     /**
-     * Creates a new WebResourcePermission with the specified name and actions.
+     * Creates a new WebUserDataPermission with the specified name and actions.
      *
      * <p>
      * The name contains a URLPatternSpec that identifies the web resources to which the permissions applies. The syntax of
@@ -95,23 +106,28 @@ public final class WebResourcePermission extends Permission {
      * </ul>
      *
      * <p>
-     * The actions parameter contains a comma separated list of HTTP methods. The syntax of the actions parameter is defined
-     * as follows:
+     * The actions parameter contains a comma separated list of HTTP methods that may be followed by a transportType
+     * separated from the HTTP method by a colon.
      *
      * <pre>
      *
      *          ExtensionMethod ::= any token as defined by RFC 2616
-     *                    (that is, 1*[any CHAR except CTLs or separators])
+     *                  (that is, 1*[any CHAR except CTLs or separators])
      *
-     *          HTTPMethod ::= "GET" | "POST" | "PUT" | "DELETE" | "HEAD" |
-     *                   "OPTIONS" | "TRACE" | ExtensionMethod
+     *          HTTPMethod ::= "Get" | "POST" | "PUT" | "DELETE" | "HEAD" |
+     *                  "OPTIONS" | "TRACE" | ExtensionMethod
      *
      *          HTTPMethodList ::= HTTPMethod | HTTPMethodList comma HTTPMethod
      *
      *          HTTPMethodExceptionList ::= exclaimationPoint HTTPMethodList
      *
-     *          HTTPMethodSpec ::= null | HTTPMethodExceptionList |
-     *                   HTTPMethodList
+     *          HTTPMethodSpec ::= emptyString | HTTPMethodExceptionList |
+     *                  HTTPMethodList
+     *
+     *          transportType ::= "INTEGRAL" | "CONFIDENTIAL" | "NONE"
+     *
+     *          actions ::= null | HTTPMethodSpec |
+     *                  HTTPMethodSpec colon transportType
      *
      * </pre>
      *
@@ -119,66 +135,87 @@ public final class WebResourcePermission extends Permission {
      * If duplicates occur in the HTTPMethodSpec they must be eliminated by the permission constructor.
      *
      * <p>
-     * A null or empty string HTTPMethodSpec indicates that the permission applies to all HTTP methods at the resources
-     * identified by the URL pattern.
+     * An empty string HTTPMethodSpec is a shorthand for a List containing all the possible HTTP methods.
      *
      * <p>
      * If the HTTPMethodSpec contains an HTTPMethodExceptionList (i.e., it begins with an exclaimationPoint), the permission
-     * pertains to all methods except those occurring in the exception list.
+     * pertains to all methods except those occuring in the exception list.
      *
      * <p>
+     * An actions string without a transportType is a shorthand for a actions string with the value "NONE" as its
+     * TransportType.
+     *
+     * <p>
+     * A granted permission representing a transportType of "NONE", indicates that the associated resources may be accessed
+     * using any connection type.
      *
      * @param name the URLPatternSpec that identifies the application specific web resources to which the permission
      * pertains. All URLPatterns in the URLPatternSpec are relative to the context path of the deployed web application
      * module, and the same URLPattern must not occur more than once in a URLPatternSpec. A null URLPatternSpec is
      * translated to the default URLPattern, "/", by the permission constructor. All colons occuring within the URLPattern
      * elements of the URLPatternSpec must be represented in escaped encoding as defined in RFC 2396.
-     * @param actions identifies the HTTP methods to which the permission pertains. If the value passed through this
-     * parameter is null or the empty string, then the permission pertains to all the possible HTTP methods.
+     * @param actions identifies the HTTP methods and transport type to which the permission pertains. If the value passed
+     * through this parameter is null or the empty string, then the permission is constructed with actions corresponding to
+     * all the possible HTTP methods and transportType "NONE".
      */
-    public WebResourcePermission(String name, String actions) {
+    public WebUserDataPermission(String name, String actions) {
         super(name);
         this.urlPatternSpec = new URLPatternSpec(name);
-        this.methodSpec = HttpMethodSpec.getSpec(actions);
+        parseActions(actions);
     }
 
     /**
-     * Creates a new WebResourcePermission with name corresponding to the URLPatternSpec, and actions composed from the
-     * array of HTTP methods.
+     * Creates a new WebUserDataPermission with name corresponding to the URLPatternSpec, and actions composed from the
+     * array of HTTP methods and the transport type.
      *
      * @param urlPatternSpec the URLPatternSpec that identifies the application specific web resources to which the
      * permission pertains. All URLPatterns in the URLPatternSpec are relative to the context path of the deployed web
      * application module, and the same URLPattern must not occur more than once in a URLPatternSpec. A null URLPatternSpec
-     * is translated to the default URLPattern, "/", by the permission constructor. All colons occuring within the
+     * is translated to the default URLPattern, "/", by the permission constructor. All colons occurring within the
      * URLPattern elements of the URLPatternSpec must be represented in escaped encoding as defined in RFC 2396.
      * @param HTTPMethods an array of strings each element of which contains the value of an HTTP method. If the value
-     * passed through this parameter is null or is an array with no elements, then the permission pertains to all the
-     * possible HTTP methods.
+     * passed through this parameter is null or is an array with no elements, then the permission is constructed with
+     * actions corresponding to all the possible HTTP methods.
+     * @param transportType a String whose value is a transportType. If the value passed through this parameter is null,
+     * then the permission is constructed with actions corresponding to transportType "NONE".
      */
-    public WebResourcePermission(String urlPatternSpec, String[] HTTPMethods) {
+    public WebUserDataPermission(String urlPatternSpec, String[] HTTPMethods, String transportType) {
         super(urlPatternSpec);
         this.urlPatternSpec = new URLPatternSpec(urlPatternSpec);
+
+        this.transportType = TT_NONE;
+
+        if (transportType != null) {
+            Integer bit = transportHash.get(transportType);
+            if (bit == null) {
+                throw new IllegalArgumentException("illegal transport value");
+            }
+            this.transportType = bit.intValue();
+        }
+
         this.methodSpec = HttpMethodSpec.getSpec(HTTPMethods);
     }
 
     /**
-     * Creates a new WebResourcePermission from the HttpServletRequest object.
+     * Creates a new WebUserDataPermission from the HttpServletRequest object.
      *
      * @param request the HttpServletRequest object corresponding to the Jakarta Servlet operation to which the permission pertains.
      * The permission name is the substring of the requestURI (HttpServletRequest.getRequestURI()) that begins after the
      * contextPath (HttpServletRequest.getContextPath()). When the substring operation yields the string "/", the permission
-     * is constructed with the empty string as its name. The permission's actions field is obtained from
-     * HttpServletRequest.getMethod(). The constructor must transform all colon characters occuring in the name to escaped
-     * encoding as defined in RFC 2396.
+     * is constructed with the empty string as its name. The constructor must transform all colon characters occurring in the
+     * name to escaped encoding as defined in RFC 2396. The HTTP method component of the permission's actions is as obtained
+     * from HttpServletRequest.getMethod(). The TransportType component of the permission's actions is determined by calling
+     * HttpServletRequest.isSecure().
      */
-    public WebResourcePermission(HttpServletRequest request) {
+    public WebUserDataPermission(HttpServletRequest request) {
         super(getUriMinusContextPath(request));
         this.urlPatternSpec = new URLPatternSpec(super.getName());
+        this.transportType = request.isSecure() ? TT_CONFIDENTIAL : TT_NONE;
         this.methodSpec = HttpMethodSpec.getSpec(request.getMethod());
     }
 
     /**
-     * Checks two WebResourcePermission objects for equality. WebResourcePermission objects are equivalent if their
+     * Checks two WebUserDataPermission objects for equality. WebUserDataPermission objects are equivalent if their
      * URLPatternSpec and (canonicalized) actions values are equivalent.
      *
      * <p>
@@ -190,17 +227,20 @@ public final class WebResourcePermission extends Permission {
      * <p>
      * Two Permission objects, P1 and P2, are equivalent if and only if P1.implies(P2) AND P2.implies(P1).
      *
-     * @param o the WebResourcePermission object being tested for equality with this WebResourcePermission.
-     * <p>
-     * @return true if the argument WebResourcePermission object is equivalent to this WebResourcePermission.
+     * @param o the WebUserDataPermission object being tested for equality with this WebUserDataPermission.
+     * @return true if the argument WebUserDataPermission object is equivalent to this WebUserDataPermission.
      */
     @Override
     public boolean equals(Object o) {
-        if (o == null || !(o instanceof WebResourcePermission)) {
+        if (o == null || !(o instanceof WebUserDataPermission)) {
             return false;
         }
 
-        WebResourcePermission that = (WebResourcePermission) o;
+        WebUserDataPermission that = (WebUserDataPermission) o;
+
+        if (this.transportType != that.transportType) {
+            return false;
+        }
 
         if (!this.methodSpec.equals(that.methodSpec)) {
             return false;
@@ -210,29 +250,78 @@ public final class WebResourcePermission extends Permission {
     }
 
     /**
-     * Returns a canonical String representation of the actions of this WebResourcePermission. In the canonical form,
-     * predefined methods preceed extension methods, and within each method classification the corresponding methods occur
-     * in ascending lexical order. There may be no duplicate HTTP methods in the canonical form, and the canonical form of
-     * the set of all HTTP methods is the value null.
+     * Returns a canonical String representation of the actions of this WebUserDataPermission.
      *
-     * @return a String containing the canonicalized actions of this WebResourcePermission (or the null value).
+     * <p>
+     * The canonical form of the actions of a WebUserDataPermission is described by the following syntax description.
+     *
+     * <pre>
+     *
+     *          ExtensionMethod ::= any token as defined by RFC 2616
+     *                   (that is, 1*[any CHAR except CTLs or separators])
+     *
+     *          HTTPMethod ::= "GET" | "POST" | "PUT" | "DELETE" | "HEAD" |
+     *                   "OPTIONS" | "TRACE" | ExtensionMethod
+     *
+     *          HTTPMethodList ::= HTTPMethod | HTTPMethodList comma HTTPMethod
+     *
+     *          HTTPMethodExceptionList ::= exclaimationPoint HTTPMethodList
+     *
+     *          HTTPMethodSpec ::= emptyString | HTTPMethodExceptionList |
+     *                  HTTPMethodList
+     *
+     *          transportType ::= "INTEGRAL" | "CONFIDENTIAL" | "NONE"
+     *
+     *          actions ::= null | HTTPMethodList |
+     *                  HTTPMethodSpec colon transportType
+     *
+     * </pre>
+     *
+     * <p>
+     * If the permission's HTTP methods correspond to the entire HTTP method set and the permission's transport type is
+     * "INTEGRAL" or "CONFIDENTIAL", the HTTP methods shall be represented in the canonical form by an emptyString
+     * HTTPMethodSpec. If the permission's HTTP methods correspond to the entire HTTP method set, and the permission's
+     * transport type is not "INTEGRAL"or "CONFIDENTIAL", the canonical actions value shall be the null value.
+     *
+     * <p>
+     * If the permission's methods do not correspond to the entire HTTP method set, duplicates must be eliminated and the
+     * remaining elements must be ordered such that the predefined methods preceed the extension methods, and such that
+     * within each method classification the corresponding methods occur in ascending lexical order. The resulting
+     * (non-emptyString) HTTPMethodSpec must be included in the canonical form, and if the permission's transport type is
+     * not "INTEGRAL" or "CONFIDENTIAL", the canonical actions value must be exactly the resulting HTTPMethodSpec.
+     *
+     * @return a String containing the canonicalized actions of this WebUserDataPermission (or the null value).
      */
     @Override
     public String getActions() {
-        return this.methodSpec.getActions();
+        String methodSpecActions = methodSpec.getActions();
+
+        if (transportType == TT_NONE && methodSpecActions == null) {
+            return null;
+        }
+
+        if (transportType == TT_NONE) {
+            return methodSpecActions;
+        }
+
+        if (methodSpecActions == null) {
+            return ":" + transportKeys[transportType];
+        }
+
+        return methodSpecActions + ":" + transportKeys[transportType];
     }
 
     /**
-     * Returns the hash code value for this WebResourcePermission.
+     * Returns the hash code value for this WebUserDataPermission.
      *
      * <p>
      * The properties of the returned hash code must be as follows:
      *
      * <ul>
-     * <li>During the lifetime of a Java application, the hashCode method must return the same integer value, every time it
-     * is called on a WebResourcePermission object. The value returned by hashCode for a particular WebResourcePermission
+     * <li>During the lifetime of a Java application, the hashCode method shall return the same integer value every time it
+     * is called on a WebUserDataPermission object. The value returned by hashCode for a particular EJBMethod permission
      * need not remain consistent from one execution of an application to another.
-     * <li>If two WebResourcePermission objects are equal according to the equals method, then calling the hashCode method
+     * <li>If two WebUserDataPermission objects are equal according to the equals method, then calling the hashCode method
      * on each of the two Permission objects must produce the same integer result (within an application).
      * </ul>
      *
@@ -241,7 +330,7 @@ public final class WebResourcePermission extends Permission {
     @Override
     public int hashCode() {
         if (hashCodeValue == 0) {
-            String hashInput = urlPatternSpec.toString() + " " + methodSpec.hashCode();
+            String hashInput = urlPatternSpec.toString() + " " + methodSpec.hashCode() + ":" + transportType;
             hashCodeValue = hashInput.hashCode();
         }
 
@@ -249,13 +338,13 @@ public final class WebResourcePermission extends Permission {
     }
 
     /**
-     * Determines if the argument Permission is "implied by" this WebResourcePermission.
+     * Determines if the argument Permission is "implied by" this WebUserDataPermission.
      *
      * <p>
-     * For this to be the case, all of the following must be true:
+     * For this to be the case all of the following must be true:
      *
      * <ul>
-     * <li>The argument is an instanceof WebResourcePermission
+     * <li>The argument is an instanceof WebUserDataPermission.
      * <li>The first URLPattern in the name of the argument permission is matched by the first URLPattern in the name of
      * this permission.
      * <li>The first URLPattern in the name of the argument permission is NOT matched by any URLPattern in the
@@ -265,6 +354,8 @@ public final class WebResourcePermission extends Permission {
      * by a URLPattern in the URLPatternList of the argument permission.
      * <li>The HTTP methods represented by the actions of the argument permission are a subset of the HTTP methods
      * represented by the actions of this permission.
+     * <li>The transportType in the actions of this permission either corresponds to the value "NONE", or equals the
+     * transportType in the actions of the argument permission.
      * </ul>
      *
      * <p>
@@ -285,16 +376,21 @@ public final class WebResourcePermission extends Permission {
      * <p>
      * All of the comparisons described above are case sensitive.
      *
-     * @param permission "this" WebResourcePermission is checked to see if it implies the argument permission.
+     * @param permission "this" WebUserDataPermission is checked to see if it implies the argument permission.
+     *
      * @return true if the specified permission is implied by this object, false if not.
      */
     @Override
     public boolean implies(Permission permission) {
-        if (!(permission instanceof WebResourcePermission)) {
+        if (!(permission instanceof WebUserDataPermission)) {
             return false;
         }
 
-        WebResourcePermission that = (WebResourcePermission) permission;
+        WebUserDataPermission that = (WebUserDataPermission) permission;
+
+        if (this.transportType != TT_NONE && this.transportType != that.transportType) {
+            return false;
+        }
 
         if (!this.methodSpec.implies(that.methodSpec)) {
             return false;
@@ -331,6 +427,32 @@ public final class WebResourcePermission extends Permission {
         return uri.replaceAll(":", ESCAPED_COLON);
     }
 
+    private void parseActions(String actions) {
+        transportType = TT_NONE;
+
+        if (actions == null || actions.equals("")) {
+            methodSpec = HttpMethodSpec.getSpec((String) null);
+        } else {
+            int colon = actions.indexOf(':');
+            if (colon < 0) {
+                methodSpec = HttpMethodSpec.getSpec(actions);
+            } else {
+                if (colon == 0) {
+                    methodSpec = HttpMethodSpec.getSpec((String) null);
+                } else {
+                    methodSpec = HttpMethodSpec.getSpec(actions.substring(0, colon));
+                }
+
+                Integer bit = transportHash.get(actions.substring(colon + 1));
+                if (bit == null) {
+                    throw new IllegalArgumentException("illegal transport value");
+                }
+
+                transportType = bit.intValue();
+            }
+        }
+    }
+
     /**
      * readObject reads the serialized fields from the input stream and uses them to restore the permission. This method
      * need not be implemented if establishing the values of the serialized fields (as is done by defaultReadObject) is
@@ -342,7 +464,7 @@ public final class WebResourcePermission extends Permission {
      * @throws IOException If an I/O error occurs
      */
     private void readObject(ObjectInputStream inputStream) throws IOException, ClassNotFoundException {
-        methodSpec = HttpMethodSpec.getSpec((String) inputStream.readFields().get("actions", null));
+        parseActions((String) inputStream.readFields().get("actions", null));
         urlPatternSpec = new URLPatternSpec(super.getName());
     }
 
