@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1997, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -14,7 +14,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  */
 
-package javax.security.jacc;
+package jakarta.security.jacc;
 
 /**
  * This checked exception is thrown by implementations of the <code>PolicyConfiguration</code>
@@ -23,7 +23,7 @@ package javax.security.jacc;
  * <code>PolicyContextException</code> Interface.
  * 
  * <P>
- * This exception is used by javax.security.jacc implementation classes to rethrow checked exceptions occurring within
+ * This exception is used by jakarta.security.jacc implementation classes to rethrow checked exceptions occurring within
  * an implementation that are not declared by the interface or class being implemented.
  *
  * @see Exception

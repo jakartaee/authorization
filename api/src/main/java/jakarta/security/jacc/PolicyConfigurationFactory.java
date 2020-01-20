@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1997, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -14,7 +14,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  */
 
-package javax.security.jacc;
+package jakarta.security.jacc;
 
 import java.security.AccessController;
 import java.security.Permission;
@@ -41,7 +41,7 @@ import java.security.SecurityPermission;
  * @author Harpreet Singh
  */
 public abstract class PolicyConfigurationFactory {
-    private static String FACTORY_NAME = "javax.security.jacc.PolicyConfigurationFactory.provider";
+    private static String FACTORY_NAME = "jakarta.security.jacc.PolicyConfigurationFactory.provider";
 
     private static volatile PolicyConfigurationFactory policyConfigurationFactory;
 
@@ -53,7 +53,7 @@ public abstract class PolicyConfigurationFactory {
      * The name of the provider specific factory implementation class is obtained from the
      * value of the system property,
      * <pre>{@code
-     *     javax.security.jacc.PolicyConfigurationFactory.provider.
+     *     jakarta.security.jacc.PolicyConfigurationFactory.provider.
      * }
      * </pre>
      *
