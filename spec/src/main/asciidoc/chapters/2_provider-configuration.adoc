@@ -1,0 +1,279 @@
+== CHAPTER 2 - 
+
+[[a173]]Provider Configuration
+Subcontract
+
+The link:jacc.html#a173[See Provider
+Configuration Subcontract] defines the requirements placed on providers
+and containers such that Policy providers may be integrated with
+containers.
+
+=== [[a175]]Policy Implementation Class
+
+The contract defined by this specification
+has been designed to work in J2SE 1.4 or later Java Standard Edition
+environments with the default _java.security.Policy_ implementation
+class, and in J2SE 1.3 environments with the default
+_javax.security.auth.Policy_ _implementation class. Support for the
+contract defined by this specification is optional in J2EE 1.3
+environments._
+
+Java platforms provide standard security
+properties whose values may be defined to cause replacement of the
+default system Policy implementation classes. The security property, “
+_policy.provider_ ”, may be used to replace the default
+_java.security.Policy_ implementation class. Similarly, the security
+property, " _auth.policy.provider_ ", may be used to replace the default
+_javax.security.auth.Policy_ implementation class. These properties are
+defined in the Java security properties file, and replacement is
+accomplished by setting their value to the fully qualified name of the
+desired Policy implementation class. The contract defined in this
+specification, is dependent on the Policy replacement mechanisms of the
+target Java environment. An application server that supports this
+contract must allow replacement of the top level java.security.Policy
+object used by every JRE of the containers of the application server.
+
+=== Permission Implementation Classes
+
+This contract defines a Java standard
+extension package, j _avax.security.jacc,_ that contains (among other
+things) Permission classes to be used by containers in their access
+decisions.
+
+=== Policy Configuration Interface
+
+The _javax.security.jacc_ package defines an
+abstract factory class that implements a static method _that uses a
+system property_ to find and instantiate a provider specific factory
+implementation class. The abstract factory class is
+_javax.security.jacc.PolicyConfigurationFactory_ , the static method is
+_getPolicyConfigurationFactory,_ _and the system property is_
+_javax.security.jacc.PolicyConfigurationFactory.provider_ .
+
+The abstract factory class also defines an
+abstract public method used to create or locate instances of the
+provider specific class that implements the interface used to define
+policy contexts within the associated Policy provider. The method is
+_getPolicyConfiguration_ and the interface is
+_javax.security.jacc.PolicyConfiguration_ .
+
+ _The abstract_ _PolicyConfigurationFactory_
+class and the _PolicyConfiguration_ _interface_ are defined in
+link:jacc.html#a760[See API]. Use of the _PolicyConfiguration_
+interface is defined in link:jacc.html#a232[See Policy
+Configuration Subcontract].
+
+=== [[a184]]PolicyContext Class and Context Handlers
+
+This _javax.security.jacc_ package defines a
+utility class that is used by containers to communicate policy context
+identifiers to Policy providers. The utility class is
+_javax.security.jacc.PolicyContext_ , and this class implements static
+methods that are used to communicate policy relevant context values from
+containers to Policy providers. Containers use the static method
+_PolicyContext.setContextID_ to associate a policy context identifier
+with a thread on which they are about to call a decision interface of a
+Policy provider. Policy providers use the static method
+_PolicyContext.getContextID_ to obtain the context identifier
+established by a calling container. The role of policy context
+identifiers in access decisions is described in
+link:jacc.html#a253[See Policy Contexts and Policy Context
+Identifiers]”.
+
+In addition to the methods used to
+communicate policy context identifiers, the
+_javax.security.jacc.PolicyContext_ class also provides static methods
+that allow container specific context handlers that implement the
+_javax.security.jacc.PolicyContextHandler_ interface to be registered
+with the _PolicyContext_ class. The _PolicyContext_ class also provides
+static methods that allow Policy providers to activate registered
+handlers to obtain additional policy relevant context to apply in their
+access decisions.
+
+The _PolicyContext_ utility class and the
+_PolicyContextHandler_ i _nterface_ are defined in
+link:jacc.html#a760[See API]. Use of the _PolicyContext_ class
+is defined in link:jacc.html#a232[See Policy Configuration
+Subcontract].
+
+=== What a Provider Must Do
+
+Each JRE of an application server must be
+provided with classes that implement the _PolicyConfigurationFactory_
+_class and_ _PolicyConfiguration_ _interface. These classes must be_
+compatible with the Policy implementation class installed for use by the
+JRE. In the case where the provider is not seeking to replace the Policy
+implementation used by the JRE, no other components need be provided.
+
+If the provider is seeking to replace the
+Policy implementation used by the JRE, then the JRE must be provided
+with an environment specific Policy implementation class. If the JRE is
+running a J2SE 1.4 or later Java Standard Edition environment, then it
+must be provided with an implementation of the _java.security.Policy_
+class. If the JRE is running a J2SE 1.3 security environment, it must be
+provided with an implementation of the _javax.security.auth.Policy_
+class (that is, a JAAS Policy object).
+
+A replacement Policy object must assume
+responsibility for performing all policy decisions within the JRE in
+which it is installed that are requested by way of the Policy interface
+that it implements. A replacement Policy object may accomplish this by
+delegating non- _javax.security.jacc_ policy decisions to the
+corresponding default system Policy implementation class. A replacement
+Policy object that relies in this way on the corresponding default
+Policy implementation class must identify itself in its installation
+instructions as a “delegating Policy provider”.
+
+The standard security properties mechanism
+for replacing a default system Policy implementation (see
+link:jacc.html#a175[See Policy Implementation Class]) should
+not be used to replace a default system Policy provider with a
+delegating Policy provider.
+
+=== Optional Provider Support for JAAS Policy Object
+
+In J2SE 1.4, the subject based authorization
+functionality of the JAAS Policy interface has been integrated into
+_java.security.Policy_ , and the JAAS Policy interface (as a separate
+entity) has been deprecated. This does not mean that the JAAS Policy
+interface was removed, but rather that the essential parts of it have
+been tightly integrated into the J2SE 1.4 platform.
+
+According to this contract, a J2SE 1.4 or
+later Java Standard Edition security environment may support replacement
+of the JAAS Policy object if and only if all javax.security.jacc policy
+decisions performed by the replacement JAAS Policy object return the
+same result as when the java.security.Policy interface is used. To
+satisfy this requirement, the replacement JAAS Policy object must be
+compatible with the implementations of _PolicyConfigurationFactory_
+_and_ _PolicyConfiguration_ _interface provided for use with the
+java.security.Policy implementation class._
+
+=== [[a196]]What the Application Server Must Do
+
+An application server or container must
+bundle or install the _javax.security.jacc_ standard extension. This
+package must include the abstract
+_javax.security.jacc.PolicyConfigurationFactory_ class, the
+_javax.security.jacc.PolicyConfiguration_ and
+_javax.security.jacc.PolicyContextHandler_ interfaces, and
+implementations of the _javax.security.jacc.PolicyContextException_
+exception, _the javax.security.jacc_ Permission classes, and the
+javax.security.jacc.PolicyContext utility class. The Permission classes
+of the _javax.security.jacc_ package are:
+
+*  _javax.security.jacc.EJBMethodPermission_
+*  _javax.security.jacc.EJBRoleRefPermission_
+* 
+_javax.security.jacc.WebResourcePermission_
+*  _javax.security.jacc.WebRoleRefPermission_
+* 
+_javax.security.jacc.WebUserDataPermission_
+
+To enable delegation of non-
+_javax.security.jacc_ policy decisions to default system Policy
+providers, all application servers must implement the following Policy
+replacement algorithm. The intent of the algorithm is to ensure that
+Policy objects can capture the instance of the corresponding default
+system Policy object during their integration into a container and such
+that they may delegate non-container policy evaluations to it.
+
+For each JRE of a J2EE 1.4 or later version
+Java EE application server, if the system property
+_“javax.security.jacc.policy.provider_ ” is defined, the application
+server must construct an instance of the class identified by the system
+property, confirm that the resulting object is an instance of
+_java.security.Policy,_ and set, by calling the
+_java.security.Policy.setPolicy_ method, the resulting object as the
+corresponding Policy object used by the JRE. For example:
+
+===  String javaPolicy = System.getProperty(
+
+ "javax.security.jacc.policy.provider"
+
+ );
+
+
+
+ if (javaPolicy != null) \{
+
+ try \{
+
+ java.security.Policy.setPolicy(
+
+ (java.security.Policy)
+
+ Class.forName(javaPolicy).newInstance()
+
+ );
+
+ } catch (ClassNotFoundException cnfe) \{
+
+ // problem with property value or classpath
+
+ } catch (IllegalAccessException iae) \{
+
+ // problem with policy class definition
+
+ } catch (InstantiationException ie) \{
+
+ // problem with policy instantiation
+
+ } catch (ClassCastException cce) \{
+
+ // Not instance of java.security.policy
+
+ }
+
+===  }
+
+An application server that chooses to support
+this contract in a J2SE 1.3 environment must perform the policy
+replacement algorithm described above when the system property “
+_javax.security.jacc.auth.policy.provider_ ” is defined. That is, for
+each JRE of the application server, the server must construct an
+instance of the class identified by the system property, confirm that
+the resulting object is an instance of _javax.security.auth.Policy,_ and
+set, by calling _javax.security.auth.Policy.setPolicy_ method _,_ the
+resulting object as the corresponding Policy object used by the JRE.
+
+Once an application server has used either of
+the system properties defined in this section to replace a Policy object
+used by a JRE, the application server must not use setPolicy to replace
+the corresponding Policy object of the running JRE again.
+
+The requirements of this section have been
+designed to ensure that containers support Policy replacment and to
+facilitate delegation to a default system Policy provider. These
+requirements should not be interpreted as placing any restrictions on
+the delegation patterns that may be implemented by replacement Policy
+modules.
+
+=== Modifications to the JAAS SubjectDomainCombiner
+
+The reference implementation of the combine
+method of the JAAS _SubjectDomainCombiner_ returns protection domains
+that are constructed with a _java.security.Permissions_ collection.This
+is the norm in J2SE 1.3 environments, and it also occurs in J2SE 1.4 and
+Java Standard Edition 5.0 environments when the installed JAAS Policy
+implementation class is not the _com.sun.security.auth.PolicyFile_ class
+(that is, the JRE is operating in backward compatibility mode with
+respect to JAAS Policy replacement). The use of
+_java.security.Permissions_ by the _SubjectDomainCombiner_ forces JAAS
+Policy providers to compute all the permissions that pertain to a
+subject and code source and effectively precludes integration of Policy
+subsystems that are not capable of doing so. To ensure that the
+implementation of the JAAS _SubjectDomainCombiner_ does not preclude
+integration of a class of Policy providers, this contract imposes the
+following requirement and recommendation on application servers.
+
+To satisfy the contract defined by this
+specification, a J2EE 1.3 application server must install or bundle,
+such that it is used by every JRE of the application server, a
+_javax.security.auth.SubjectDomainCombiner_ whose _combine_ method
+returns protection domains constructed using the permission collections
+returned by _javax.security.auth.Policy.getPermisions_ . It is
+recommended that this requirement also be satisfied by J2EE 1.4 and
+later version Java EE application servers in the case where
+_javax.security.auth.Policy_ is used (in backward compatibility mode) to
+perform javax.security.jacc policy decisions.

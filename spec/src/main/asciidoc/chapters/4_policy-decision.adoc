@@ -1,0 +1,837 @@
+== CHAPTER 4 - 
+
+[[a556]]Policy Decision and
+Enforcement Subcontract
+
+The link:jacc.html#a556[See Policy
+Decision and Enforcement Subcontract] defines the interactions between
+container policy enforcement points and the providers that implement the
+policy decisions required by Java EE containers.
+
+=== [[a558]]Policy Enforcement by Servlet Containers
+
+Servlet containers must employ the methods
+defined in the following subsections to enforce the authorization
+policies established for web resources.
+
+=== [[a560]]Permission Names for Transport and Pre-Dispatch Decisions
+
+The name of the permission checked in a
+transport or pre-dispatch decision must be the unqualified request URI
+minus the context path. All colon characters occurring within the name
+must be represented using escaped encodinglink:#a1266[17]. For
+the special case where this transformation of the request URI yields the
+URLPattern "/", the empty string URLPattern, "", must be used as the
+permission name.
+
+For the special case where the empty string
+must be substituted for the "/" pattern in the permission evaluation,
+all target related processing (including servlet mapping, filter
+mapping, and form based login processing) must be performed using the
+original pattern, "/".
+
+=== [[a563]]Evaluation of Transport Guarantees
+
+The Servlet container must obtain a
+WebUserDataPermission object with name obtained from the request URI as
+defined in link:jacc.html#a560[See Permission Names for
+Transport and Pre-Dispatch Decisions]”. The actions of the obtained
+permission must be composed of the HTTP method of the request and a
+protection value describing the transport layer protection of the
+connection on which the request arrived. The protection value must be as
+follows:
+
+* If the request arrived on a connection
+deemed by the container to be protected for confidentiality, a
+protection value of “:CONFIDENTIAL” must be used.
+* If the request arrived on a connection
+deemed by the container to be protected for integrity (but not
+confidentiality), a protection value of “:INTEGRAL” must be used.
+* If the request arrived on a connection
+deemed by the container to be unprotected, the actions used in the
+permission construction must contain only the HTTP method of the
+request.
+
+The Servlet container must use one of the
+methods described in link:jacc.html#a727[See Checking
+AccessControlContext Independent Grants]” to test if access to the
+resource using the method and connection type encapsulated in the
+WebUserDataPermission is permitted. If a SecurityException is thrown in
+the permission determination, it must be caught, and the result of the
+determination must be that access to the resource using the method and
+connection type is not permitted. If access is not permitted, the
+request must be redirected as defined by the Servlet Specification. If
+access is permitted, the request must be subjected to a pre-dispatch
+decision.
+
+=== [[a569]]Pre-dispatch Decision
+
+The Servlet container must obtain a
+WebResourcePermission object with name obtained from the request URI as
+defined in link:jacc.html#a560[See Permission Names for
+Transport and Pre-Dispatch Decisions]”. The actions of the obtained
+permission must be the HTTP method of the request. The Servlet container
+must use one of the methods described in
+link:jacc.html#a736[See Checking the Caller for a Permission]”
+to test if the WebResourcePermission has been granted to the caller. If
+a SecurityException is thrown in the permission determination, it must
+be caught, and the result of the determination must be that the
+permission is not granted to the caller. The Servlet container may only
+dispatch the request to the web resource if the WebResourcePermission is
+determined to be granted to the caller. Otherwise the request must be
+rejected with the appropriate HTTP error message as defined by the
+Servlet Specification.
+
+Before it dispatches a call to a web
+resource, the container must associate with the call thread an
+AccessControlContext containing the principals of (only) the target
+component’s runAs identity (as defined in
+link:jacc.html#a703[See Component runAs Identity]).
+
+=== [[a572]]Application Embedded Privilege Test
+
+When a call is made from a web resource to
+_isUserInRole(String roleName)_ the implementation of this method must
+obtain a WebRoleRefPermission object with name corresponding to the
+servlet-name of the calling web resource and with actions equal to the
+roleName used in the call. For the special case where the call to
+_isUserInRole_ is made from a web resource that is not mapped to a
+Servlet (i.e. by a _servlet-mapping_ ), the name of the
+WebRoleRefPermission must be the empty string. In either case, the
+implementation of the isUserInRole method must then use one of the
+methods described in link:jacc.html#a736[See Checking the
+Caller for a Permission]” to determine if the WebRoleRefPermission has
+been granted to the caller. If a SecurityException is thrown in the
+permission determination, it must be caught, and the result of the
+determination must be that the permission is not granted to the caller.
+If it is determined that the WebRoleRefPermission has been granted to
+the caller, isUserInRole must return true. Otherwise the return value
+must be false.
+
+=== [[a574]]Provider Support for Servlet Policy Enforcement
+
+In support of the policy enforcement done by
+servlet containers, providers must implement the policy decision
+functionality defined in the following subsections.
+
+=== [[a576]]Servlet Policy Decision Semantics
+
+A Policy provider must use the combined
+policy statements of the default policy context (as defined in
+link:jacc.html#a747[See Default Policy Context]”) and of the
+policy context identified by calling PolicyContext.getContextID to
+determine if they imply the permission being checked. If one or more
+excluded policy statements imply the checked permission, the evaluation
+may terminate and the checked permission must be determined not to be
+granted. Otherwise, if one or more unchecked policy statements imply the
+checked permission, the checked permission must be determined to be
+granted independent of AccessControlContext. If the status of the
+checked permission is not resolved by the excluded and unchecked
+evaluations, it must be determined if a permission that implies the
+checked permission has been granted to the AccessControlContext being
+tested for the permission. The checked permission may only be determined
+to be granted if a permission that implies the checked permission has
+been granted to the AccessControlContext. Otherwise the permission must
+be determined not to be granted. The policy decision semantics are
+dependent on permission specific rules for determining if the
+permissions in policy statements imply the permission being checked.
+
+The WebResourcePermission,
+WebUserDataPermission, and WebRoleRefPermission specific rules used to
+determine if the permissions in policy statements imply a checked
+permission are defined in the next sections.
+
+=== [[a579]]Matching Qualified URL Pattern Names
+
+Qualified URL Patterns names were described
+in a subsection of link:jacc.html#a281[See Translating
+security-constraint Elements]”. The WebResourcePermission and
+WebUserDataPermission classes use the term URLPatternSpec to describe
+the syntax of qualified URL pattern names. The URLPatternSpec syntax is
+defined as follows:
+
+=== URLPatternList ::= URLPattern | URLPatternList colon URLPattern
+
+URLPatternSpec ::= URLPattern | URLPattern
+colon URLPatternList
+
+=== name ::= URLPatternSpec
+
+Given this syntax, A reference URLPatternSpec
+matches an argument URLPatternSpec if all of the following are true.
+
+* The first URLPattern in the argument
+URLPatternSpec is matched by the first URLPattern in the reference
+URLPatternSpec.
+* The first URLPattern in the argument
+URLPatternSpec is NOT matched by any URLPattern in the URLPatternList of
+the reference URLPatternSpec.
+* If the first URLPattern in the argument
+URLPatternSpec matches the first URLPattern in the reference
+URLPatternSpec, then every URLPattern in the URLPatternList of the
+reference URLPatternSpec must be matched by a URLPattern in the
+URLPatternList of the argument URLPatternSpec.
+
+The comparisons described above are case
+sensitive, and all matching is according to the rules defined in
+link:jacc.html#a347[See Servlet URL-Pattern Matching Rules]”.
+
+=== [[a589]]Matching HTTP Method Specifications
+
+The WebResourcePermission and
+WebUserDataPermission classes use the term HTTPMethodSpec to describe
+the syntax of the HTTP method component of their actions values. The
+HTTPMethodSpec syntax is defined as follows:
+
+=== HTTPMethodSpec ::= null | emptyString |
+
+===  HTTPMethodExceptionList | HTTPMethodList
+
+Given this syntax, a reference HTTPMethodSpec
+matches an argument HTTPMethodSpec if all of the HTTP methods
+represented by the actions of the argument specification are included in
+the method subset represented by the actions of the reference
+specification.
+
+A null or emptyString HTTPMethodSpec
+represents the entire set of HTTP methods, and as such, matches any
+argument HTTPMethodSpec. An
+HTTPMethodExceptionListlink:#a1267[18] matches any subset that
+does not include a method named in the exception list. A reference
+HTTPMethodList matches an argument HTTPMethodList if the methods named
+in the argument list are all named in the reference list. An
+HTTPMethodList never matches an argument HTTPMethodExceptionList.
+Neither an HTTPMethodList or an HTTPMethodExceptionList matches a null
+or emptyString HTTPMethodSpec.
+
+=== WebResourcePermission [[a595]]Matching Rules
+
+A reference WebResourcePermission implies an
+argument permission if all of the following are true.
+
+* The argument permission is an instanceof
+WebResourcePermission.
+* The name of the argument permission is
+matched by the name of the reference permission according to the rules
+defined in link:jacc.html#a579[See Matching Qualified URL
+Pattern Names].
+* The HTTP methods represented by the actions
+of the argument permission are a subset of the HTTP methods represented
+by the actions of the reference permission as defined in
+link:jacc.html#a589[See Matching HTTP Method Specifications]”.
+
+The comparisons described above are case
+sensitive.
+
+=== [[a601]]WebRoleRefPermission Matching Rules
+
+ A reference WebRoleRefPermission implies an
+argument permission if all of the following are true.
+
+* The argument permission is an instanceof
+WebRoleRefPermission.
+* The name of the argument permission is
+equivalent to the name of the reference permission.
+* The actions (i.e role reference) of the
+argument permission is equivalent to the actions (i.e role reference) of
+the reference permission.
+
+The comparisons described above are case
+sensitive.
+
+=== [[a607]]WebUserDataPermission Matching Rules
+
+A reference WebUserDataPermission implies an
+argument permission if all of the following are true.
+
+* The argument permission is an instanceof
+WebUserDataPermission.
+* The name of the argument permission is
+matched by the name of the reference permission according to the rules
+defined in link:jacc.html#a579[See Matching Qualified URL
+Pattern Names].
+* The HTTP methods represented by the actions
+of the argument permission are a subset of the HTTP methods represented
+by the actions of the reference permission as defined in
+link:jacc.html#a589[See Matching HTTP Method Specifications]”.
+* The transportType in the actions of the
+reference permission either corresponds to the value "NONE", or equals
+the transportType in the actions of the argument permission.
+
+The comparisons described above are case
+sensitive.
+
+=== [[a614]]Policy Enforcement by EJB Containers
+
+EJB containers must employ the methods
+defined in the following subsections to enforce the authorization
+policies established for EJB resources.
+
+=== [[a616]]EJB Pre-dispatch Decision
+
+The EJB container must obtain an
+EJBMethodPermission object with name corresponding to the ejb-name of
+the target resource and with actions that completely specify the
+about-to-be-called method of the EJB by identifying the method
+interface, method name, and method signature as defined for a methodSpec
+in the documentation of the EJBMethodPermission class.
+
+The EJB container must use one of the methods
+described in link:jacc.html#a736[See Checking the Caller for a
+Permission]” to determine if the EJBMethodPermission has been granted to
+the caller. If a SecurityException is thrown in the permission
+determination, it must be caught, and the result of the determination
+must be that the permission is not granted to the caller. The EJB
+container may only dispatch the request to the EJB resource, if the
+EJBMethodPermission is determined to be granted to the caller. Otherwise
+the request must be rejected with the appropriate exception, as defined
+by the corresponding EJB specification.
+
+Before it dispatches a call to an EJB, the
+container must associate with the call thread an AccessControlContext
+containing the principals of only the target EJB’s runAs identity (as
+defined in link:jacc.html#a703[See Component runAs Identity]).
+
+=== [[a620]]EJB Application Embedded Privilege Test
+
+When an EJB makes a call to
+_isCallerInRole(String roleName)_ the implementation of this method must
+obtain an EJBRoleRefPermission object with name corresponding to the
+ejb-name of the EJB making the call and with actions equal to the
+roleName used in the call. The implementation of the isCallerInRole
+method must then use one of the methods described in
+link:jacc.html#a736[See Checking the Caller for a Permission]”
+to determine if the EJBRoleRefPermission has been granted to the caller.
+If a SecurityException is thrown in the permission determination, it
+must be caught, and the result of the determination must be that the
+permission is not granted to the caller. If it is determined that the
+EJBRoleRefPermission has been granted to the caller, then isCallerInRole
+must return true. Otherwise the return value must be false.
+
+=== [[a622]]Provider Support for EJB Policy Enforcement
+
+In support of the policy enforcement done by
+EJB containers, providers must implement the policy decision
+functionality defined in the following subsections.
+
+=== [[a624]]EJB Policy Decision Semantics
+
+A Policy provider must employ the policy
+decision semantics described in link:jacc.html#a576[See Servlet
+Policy Decision Semantics]” in the Processing of EJB Policy decisions.
+
+The EJBMethodPermission and
+EJBRoleRefPermission specific rules used to determine if the permissions
+in policy statements imply a checked permission are defined in the
+following sections.
+
+=== [[a627]]EJBMethodPermission Matching Rules
+
+A reference EJBMethodPermission implies an
+argument permission, if all of the following are true.
+
+* The argument permission is an instanceof
+EJBMethodPermission.
+* The name of the argument permission is
+equivalent to the name of the reference permission.
+* The methods to which the argument
+permission applies (as defined in its actions) must be a subset of the
+methods to which the reference permission applies (as defined in its
+actions). This rule is satisfied if all of the following conditions are
+met.
+
+The method name of the reference permission
+is null, the empty string, or equivalent to the method name of the
+argument permission.
+
+The method interface of the reference
+permission is null, the empty string, or equivalent to the method
+interface of the argument permission.
+
+The method parameter type list of the
+reference permission is null, the empty string, or equivalent to the
+method parameter type list of the argument permission.
+
+The comparisons described above are case
+sensitive.
+
+
+
+link:jacc.html#a639[See
+EJBMethodPermission methodSpec Matching Examples] demonstrate the
+properties of EJBMethodPermission matching by example.
+
+
+
+=== EJBMethodPermission [[a639]]methodSpec Matching Examples
+
+type
+
+methodInterface
+
+Spec
+
+methodName
+
+Spec
+
+methodParams
+
+Spec
+
+implies
+
+checked
+
+permission
+
+checked permission
+
+Home
+
+doThis
+
+java.lang.String
+
+
+
+reference
+
+permission
+
+empty string
+
+empty string
+
+empty string
+
+yes
+
+reference
+
+permission
+
+Home
+
+empty string
+
+empty string
+
+yes
+
+reference
+
+permission
+
+empty string
+
+doThis
+
+empty string
+
+yes
+
+reference
+
+permission
+
+empty string
+
+empty string
+
+java.lang.String
+
+yes
+
+reference
+
+permission
+
+Remote
+
+doThis
+
+java.lang.String
+
+no
+
+reference
+
+permission
+
+Home
+
+doNotDoThis
+
+java.lang.String
+
+no
+
+reference
+
+permission
+
+Home
+
+doThis
+
+java.lang.byte
+
+no
+
+=== [[a697]]EJBRoleRefPermission Matching Rules
+
+A reference EJBRoleRefPermission implies an
+argument permission, if all of the following are true.
+
+* The argument permission is an instanceof
+EJBRoleRefPermission.
+* The name of the argument permission is
+equivalent to the name of the reference permission.
+* The actions (i.e role reference) of the
+argument permission is equivalent to the actions (i.e role reference) of
+the reference permission.
+
+The comparisons described above are case
+sensitive.
+
+=== [[a703]]Component runAs Identity
+
+The identity used by Servlet or EJB
+components in the operations they perform is configured by the Deployer.
+This identity is referred to as the component’s runAs identity. By
+default (and unless otherwise specified in the EJB or Servlet
+specifications), components are configured such that they are assigned
+the identity of their caller (such as it is) as their runAs identity.
+Alternatively, a Deployer may choose to assign an environment specific
+identity as a component’s runAs identity. In this case, the container
+must establish the specified identity as the component’s runAs identity
+independent of the identity of the component’s caller.
+
+ When a Deployer configures an environment
+specific component identity based on a deployment descriptor
+specification that the component run with an identity mapped to a role,
+those responsible for defining the principal-to-role mapping must ensure
+that the specified identity is mapped to the role.
+
+A container establishes a component’s runAs
+identity by associating an AccessControlContext with the component’s
+thread of execution. The container must ensure that the
+AccessControlContext includes a SubjectDomainCombiner; and the container
+must protect the AccessControlContext associated with a running
+component such that, by default, the component is not granted
+permissions sufficient to modify the AccessControlContext.
+
+=== [[a707]]Setting the Policy Context
+
+A policy context identifier is set on a
+thread by calling the setContextID method on the PolicyContext utility
+class. The value of a thread’s policy context identifier is null until
+the setContextID method is called. Before invoking Policy to evaluate a
+transport guarantee or to perform a pre-dispatch decision, and before
+dispatching into a Servlet or EJB component, a container must ensure
+that the thread’s policy context identifier identifies the policy
+context corresponding to the instance of the module or application for
+which the operation is being performed.
+
+Containers must be granted the “setPolicy”
+SecurityPermission independent of policy context identifier (or in all
+policy contexts) as they need this permission to set the policy context
+identifier.
+
+=== [[a710]]Policy Context Handlers
+
+This specification requires that containers
+register policy context handlers with the PolicyContext utility class
+such that Policy providers can invoke these handlers to obtain
+additional context to apply in their access decisions. Policy context
+handlers are objects that implement the PolicyContextHandler interface.
+To satisfy the requirements of this specification, containers are
+required to provide and register with the PolicyContext class the policy
+context handlers described in the following subsections. All of the
+required context handlers mustlink:#a1268[19] return the value
+null when activated outside of the scope of a container’s processing of
+a component request. In this context, the scope of a container's
+processing of a component request begins when the container asks policy
+to perform the corresponding pre-dispatch access decision and ends
+either when the access decision returns a failed authorization or when
+the dispatched request returns from the component to the container.
+
+Policy providers must not call methods on or
+modify the objects returned by the context handlers if these actions
+will cause the container to fail in its processing of the associated
+request.
+
+Containers may delay the registration of
+required context handlers until the first call to
+PolicyContext.getHandlerKeys, or for a specific handler, until the
+required context handler is activated (assuming getHandlerKeys has not
+been called). When a required context handler for which registration has
+been delayed is invoked, the container may return null, and must
+complete the registration of the handler before returning.
+
+A provider that is dependent on a handler,
+should force registration of the handler in advance of the provider’s
+processing of a component request for which the handler is required.
+This can be accomplished by invoking the required handler during
+initialization of the provider.
+
+=== [[a715]]Container Subject Policy Context Handler
+
+All EJB and Servlet containers must register
+a PolicyContextHandler whose getContext method returns a
+javax.security.auth.Subject object when invoked with the key
+“javax.security.auth.Subject.container”. When this handler is activated
+as the result of a policy decision performed by a container before
+dispatch
+
+into a component, this handler must return a
+Subject containing the principals
+
+and credentials of the “caller” of the
+component. When activated from the scope of a dispatched call, this
+handler must return a Subject containing the principals and credentials
+corresponding to the identity established by the container prior to the
+activation of the handler. The identity established by the container
+will either be the component’s runAs identity or the caller’s identity
+(e.g. when an EJB component calls _isCallerInRole_ ). In all cases, if
+the identity of the corresponding Subject has not been established or
+authenticated, this handler must return the value null.
+
+=== [[a719]]SOAPMessage Policy Context Handler
+
+All EJB containers must register a
+PolicyContextHandler whose getContext method returns a
+javax.xml.soap.SOAPMessage object when invoked with the key
+“javax.xml.soap.SOAPMessage”. If the request being processed by the
+container arrived as a SOAP request at the ServiceEndpoint method
+interface, the container must return the SOAP message object when this
+handler is activated. Otherwise, this handler must return the value
+null.
+
+=== [[a721]]HttpServletRequest Policy Context Handler
+
+All Servlet containers must register a
+PolicyContextHandler whose getContext method returns a
+javax.servlet.http.HttpServletRequest object when invoked with the key
+“javax.servlet.http.HttpServletRequest”. When this handler is activated,
+the container must return the HttpServletRequest object corresponding to
+the component request being processed by the container.
+
+=== [[a723]]EnterpriseBean Policy Context Handler
+
+All EJB containers must register a
+PolicyContextHandler whose getContext method returns a
+javax.ejb.EnterpriseBean object when invoked with the key
+“javax.ejb.EnterpriseBean”. When this handler is activated, the
+container must return the EnterpriseBean object corresponding to the EJB
+component request (as restricted below) being processed by the
+container. The EnterpriseBean object must only be returned when this
+handler is activated within the scope of a container's processing of a
+business method of the EJB Remote, Local, or ServiceEndpoint interfaces
+of the EnterpriseBean object. The value null must be returned if the
+bean implementation class does not implement the
+javax.ejb.EnterpriseBean interface.
+
+=== [[a725]]EJB Arguments Policy Context Handler
+
+All EJB containers must register a
+PolicyContextHandler whose getContext method returns an array of objects
+(Object[]) containing the arguments of the EJB method invocation (in the
+same order as they appear in the method signature) when invoked with the
+key “javax.ejb.arguments”. The context handler must return the value
+null when called in the context of a SOAP request that arrived at the
+ServiceEndpoint method interface. Otherwise, the context handler must
+return the array of objects corresponding to the parameters of the EJB
+component invocation. If there are no parameters in the method
+signature, the context handler must return an empty array of Object
+(i.e. Object[0]).
+
+=== [[a727]]Checking AccessControlContext Independent Grants
+
+This section describes the techniques used by
+containers to check permissions for which policy is defined in terms of
+the operation defined by the permission and independent of properties of
+the invocation context represented in the AccessControlContext. The
+WebUserDataPermission policy statements resulting from the translation
+of Servlet _user-data-constraint_ elements are an example of such
+permissions. A container must use one of the following techniques to
+check an instance of a permission for which policy is defined
+independent of AccessControlContext.
+
+* The container calls
+_AccessControlContext.checkPermission_ with the permission being checked
+as argument. The call to _checkPermission_ may be made on any
+AccessControlContext. If _checkPermission_ throws an
+AccessControlException, the permission is not granted. Otherwise the
+permission is granted.
+* The container calls
+_AccessController.checkPermission_ with the permission being checked.
+The value of the current thread’s AccessControlContext is irrelevant in
+the access determination. If _checkPermission_ throws an
+AccessControlException, the checked permission is not granted. Otherwise
+the permission is granted.
+* The container calls
+_SecurityManager.checkPermission_ with the permission being checked. If
+_checkPermission_ throws an AccessControlException, the checked
+permission is not granted. Otherwise the permission is granted.
+* The J2EE 1.4 container calls
+_Policy.implies_ with two arguments; the permission being checked and a
+ProtectionDomain that need not be constructed with principals. The
+checked permission is granted if Policy.implies returns true. Otherwise,
+the permission is not granted.
+* The J2EE 1.4 container calls
+_java.security.Policy.getPermissions_ with a ProtectionDomain that need
+not be constructed with principals. The container must call the
+_implies_ method on the returned PermissionCollection using the
+permission being checked as argument. The checked permission is granted
+if the PermissionCollection implies it. Otherwise, the permission is not
+granted. This technique is supported but not recommended.
+* The J2EE 1.3 container calls
+_javax.security.auth.Policy.getPermissions_ to determine the collection
+of permissions granted independent of AccessControlContext. The Subject
+in the call to _getPermissions_ may be null. The container must call the
+_implies_ method on the returned PermissionCollection using the
+permission being checked as argument. The checked permission is granted
+if the PermissionCollection implies it. Otherwise, the permission is not
+granted. This technique is supported but not recommended.
+
+Prior to using any of the techniques
+described in this section, the container must have established a policy
+context identifier as defined in link:jacc.html#a707[See
+Setting the Policy Context]”.
+
+=== [[a736]]Checking the Caller for a Permission
+
+A container must determine if the caller has
+been granted a permission by evaluating the permission in the context of
+an AccessControlContext, ProtectionDomain, or Subject containing the
+principals of (only) the callerlink:#a1268[20]. If the caller’s
+identity has been asserted or vouched for by a trusted authority (other
+than the caller), the principals of the authority must not be included
+in the principals of the caller. A container must use one of the
+following techniques to determine if a permission has been granted to
+the caller.
+
+* The container calls
+_AccessControlContext.checkPermission_ with the permission as argument.
+The call to _checkPermission_ must be made on an AccessControlContext
+that contains the principals of the caller. If checkPermission throws an
+AccessControlException, the permission is not granted to the caller.
+Otherwise the permission is granted.
+* The container calls
+_AccessController.checkPermission_ with the permission as argument. The
+AccessControlContext associated with the thread on which the call to
+_checkPermission_ is made must contain the principals of the caller. If
+_checkPermission_ throws an AccessControlException, the permission is
+not granted to the caller. Otherwise the permission is granted.
+* The container calls
+_SecurityManager.checkPermission_ with the permission as argument. The
+AccessControlContext associated with the thread on which the call to
+_checkPermission_ is made must contain the principals of the caller. If
+checkPermission throws an AccessControlException, the permission is not
+granted to the caller. Otherwise the permission is granted.
+* The J2EE 1.4 container calls
+_Policy.implies_ with two arguments; the permission being checked and a
+ProtectionDomain constructed with the principals of the caller. The
+boolean result returned by _Policy.implies_ indicates whether or not the
+permission has been granted to the caller.
+* The J2EE 1.4 container calls
+_java.security.Policy.getPermissions_ with an argument ProtectionDomain
+that was constructed with the principals of the caller. The container
+must call the _implies_ method on the returned PermissionCollection
+using the permission being checked as argument. If the
+PermissionCollection implies the permission being tested, the permission
+has been granted to the caller. Otherwise it has not. This technique is
+supported but not recommended.link:#a1270[21]
+* The J2EE 1.3 container calls
+_javax.security.auth.Policy.getPermissions_ with an argument Subject
+containing the principals of the caller.The container must call the
+_implies_ method on the returned PermissionCollection using the
+permission being checked as argument. If the PermissionCollection
+implies the permission being tested, the permission has been granted to
+the caller. Otherwise it has not. This technique is supported but not
+recommended.
+
+Prior to using any of the techniques
+described in this section, the container must have established a policy
+context identifier as defined in link:jacc.html#a707[See
+Setting the Policy Context]”.
+
+=== [[a745]]Missing Policy Contexts
+
+A Policy provider must return that a tested
+permission has not been granted if it acquires a non-null policy context
+identifier by calling getContextID on the PolicyContext class and the
+_inService_ method of the _PolicyConfigurationFactory_ associated with
+the provider would return false if called with the policy context
+identifier.
+
+=== [[a747]]Default Policy Context
+
+The default policy context contains the
+policy statements that apply to the JRE independent of the policy
+contexts defined as the result of the deployment of modules or
+applications in containers. The policy context identifier of the default
+policy context is the null value. The default policy context is never
+linked to another PolicyConfiguration, and as such does not share the
+principal-to-role mapping of any other policy context.
+
+A Policy provider must include the policy
+statements of the default policy context in every access determination
+it performs. A Policy provider that either does not call
+PolicyContext.getContexdID, or does so and acquires the identifier of
+the default policy context, must use only the policy statements of the
+default policy context to perform its access determination.
+
+=== [[a750]]Policy Compatibility Requirements
+
+To be compatible with this contract, every
+JRE of a J2EE 1.4 application server must perform all of the policy
+decisions defined by this contract by interacting with the
+_java.security.Policy_ instance available in the JRE via the
+_java.security.Policy.getPolicy_ method. Every JRE of a J2EE 1.3
+application server must perform all of the policy decisions defined by
+this contract by interacting with the _javax.security.auth.Policy_
+instance available in the JRE via the
+_javax.security.auth.Policy.getPolicy_ method.
+
+If an application server or JRE employs a
+custom SecurityManager, the necessary reliance on Policy object may be
+accomplished by ensuring that the custom SecurityManager relies on the
+appropriate (as defined above) Policy object for all of the policy
+decisions defined by this contract.
+
+=== [[a753]]Optimization of Permission Evaluations
+
+Containers may employ the following
+optimizations (based on reuse) when the result obtained by repeating the
+evaluation will not differ from the previous result or when the time
+since the previous evaluation is less than the container’s threshold for
+being effected by policy changes:
+
+* Containers may reuse an authorization
+result obtained from a previous equivalent permission evaluation.
+* Containers may reuse an authorization
+result obtained for an unauthenticated caller (i.e. a caller with no
+principals) performed as defined in link:jacc.html#a736[See
+Checking the Caller for a Permission]” to grant, independent of caller
+identity, any permission implied by the unauthenticated result.
+
+This specification does not prescribe how a
+container determines when a repeated evaluation will return the same
+result. That said, one way that containers could make this determination
+is if they are, and can determine if they will be, notified of policy
+changes and if they can establish that their policy provider does not
+employ additional context (such as could be acquired by calling a
+_PolicyContextHandler_ ) in its policy evaluations.
+
+Common practice for containers to receive
+such notification could be for them to register to the
+_"java.security.Policy.supportsReuse"_ key a _PolicyContextHandler_ and
+for the container to determine if its provider will notify it of policy
+changes by making a test call to the provider’s _refresh_ method. Only a
+provider that is compatible with the optimizations described above
+(including because it does not employ additional context in its policy
+evaluations) may deliver notice of policy changes by activating this
+handler when its _refresh_ method is called.

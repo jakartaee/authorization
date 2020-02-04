@@ -1,0 +1,169 @@
+=== Preface
+
+ 
+
+=== Status of Document
+
+This document is the Final Release of the
+Java _TM_ Authorization Contract for Containers Version 1.5
+specification and represents the definition of this technology as
+implemented by the reference implementation (RI) and verified by the
+technology compatibility kit (TCK) . This specification was developed
+under the Java Community Process (JCP2.7).
+
+=== Audience
+
+This document is intended for developers of
+the RI and TCK and for those who will be delivering implementations of
+this technology in their products.
+
+=== Abstract
+
+This specification defines new
+java.security.Permission classes to satisfy the Java EE authorization
+model. The specification defines the binding of container access
+decisions to operations on instances of these permission classes. The
+specification defines the semantics of policy providers that employ the
+new permission classes to address the authorization requirements of Java
+EE, including the following:
+
+* the definition of roles as named
+collections of permissions
+* the granting to principals of permissions
+corresponding to roles
+* the determination of whether a principal
+has been granted the permissions of a role (e.g. isCallerInRole)
+* the definition of identifier to role
+mappings that bind application embedded identifiers to application
+scoped role names.
+
+The specification defines the installation
+and configuration of authorization providers for use by containers. The
+specification defines the interfaces that a provider must make available
+to allow container deployment tools to create and manage permission
+collections corresponding to roles.
+
+=== Keywords
+
+The keywords “MUST”, “MUST NOT”, “REQUIRED”,
+“SHALL”, “SHALL NOT”, “SHOULD”, “SHOULD NOT”, “RECOMMENDED”, “MAY”, and
+“OPTIONAL” in this document are to be interpreted as described in
+RFC2119 [KEYWORDS].
+
+=== Acknowledgements
+
+This draft of the specification incorporates
+the contributions of the RI and TCK teams with the output of the JSR115
+Expert Group. The JSR 115 Expert Group included the following members:
+
+
+
+Steven Bazyl RSA Security, Inc.
+
+Sean Dolan Hitachi Computer Products
+
+Herb Erickson SilverStream Software
+
+Gary Ellison Sun Microsystems
+
+Neil Forrest Dyoti Enterprises Ltd
+
+Johan Gellner Tmax Soft, Inc.
+
+Craig Heath Individual
+
+Hal Lockhart Entegrity Solutions
+
+Larry McCay Hewlett-Packard Company
+
+Serge Mister Entrust, Incorporated
+
+Ron Monzillo Sun Microsystems
+
+Anthony Nadalin Tivoli Systems, Incorporated
+
+Nataraj Nagaratnam International Business
+Machines Corporation
+
+Vijakumar Natarajan Borland Software
+Corporation
+
+Raymond K. Ng Oracle Corporation
+
+Samir Nigam Sybase, Incorporated
+
+Henry Pasternack Netegrity, Incorporated
+
+Paul Patrick BEA Systems
+
+Francis Pouatcha Individual
+
+Jyri Virkki iPlanet
+
+
+
+The RI, the TCK, and the improvements to the
+specification made as a result of the experiences gained during these
+actvities are the result of the fine work of the following individuals:
+
+
+
+Jean-Francois Arcand Sun Microsystems
+
+Carla Carlson Sun Microsystems
+
+Shing Wai Chan Sun Microsystems
+
+Paul Hendley Sun Microsystems
+
+Kumar Jayanti Sun Microsystems
+
+Eric Jendrock Sun Microsystems
+
+Jagadesh Babu Munta Sun Microsystems
+
+Tony Ng Sun Microsystems
+
+Craig Perez Oracle America, Inc.
+
+Raja Perumal Sun Microsystems
+
+Deepa Singh Sun Microsystems
+
+Harpreet Singh Sun Microsystems
+
+Nithya Subramanian Sun Microsystems
+
+
+
+The following people are among many who
+commented on the specification, and in so doing, contributed to its
+final form. I would like to recognize the contributions of everyone who
+commented on the specification.
+
+
+
+Rajeev Angal iPlanet
+
+Lambert Boskamp SAP AG
+
+William Cox BEA Systems
+
+Paul Ferwerda BEA Systems
+
+Charlie Lai Sun Microsystmes
+
+Rosanna Lee Sun Microsystems
+
+Robert Naugle Hewlett-Packard Company
+
+Bob Scheifler Sun Microsystems
+
+Bill Shannon Sun Microsystems
+
+Neil Smithline BEA Systems
+
+Sirish Vepa Sybase, Incorporated
+
+Kai Xu Sun Microsystems
+

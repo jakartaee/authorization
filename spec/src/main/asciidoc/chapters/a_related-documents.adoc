@@ -1,0 +1,31 @@
+=== Related Documents
+
+This specification refers to the following
+documents. The terms used to refer to the documents in this
+specification are included in brackets.
+
+S. Bradner, “Key words for use in RFCs to
+Indicate Requirement Levels,” RFC 2119, [Keywords] Harvard University,
+March 1997
+
+ _Java™ 2 Platform, Enterprise Edition
+Specification Version 1.4_ [Java EE specification] Copyright 1999-2003,
+Sun Microsystems, Inc. Available at _http://java.sun.com/j2ee/docs.html_
+.
+
+ _Java™ 2 Platform, Standard Edition, v1.4.0
+API Specification_ [Java SE specification]. Copyright 1993-2003, Sun
+Microsystems, Inc. Available at
+_http://java.sun.com/j2se/1.4/docs/api/index.html_ .
+
+ _Enterprise JavaBeans™ Specification, Version
+2.1_ [EJB specification]. Copyright 1998-2003, Sun Microsystems, Inc.
+Available at _http://java.sun.com/products/ejb_ .
+
+ _Java™ Servlet Specification, Version 2.4_
+[Servlet specification]. Copyright 1998-2003, Sun Microsystems, Inc.
+Available at _http://java.sun.com/products/servlet_ .
+
+ _Java™ Authentication and Authorization
+Service_ (JAAS) 1.0 [JAAS specification]. Copyright 1999-2003, Sun
+Microsystems, Inc. Available at _http://java.sun.com/products/jaas_ .

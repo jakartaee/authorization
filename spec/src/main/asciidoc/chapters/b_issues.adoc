@@ -1,0 +1,535 @@
+=== Issues
+
+The following sections document the more
+noteworthy issues that have been discussed by the Expert Group. These
+sections are included in the Final Release as they provide insight into
+the discussions and decisions which shaped the form of the current
+specification. All of these issues have been resolved, and their
+resolutions are described below and reflected in the document.
+
+=== Configuration Context and Policy Context Identifiers
+
+The PolicyConfiguration interface associates
+Configuration Context Identifiers with policy statements, which
+themselves contain embedded policy context identifiers. There needs to
+be more explanation of the purpose and use models of these context
+identifiers. Configuration context identifiers should only be assigned
+by the Provider, to eliminate problems with ambiguity. In the case of
+createRole, we allow a configuration context identifier to be passed to
+createRole so that one configuration context id can be used for all of
+the roles in an application/module. It would probably be a good idea to
+allow the unchecked and excluded policy collections to also share the
+same context id. This would reduce the complexity of the identity
+mapping, but it would make it harder for the provider to ensure
+uniqueness of identifiers. We also want to support deployment and
+undeployment of modules, within a multi-module policy configuration
+context. That is, the modules share the same roles, but their individual
+policy statements are differentiated by policy context id within these
+roles.
+
+
+
+image:authz-4.png[image]
+
+Regarding policy context identifiers, it will not be possible to
+surgically replace the policy statements corresponding to a module, if
+modules within a policy configuration context share the same policy
+context identifiers.
+
+image:authz-4.png[image]
+
+
+
+image:authz-4.png[image]
+
+The PolicyConfiguration interface has been redesigned to support both
+the factory and finder patterns, and to include an inService method to
+allow a container to check if a PolicyConfiguration with a given
+identifier already exists. The interface also includes the concept of
+linked PolicyConfigurations to identify those PolicyConfigurations that
+must share the same principal-to-role mappings.
+
+image:authz-4.png[image]
+
+=== [[a780]]Configuration of Permissions with Parameters
+
+The PolicyConfiguration interface is used to
+communicate policy statements to Policy. An element of these statements
+is a PermissionCollection that may contain EJBMethodPermission and
+EJBRoleRefPermission objects that may have been constructed with
+embedded references to argument arrays or EntityBean instances. The
+contract must state whether such permissions may be passed through the
+PolicyConfiguration interface, and what the responsibility of the
+provider shall be should it occur.
+
+
+
+image:authz-4.png[image]
+
+resolved via the introduction of PolicyContext handlers and the
+corresponding removal of the ability to include such information in
+permission constrictions.
+
+image:authz-4.png[image]
+
+=== Extensibility of the PolicyConfiguration Interface
+
+For example, the PolicyConfiguration
+interface does not include methods that may be used to interrogate
+Policy to determine the list of configured policy configuration
+contexts. We should also consider whether the interface should be
+extended to support the configuration of additional forms (other than
+unchecked, and excluded) logical policy statements
+
+
+
+image:authz-4.png[image]
+
+(Partial) with the change to finder semantics, that is
+getPolicyConfiguration, and the addition of the inService method to
+PolicyConfigurationFactory.
+
+image:authz-4.png[image]
+
+=== Directory Scoped Extension matching patterns
+
+
+
+image:authz-4.png[image]
+
+We will not require that they be supported by policy providers, nor will
+we require that policy providers reject other than the patterns defined
+by servlet.
+
+image:authz-4.png[image]
+
+=== [[a788]]Evolution of Deployment Policy Language
+
+The PolicyConfiguration and Policy Decision
+Subcontracts should be generalized to sustain evolution in the
+declarative authorization policy representations used in deployment
+descriptors. One dimension of this evolution, would be a change from
+DTDs to schema.
+
+
+
+image:authz-4.png[image]
+
+Some generalization in the PolicyConfiguration interface has occurred as
+a result of the removal of policy context identifiers from permissions
+such that any permission objects may be configured through this
+interface.
+
+image:authz-4.png[image]
+
+=== [[a791]]Principals Passed to Providers in Subjects
+
+The provider is expected to do
+principal-to-role mapping, but we have not allowed the provider to
+assume that it is working with a companion authentication module. We
+have also not defined standard principals for containers to put in the
+subjects used when they ask Policy to make decisions for them. So, it is
+unclear how providers will be able to do Principal-to-Role mapping.
+
+
+
+image:authz-4.png[image]
+
+We decoupled consideration of this issue from notions of principal
+selection imposed by the getCallerPrincipal and getUserPrincipal methods
+of EJB and Servlet respectively. We clarified that all principals in an
+AccessControlContext shall be available to the policy module for use in
+principal to role mapping. We added a requirement with respect to
+asserting or vouching authorities to ensure that principals
+corresponding to authorities are not misinterpreted by providers as
+principals of the subject (see link:jacc.html#a736[See Checking
+the Caller for a Permission]). Moreover, we concluded that independent
+of this contract, a policy module must be familiar with the principals
+(i.e. security attributes) assigned to subjects as the result of
+authentication in its operational environment and for which it must
+evaluate policy.
+
+image:authz-4.png[image]
+
+=== [[a794]]Clarification of Servlet Constraint Matching Semantics
+
+The definition of the security-constraint
+matching and enforcement semantics are under specified in the Servlet
+2.2 and 2.3 specifications. The contract defined in this document has
+clarified these semantics; however there will be an issue until these
+clarifications are incorporated in Servlet.
+
+
+
+image:authz-4.png[image]
+
+Servlet 2.4 specification will include a more complete description of
+the processing of constraints.
+
+image:authz-4.png[image]
+
+=== [[a797]]References and Arguments in EJBMethodPermisison
+
+When a container constructs an
+EJBMethodPermission as part of its policy decision subcontract, it may
+include a reference to the EJB (for an EntityBean) and the arguments to
+the method in the constructed permission. Inclusion of this additional
+context by containers is optional for performance reasons, yet it has
+been suggested that the contract provide a way (perhaps via a callback
+or an exception thrown by the provider) for the container to find out
+whether or not such information would be used by the provider.
+
+
+
+image:authz-4.png[image]
+
+Resolved with introduction of policy context handlers
+
+image:authz-4.png[image]
+
+=== [[a800]]Permission Spanning in RoleRefPermission
+
+The EJBRoleRefPermission and
+WebRoleRefPermission objects support the checking of multiple
+“references” in a single permission check. This functionality was
+motivated by recurring requests to extend the Java EE “inRole” APIs to
+allow multiple role references to be evaluated in a single call. The
+permission classes noted above, currently support this functionality, at
+the cost of having to span permissions in collection implication. The
+most direct consequence of this spanning is that the new Permission
+Collection methods of these Permission classes must not return null, as
+they must return a PermissionCollection capable of doing the permission
+specific spanning.
+
+
+
+image:authz-4.png[image]
+
+The replacement paradigm has been changed such that it should no longer
+be possible for providers to depend on custom implementations of the
+permission classes defined by this specification. Accordingly, the
+complexity introduced by spanning should be attenuated in the reference
+implementation.
+
+image:authz-4.png[image]
+
+=== [[a803]]Integrating Principal-to-Role Mapping with the Deployer Console
+
+The desire for a single user interface for
+security administration works somewhat counter to Java EE platforms that
+provide their own administrative console for tasks like
+principal-to-role mapping. That said, we need to preserve existing
+platform administrative consoles by defining a method to integrate
+provider specific principal-to-role mapping dialogs via the existing
+platform consoles. We must ensure alignment with JSR 88, which is
+solving a slightly different but overlapping problem. JSR 88 is defining
+how a platform with fixed deployment interfaces can be integrated with
+an administration console provided by another party.
+
+
+
+image:authz-4.png[image]
+
+This is optional functionality. Providers may choose to provide a JSR 88
+config bean that encapsulates a provider specific principal-to-role
+management interface. Containers that wish to have tight integration
+between their deployment consoles and a provider supplied
+principal-to-role management interface, should pass the provider
+supplied config bean among the config beans they are required by JSR 88
+to return to a deployment tool.
+
+image:authz-4.png[image]
+
+=== [[a806]]PolicyContext Identifiers are Unknown to Components
+
+Although not strictly speaking within the
+scope of this JSR, the work of this JSR empowers application components
+to use the Java SE policy decision interface to perform their own access
+control decisions. The permissions defined by this specification must be
+constructed with an embedded policy context identifier so that the
+policy provider can evaluate the permission in the proper deployment
+context (i.e policy configuration). As currently defined, the
+specification does not provide a component with access to its policy
+configuration identifiers, and as such a component can not check any
+permissions which implement the PolicyContext interface.
+
+
+
+image:authz-4.png[image]
+
+resolved by moving policy context identifiers out of the permissions,
+into the PolicyContext utility class
+
+image:authz-4.png[image]
+
+=== [[a809]]JAAS Policy Interface expects Providers to be able to getPermissions
+
+Not all Policy providers can, or find it
+convenient or efficient, to determine all of the permissions granted to
+an access control context. The JAAS Policy decision interface, and the
+use of this interface by the JAAS SubjectDomainCombiner, impede the
+integration of Policy Providers that are unable to enumerate all the
+permissions that pertain to a subject/protection domain before returning
+from _Policy.getPermissions()_ .
+
+
+
+image:authz-4.png[image]
+
+Added requirement to link:jacc.html#a173[See Provider
+Configuration Subcontract] that the
+_javax.security.auth.SubjectDomainCombiner_ of a J2EE 1.3 application
+server must _combine_ into the permission collection returned by
+_javax.security.auth.Policy.getPermisions_ . Recommended same of J2EE
+1.4 application servers.
+
+image:authz-4.png[image]
+
+=== [[a812]]Implementing Web Security Constraints as Permission
+
+Specification of the WebResourcePermission
+and WebUserDataPermission classes with simple, single URL pattern names
+is a bad fit for the Java SE Policy decision interface. The
+implementation of getPermissions presents a major challenge, as the
+constraint model would force the implementation to preserve ungranted
+constraining permissions in the returned PermissionCollection. It also
+would not be possible to implement the enumeration functionality
+available through the elements method of the collection. Perhaps more
+significant, the mapping of security constraints to simple, single URL
+pattern names would require a special more complex Policy provider rule
+combining algorithm, and as such, would render the default Java Policy
+provider incompetent to process such permissions. The last point is in
+direct conflict with a stated goal of the specification.
+
+
+
+image:authz-4.png[image]
+
+The translation of web security constraints into Java SE permissions was
+modified such that the URL pattern names of the WebResource and
+WebUserData permissions include a representation of the URL patterns to
+which the permission does NOTapply. The permission implies logic was
+enhanced to take this change into account. As a result of these changes
+these permissions may be processed by the default Java SE Policy module
+like any other Java SE permission.
+
+image:authz-4.png[image]
+
+=== [[a815]]Exception Handling
+
+The first PFD did not define error handling
+for the methods of the PolicyConfigurationFactory and PolicyContext
+classes, or for the PolicyConfiguration and PolicyContextHandler
+interfaces. Also, no provision was provided for implementation classes
+to pass checked exceptions out through the defined interfaces and
+classes.
+
+
+
+image:authz-4.png[image]
+
+A PolicyContextException class was added to the javax.security.jacc
+package, and the methods of the classes and interfaces identified above
+were modified to throw this checked exception as appropriate.
+
+image:authz-4.png[image]
+
+=== [[a818]]PolicyConfiguration Commit
+
+The first PFD did not provide a way for
+container deployment tools to indicate when the translation of a policy
+context was complete and available for assimilation into the associated
+Policy provider. It had been assumed that the Policy.refresh method
+could serve this purpose, until it was discovered that depending on
+Policy.refresh for this purpose would preclude parallelism in the
+deployment of applications.
+
+
+
+image:authz-4.png[image]
+
+Added "commit" and “inService” methods to the PolicyConfiguration
+interface, and formalized a 3 state (i.e. open, inService, and deleted)
+life cycle for policy contexts. Required that the commit method be
+called on a PolicyConfiguration object after all of its policy
+statements have been added, and after it is "linked to any other module
+with which it must share the same principal-to-role mapping". Also
+required that Policy.refresh only assimilate policy contexts in the
+“inService” state.
+
+image:authz-4.png[image]
+
+=== [[a821]]Support for ServiceEndpoint methodInterface
+
+The definition of the EJBMethodPermission
+class in the first PFD did not support “ServiceEndpoint" as a valid
+methodInterface value. The ServiceEndpoint methodInterface was
+introduced by EJB 2.1.
+
+
+
+image:authz-4.png[image]
+
+Added “ServiceEndpoint” as another possible value for the
+methodInterface component of an EJBMethodPermission methodNameSpec.
+
+image:authz-4.png[image]
+
+=== [[a824]]TypeNames of EJBMethodPermission Array Parameters
+
+The syntax or syntaxes that may be used to
+specify array parameters are not defined by the constructors of the
+EJBMethodPermission class. The corresponding canonical form of such
+params as returned by getActions must also be specified.
+
+
+
+image:authz-4.png[image]
+
+Added requirement that Array parameters be specified as ComponentType[]
+as apposed to in the form returned by Class.getName() (i.e.
+[LComponentType;).
+
+image:authz-4.png[image]
+
+=== [[a827]]Checking Permission on the root of a Web Application
+
+The URLPattern, "/", cannot be used to check
+a permission, as it is a synonym for asking if permission to access the
+entire application has been granted.
+
+
+
+image:authz-4.png[image]
+
+Require that the empty string be used as a replacement for "/", during
+the permission evaluation. Clarify the WebResourcePermission and
+WebUserDataPermission definitions to account for the use of the
+empty-string as a legitimate URLPattern in such permissions.
+
+image:authz-4.png[image]
+
+=== [[a830]]Calling isUserInRole from JSP not mapped to a Servlet
+
+Checking a WebRoleRefPermission requires the
+name of a Servlet to identify the scope of the reference to role
+translation. The name of a scoping servlet has not been established for
+an unmapped JSP.
+
+
+
+image:authz-4.png[image]
+
+For every security role in the web application add a
+WebRoleRefPermission to the corresponding role. The name of all such
+permissions shall be the empty string, and the actions of each
+permission shall be the corresponding role name. When checking a
+WebRoleRefPermission from a Web resource not mapped to a servlet, use a
+permission with the empty string as its name and with the argument to
+isUserInRole as its actions.
+
+image:authz-4.png[image]
+
+=== [[a833]]Support for HTTP Extension Methods
+
+Servet 2.5 added support for HTTP extension
+methods (as defined in IETF RFC 2616 "Hypertext Transfer Protocol --
+HTTP/1.1") to security-constraints. Support for extension methods
+requires changes to the WebResourcePermission and WebUserDataPermission
+classes and to the translation of servlet security-constraints. In
+general support for HTTP extension methods requires an ability to
+represent non-enumerable HTTP method sets in the HTTPMethodSpec
+components of WebResourcePermission and WebUserDataPermission actions
+values.
+
+
+
+image:authz-4.png[image]
+
+Modified the HTTPMethodSpec constructs of WebResourcePermission and
+WebUserDataPermission to support an HTTPMethodExceptionList as a third
+form of HTTPMethodSpec. This resolution is known to have the following
+consequences with respect to backward compatibility: 1) A permission
+constructed with an HTTPMethodSpec composed of an HTTPMethodList
+containing all the "standard" HTTP methods (i.e.,
+"DELETE,GET,HEAD,OPTIONS,POST,PUT,TRACE) is no longer equal to and no
+longer implies a permission constructed with a null, empty array, or
+emptyString HTTPMethodSpec. 2) Permissions constructed with a null,
+empty array, or emptyString HTTPMethodSpec component to their actions
+value represent the non-enumerable (due to extension methods) set of all
+possible HTTP methods and are NOT equal to or implied by any permission
+constructed with an HTTPMethodSpec represented as an HTTPMethodList. 3)
+It is no longer possible to use the HTTPMethodList syntax to represent
+(via enumeration) the complement of a proper subset of all HTTP methods.
+As such, an HTTPMethodExceptionList must be used to represent any proper
+subset of HTTP methods determined NOT to be constrained during the
+translation of servlet security-constraints. 4) The use of exception
+lists causes the permissions resulting from the translation of a given
+security-constraint configuration to differ in their actions values from
+those that would have been produced prior to support for HTTP extension
+methods. Previously translated permissions remain supported by the
+changed permission implementations, and (with the exceptions listed in 1
+and 2 above) continue to function as they did before the change, as long
+as extension methods are not set in checked permissions.
+
+image:authz-4.png[image]
+
+=== [[a836]]Welcome File and security-constraint Processing
+
+The relationship between welcome file
+processing (which can modify the effective request URI) and
+security-constraint processing is not defined by the Servlet
+Specification. Since this specification uses url-patterns derived from
+request URIs to name target resources in checked permissions, it is
+important that welcome file processing and its relationship to
+security-constraint processing be clearly specified. Without a clear
+description of this relationship, unprotected request URIs which are
+modified to yield effective request URIs for protected resources may
+inadvertently be left unprotected.
+
+
+
+image:authz-4.png[image]
+
+pending Servlet clarification. Recommend that Servlet standarize an
+HttpServletRequest attribute that can be used to portably obtain the
+requestURI following welcome file mapping. Once this attribute is
+standardized, The HttPservletRequest based constructors of
+WebResourcePermission and WebUserDataPermission would use its value to
+establish the permission name.
+
+image:authz-4.png[image]
+
+=== [[a839]]Colons Within path-segment of Request URI
+
+As defined in IETF RFC 2396 "Uniform Resource
+Identifiers (URI): Generic Syntax", the abs_path component of a request
+URI may consist of a sequence of "/" separated path segments, where the
+format of each segment is defined as follows:
+
+=== segment = *pchar *( ";" param )
+
+param = *pchar
+
+=== pchar = unreserved | escaped |":" | "@" | "&" | "=" | "+" | "$" | ","
+
+A colon character occurring within a
+path-seqment will be syntactically indistinguishable from colons used by
+the WebResourcePermission and WebUserDataPermission constructors to
+demarcate qualifying patterns.
+
+
+
+image:authz-4.png[image]
+
+Require that containers use escaped encoding (as defined in RFC 2396) on
+colon characters occuring within url-patterns obtained from web.xml.
+Also require that containers encode colons occuring within patterns
+extracted from HttpServletRequest objects and used to create the names
+of checked WebResourcePermission and WebUserDataPermission objects. Also
+require the the HttpServletRequest based constructors of
+WebResourcePermission and WebUserDataPermission apply escaped encoding
+to colons occuring in the names the derived from the request URI. Note
+that the colon character is represented as %3A in escaped encoding.
+
+image:authz-4.png[image]

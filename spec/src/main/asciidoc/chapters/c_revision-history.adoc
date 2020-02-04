@@ -1,0 +1,1635 @@
+=== Revision History
+
+
+=== Community Draft Version 0.3 (dated 12/13/2001)
+
+Posted for Community Review 12/17/2001
+
+=== Changes in Public Draft Version 0.1
+
+=== General
+
+JCP version changed to 2.1.
+
+Specification title changed to J2EETM
+Authorization Contract for Containers
+
+Added additional definitions to the terminology
+section for link:jacc.html#a90[See JAAS Policy interface]” and
+link:jacc.html#a92[See JAAS Policy provider]”.
+
+Converted the requirements with respect to
+support for this specification on J2EE 1.3 and 1.4 platforms into
+assumptions, as any such requirements will ultimately be defined in the
+J2EE 1.4 Platform Specification.
+
+Added an Assumption and a corresponding
+requirement with respect to support for Policy Providers that get all
+permissions before returning from Policy.
+
+Clarified relationship to Servlet and EJB
+specification of authorization semantics.
+
+Changed all references to “VM” to “JRE”
+
+Changed all references to “deploy tool” to
+“deployment tool”
+
+Removed empty brackets from all method names in
+prose.
+
+=== Changes to Provider Configuration Subcontract
+
+Rewrote replacability paradigm. New model does
+not require replacement of permission implementations.
+
+Described changes to JAAS SubjectDomainCombiner
+as required when contract is optionally applied in a J2EE 1.3 context.
+
+=== Changes to Policy Configuration Subcontract
+
+Changed to be compatible with the changes made
+(for replacability) to the link:jacc.html#a173[See Provider
+Configuration Subcontract]”.
+
+=== Changes to Policy Decision Subcontract
+
+Added section describing
+link:jacc.html#a703[See Component runAs Identity]” to
+distinguish between runAs identity and caller identity. More accurately
+described what a container must do to set a component’s runAs identity.
+Added requirement that container prevent component from being able to
+modify its runAs identity.
+
+Added clarification of the matching of an
+excluded policy statement to a granted permission.
+
+Clarified the policy decision algorithms in
+link:jacc.html#a727[See Checking AccessControlContext
+Independent Grants]” and link:jacc.html#a736[See Checking the
+Caller for a Permission]” to be compatible with the distinction between
+caller and runAs identity. Also factored out references to platform
+versions.
+
+In link:jacc.html#a736[See Checking
+the Caller for a Permission]” added requirement that caller identity not
+include principals of any trusted (other than the caller).
+
+Added new section,
+link:jacc.html#a745[See Missing Policy Contexts]”, to make
+explicit the behavior of a provider when asked to check a permission in
+an unknown policy context.
+
+Rewrote the link:jacc.html#a750[See
+Policy Compatibility Requirements]” to indicate that a J2EE 1.4
+container that uses a JAAS policy interface to perform container access
+decisions would not be compatible with this specification.
+
+=== Changes to API
+
+Changed PolicyConfigurationFactory to be an
+abstract class with a static method that reads a system property to
+instantiate a concrete factory implementation class. Also documented the
+role of PolicyConfigurationFactory in supporting the PolicyConfiguration
+with null context identifier.
+
+Specified exceptions to be thrown by methods of
+PolicyConfiguration interface.
+
+Changed the PolicyConfiguration interface to
+support the configuration of permissions that are not instances of
+PolicyContext into a PolicyConfiguration with null identifier.
+
+=== Changes to Issues
+
+{empty}Resolved issue
+link:jacc.html#a791[See Principals Passed to Providers in
+Subjects]
+
+{empty}Resolved issue
+link:jacc.html#a800[See Permission Spanning in
+RoleRefPermission]
+
+{empty}Added new issue
+link:jacc.html#a803[See Integrating Principal-to-Role Mapping
+with the Deployer Console]
+
+{empty}Added new Issue
+link:jacc.html#a806[See PolicyContext Identifiers are Unknown
+to Components]
+
+=== Changes in Public Draft Version 0.2
+
+=== General
+
+Specification title changed to JavaTM
+Authorization Contract for Containers
+
+Corrected audience to be the public
+
+In terminology: simplified definition of
+redeploy, corrected definition of provider, by removing permission
+implementations, as these will now be part of application server
+platform.
+
+=== Changes to Provider Configuration Subcontract
+
+ Replaced most references to container with
+JRE, as a provider integrates per JRE.
+
+=== Changes to Policy Decision Subcontract
+
+In link:jacc.html#a624[See EJB Policy
+Decision Semantics], replace references to “subject” with “access
+control context”.
+
+In link:jacc.html#a703[See Component
+runAs Identity], softened requirement that container prevent component
+from modifying its runAs identity by saying that this must be the
+default policy.
+
+Changes references to “access exception” to
+AccessControlException.
+
+=== Changes to Issues
+
+Added Introductory paragraph.
+
+Added new issue,
+link:jacc.html#a809[See JAAS Policy Interface expects Providers
+to be able to getPermissions] and its resolution to ensure that this
+issue is documented.
+
+=== Changes in Proposed Final Draft 1 Expert Draft 0.1
+
+=== General
+
+The license page was changed; most notably the
+license number.
+
+Improper uses of the word “which” were replaced
+with the word “that”.
+
+The word “shall” was replaced with the word
+“must”.
+
+The 2.3 version designation was removed from
+references to Servlet as the applicable Servlet release is defined by
+the EE environment.
+
+=== Changes to the Preface and Overview
+
+The preface was changed to reflect the purpose
+of the PFD
+
+the definition of hostname was modified so that
+hostnames are no longer required to be used in servlet policy context
+identifiers.
+
+The requirement that permissions identify the
+context of their use was changed to require that the context be set
+before permission evaluation.
+
+=== Changes to Provider Configuration Subcontract
+
+link:jacc.html#a184[See PolicyContext
+Class and Context Handlers] was inserted to describe the PolicyContext
+utility class and the PolicyContextHandler interface.
+
+link:jacc.html#a196[See What the
+Application Server Must Do] was modified to include the application
+server’s responsibilities relating to the PolicyContext class, and to
+correct errors in the names of the abstract policy classes.
+
+=== Changes to Policy Configuration Subcontract
+
+The examples in
+link:jacc.html#a235[See What a Java EE Platform’s Deployment
+Tools Must Do], were modified to reflect changes to policy context
+identifiers and their removal from permission names.
+
+{empty}The requirement that the names of
+checked permissions identify the policy context was removed from
+link:jacc.html#a253[See Policy Contexts and Policy Context
+Identifiers]
+
+{empty}The linkConfiguration method name
+replaced the incorrect link method name in
+link:jacc.html#a269[See Linking Policy Contexts]
+
+link:jacc.html#a271[See Servlet Policy
+Context Identifiers] was moved to follow
+link:jacc.html#a269[See Linking Policy Contexts], and the
+section was made less prescriptive with respect to the format of Servlet
+policy context identifiers. The non-normative description of the
+behavior of the Tomcat server was removed.
+
+link:jacc.html#a281[See Translating
+security-constraint Elements] was made a subsection of a new
+link:jacc.html#a276[See Translating Servlet Deployment
+Descriptors] and changed to deal with the removal of policy context
+identifiers from permission names.
+
+The part of the translation remaining in
+link:jacc.html#a281[See Translating security-constraint
+Elements] was modified to yield an OR constraint combination semantic.
+
+{empty}The description of the mapping of
+transport guarantees to unacceptable connection types was moved to a new
+link:jacc.html#a330[See Mapping Transport Guarantee to
+Connection Type]
+
+link:jacc.html#a343[See Translating
+Servlet security-role-ref Elements] was modified to reflect the removal
+of policy context identifiers from permission names.
+
+link:jacc.html#a518[See Translating
+EJB method-permission Elements] was made a subsection of a new
+link:jacc.html#a516[See Translating EJB Deployment Descriptors]
+and changed to deal with the removal of policy context identifiers from
+permission names.
+
+A new section link:jacc.html#a512[See
+EJB Policy Context Identifiers], was added to describe the selection of
+EJB policy context identifiers.
+
+link:jacc.html#a518[See Translating
+EJB method-permission Elements], link:jacc.html#a521[See
+Translating the EJB exclude-list], and link:jacc.html#a524[See
+Translating EJB security-role-ref Elements] were all changed to reflect
+the removal of the policy context identifier from permission names.
+
+link:jacc.html#a533[See Undeploying an
+Application or Module] was modified to reflect the use of the
+PolicyContext class to define the policy context.
+
+link:jacc.html#a549[See Permission to
+Configure Policy] was changed to require that “the state of the policy
+statement repository” not be changed when the caller does not have the
+“setPolicy” permission. Also a new requirement was added that policy be
+configured to grant containers the “getPolicy” and “setPolicy”
+permissions.
+
+=== Changes to Policy Decision Subcontract
+
+The name was changed to the “Policy Decision
+and Enforcement Contract”.
+
+link:jacc.html#a563[See Evaluation of
+Transport Guarantees], link:jacc.html#a569[See Pre-dispatch
+Decision], and link:jacc.html#a572[See Application Embedded
+Privilege Test] were changed to reflect the removal of the policy
+context identifier from permission names.
+
+Section 4.2.1 “Servlet Constraint Matching
+Semantics”, was replaced by two sections;
+link:jacc.html#a576[See Servlet Policy Decision Semantics], and
+link:jacc.html#a595[See WebResourcePermission Matching Rules].
+The latter describes the processing of servlet constraints in a manner
+related to the three types of policy statements created via the
+PolicyConfiguration interface.
+
+Section 4.2.2.1, “Servlet URL-Pattern Matching
+Rules” was renamed.
+
+Some changes were made to the last two tables
+of Section 4.2.2.2, “Servlet Constraint Matching Examples” to
+accommodate and better illustrate the OR constraint combining semantics.
+
+Section 4.2.3, “WebRoleRefPermission Processing
+Semantics” was added as the public draft mistakenly assumed that the
+Servlet policy model was just about constraints.
+
+link:jacc.html#a616[See EJB
+Pre-dispatch Decision] and link:jacc.html#a620[See EJB
+Application Embedded Privilege Test] were changed to reflect the removal
+of the policy context identifier from permission names.
+
+A new link:jacc.html#a707[See Setting
+the Policy Context] was added to describe how a container must set the
+policy context before invoking policy. This section also requires that
+containers be granted the setPolicy permission in all policy contexts.
+
+A new link:jacc.html#a710[See Policy
+Context Handlers] was added to define the requirements on containers
+with respect to policy context handlers. The following new sections were
+added to define the policy context handlers required of containers:
+link:jacc.html#a715[See Container Subject Policy Context
+Handler], link:jacc.html#a719[See SOAPMessage Policy Context
+Handler], link:jacc.html#a721[See HttpServletRequest Policy
+Context Handler], link:jacc.html#a723[See EnterpriseBean Policy
+Context Handler], and link:jacc.html#a725[See EJB Arguments
+Policy Context Handler].
+
+The methods for checking policy as defined in
+link:jacc.html#a727[See Checking AccessControlContext
+Independent Grants] were reorganized such that it is clear that one of
+the presented alternatives must be used. Using
+AccessController.checkPermission was added as an additional supported
+alternative, and the release specific techniques were annotated as such.
+Also the techniques based on getPermissions were annotated as not
+recommended. At the end of the section a requirement was made regarding
+the policy context having been set prior to the evaluation.
+
+The same changes as described in the previous
+change item were applied to link:jacc.html#a736[See Checking
+the Caller for a Permission].
+
+link:jacc.html#a745[See Missing Policy
+Contexts] was renamed from “Unconfigured Policy Contexts” and the
+semantics were modified to reflect the use of the PolicyContext utility
+class and the designation of the null policy context id as the default.
+
+A new link:jacc.html#a747[See Default
+Policy Context] was introduced to describe requirements for chaining
+policy evaluation through to the provider of the default policy context.
+
+=== Changes to API
+
+Replaced the PolicyContext interface with the
+PolicyContext class. Also changed all of the permissions such that none
+of them implement the PolicyContext interface and such that none of them
+include a policy context identifier in their names.
+
+Added the PolicyContextHandler interface.
+
+Removed the special purpose, EntityBean and
+Argument array constructors from the EJBMethodPermission class.
+
+Removed the special purpose, EntityBean
+constructor from the EJBRoleRefPermission class.
+
+Modified the actions field of the
+EJBRoleRefPermission and WebRoleRefPermission classes such that they
+contain at most a single role reference. Related to this change, also
+removed the newPermissionCollection method implementation from both of
+these classes.
+
+In the PolicyConfiguration interface, changed
+the name of the getPolicyContextId method to getContextID.
+
+Changed the description of the
+PolicyConfigurationFactory to require implementation classes to have a
+public no argument constructor. Also precluded the use of the null value
+as an argument to getPolicyConfiguration.
+
+Added a new constructor to the
+WebResourcePermission and WebUserDataPermission classes to allow an
+instance to be constructed from an HttpServletRequest.
+
+=== Changes to Issues
+
+Changed the introductory material to indicate
+that all of the issues have been resolved.
+
+The resolution of Issue
+link:jacc.html#a780[See Configuration of Permissions with
+Parameters], was changed to reflect the introduction of policy context
+handlers.
+
+Issue link:jacc.html#a788[See
+Evolution of Deployment Policy Language], was partially resolved by
+removing the requirement that permissions added via the
+PolicyConfiguration interface have policy context identifiers in their
+names.
+
+Issue link:jacc.html#a794[See
+Clarification of Servlet Constraint Matching Semantics], was resolved
+with the rewrite of Section link:jacc.html#a595[See
+WebResourcePermission Matching Rules], and with the expectation that the
+Servlet EG will adopt a change to section SRV.12.8 of the Servlet
+specification.
+
+Issue link:jacc.html#a797[See
+References and Arguments in EJBMethodPermisison], was resolved with the
+introduction of policy context handlers.
+
+Issue link:jacc.html#a803[See
+Integrating Principal-to-Role Mapping with the Deployer Console], was
+made optional functionality.
+
+Issue link:jacc.html#a806[See
+PolicyContext Identifiers are Unknown to Components], was resolved by
+introducing the PolicyContext utility class.
+
+=== Changes in Proposed Final Draft 1 Expert Draft 0.2
+
+=== Changes to the Preface and Overview
+
+The restriction that entities be identified by
+principal was removed from the definition of grant.
+
+=== Changes to Policy Configuration Subcontract
+
+In link:jacc.html#a235[See What a Java
+EE Platform’s Deployment Tools Must Do], the argument to
+linkConfiguration was corrected in the example.
+
+=== Changes to Policy Decision Subcontract
+
+Section 4.2.2.1, “Servlet URL-Pattern Matching
+Rules” was modified to indicate that pattern length only is significant
+among path prefix matches.
+
+A description of the content of the tables and
+how they should be interpreted was added to Section 4.2.2.2, “Servlet
+Constraint Matching Examples”.
+
+Section 4.2.3, “WebRoleRefPermission Processing
+Semantics” was added as the public draft mistakenly assumed that the
+Servlet policy model was just about constraints.
+
+link:jacc.html#a616[See EJB
+Pre-dispatch Decision] and link:jacc.html#a572[See Application
+Embedded Privilege Test] were changed to reflect the removal of the
+policy context identifier from permission names.
+
+=== Changes to History
+
+The history section was completed to reflect
+the changes made in Version 0.1 and 0.2
+
+=== Changes in Proposed Final Draft 1 Expert Draft 0.3
+
+=== Changes to the Preface and Overview
+
+The requirement that applicable constraints be
+selected by best-match was rephrased to define best-match as it is
+defined in this spec and the Servlet specification.
+
+=== Changes to Policy Configuration Subcontract
+
+A clarifying sentence was added to the end of
+link:jacc.html#a544[See What the Provider Must Do] to make it
+clear that this specification does not prescribe the policy language or
+the methods used within providers to implement the defined policy and
+role requirements.
+
+=== Changes to Policy Decision Subcontract
+
+Section 4.2.3, “WebRoleRefPermission Processing
+Semantics” was simplified, as much of its content was not pertinent to
+the WebRoleRefPermission class.
+
+Section 4.4.2, “EJB Permission Matching Rules”
+was changed to reflect the change to a single role in the actions of the
+EJBRoleRefPermission class.
+
+In link:jacc.html#a715[See Container
+Subject Policy Context Handler], the key for the "Subject Policy Context
+Handler" was changed to javx.security.auth.Subject.container, and the
+semantics were modified to return the caller or runAs identity as
+appropriate.
+
+In link:jacc.html#a723[See
+EnterpriseBean Policy Context Handler], the handler return type was
+corrected.
+
+=== Changes to API
+
+The resolution of the class diagram was
+improved by changing to a black and white image.
+
+=== Changes in Proposed Final Draft 2 Expert Draft 1
+
+=== General
+
+In many places through out the document,
+replaced used of the phrase “policy configuration” with “policy
+context”, and adopted the practice of using PolicyConfiguration to refer
+to the configuration interface of a policy context.
+
+=== Changes to Preface
+
+Updated Status section
+
+Acknowledged all contributors, including RI and
+TCK team, and all those who commented on the specification.
+
+=== Changes to Overview
+
+Added dashed lines to
+link:jacc.html#a76[See Policy Configuration and Enforcement
+Subcontracts]to represent PolicyContext interactions.
+
+Modified requirement 7, to reflect change is
+treatment of permissions derived from security-constraints.
+
+=== Changes to Provider Configuration Subcontract
+
+Added two new sentences to the end of
+link:jacc.html#a175[See Policy Implementation Class], to make
+it clear that this contract is dependent on the standard Java Policy
+replacement mechanisms, and to make it clear that containers must
+support replacability.
+
+In link:jacc.html#a196[See What the
+Application Server Must Do], added all elements of the jacc package to
+the list of things that an application server must bundle.
+
+In link:jacc.html#a196[See What the
+Application Server Must Do], the requirement for
+javax.security.auth.Policy replacement was softened such that it only
+applies to 1.3 application servers that choose to support this
+specification.
+
+In link:jacc.html#a196[See What the
+Application Server Must Do], reintroduced the requirement that setPolicy
+not be called again, to ensure more than temporary Policy replacement.
+
+=== Changes to Policy Configuration Subcontract
+
+In the examples in
+link:jacc.html#a235[See What a Java EE Platform’s Deployment
+Tools Must Do], the type of the declared permission was corrected to
+agree with constructed type, and “petID” was changed to “petContextID”
+(as a clarification).
+
+In the examples in
+link:jacc.html#a235[See What a Java EE Platform’s Deployment
+Tools Must Do], a new stanza was added to place the policy context in
+service.
+
+link:jacc.html#a257[See Policy Context
+Life Cycle], was added.
+
+In link:jacc.html#a276[See Translating
+Servlet Deployment Descriptors], the call to getPolicyConfiguration was
+augmented with a second parameter to ensure that all policy statements
+are removed from the context.
+
+link:jacc.html#a281[See Translating
+security-constraint Elements], was rewritten such that the target names
+of the WebResourcePermission and WebUserDataPermission policy statements
+resulting from the translation are qualified such that they precisely
+specify the resources to which they apply. The most significant affect
+of this change is that it captures the best-matching semantics of the
+Servlet constraint model in the permission names, such that these
+permissions can be tested using the standard J2SE permission evaluation
+logic.
+
+Added a new section,
+link:jacc.html#a288[See Qualified URL Pattern Names]”, to
+describe the rules for composing the target names used in the
+construction of the WebResourcePermission and WebUserDataPermission
+policy statements resulting from the translation of Servlet security
+constraints.
+
+The section that had described the “Mapping to
+Unacceptable Transport Connection Types” was changed to describe the
+mapping to “acceptable” connection type. The title of the section was
+changed to link:jacc.html#a330[See Mapping Transport Guarantee
+to Connection Type]”. link:jacc.html#a332[See
+transport-guarantee to Acceptable Connection Mapping] was also changed
+to reflect the change to “acceptable” connection types, and the
+connection type values in the table were modified to agree with the
+transportTypeSpec syntax of the WebUserDataPermission class.
+
+link:jacc.html#a347[See Servlet
+URL-Pattern Matching Rules], was added to support the pattern
+qualification section, and relevant sections of the enforcement
+subcontract.
+
+link:jacc.html#a354[See Example] was
+added
+
+In link:jacc.html#a516[See Translating
+EJB Deployment Descriptors], the call to getPolicyConfiguration was
+augmented with a second parameter to ensure that all policy statements
+are removed from the context.
+
+The last paragraph of
+link:jacc.html#a521[See Translating the EJB exclude-list], was
+clarified.
+
+link:jacc.html#a527[See Deploying an
+Application or Module], link:jacc.html#a533[See Undeploying an
+Application or Module], link:jacc.html#a536[See Deploying to an
+existing Policy Configuration], and link:jacc.html#a540[See
+Redeploying a Module], were all changed o reflect the introduction of
+the policy context life cycle and the commit method.
+
+The inService method was added to the factory
+methods called out in the first paragraph of
+link:jacc.html#a549[See Permission to Configure Policy], and
+the SecurityPermission required by these methods was changed from
+“getPolicy” to “setPolicy” to correct an inconsistency with the Java
+implementation.
+
+=== Changes to Policy Decision and Enforcement Subcontract
+
+link:jacc.html#a558[See Policy
+Enforcement by Servlet Containers], was modified to require that
+containers use Policy to make access control decisions.
+
+link:jacc.html#a563[See Evaluation of
+Transport Guarantees], was modified to describe how the transport type
+value is obtained for the permission construction, and to reflect the
+change made to the WebUserDataPermission class such that it is no longer
+checked by “determining if a Permission has been excluded”.
+
+link:jacc.html#a563[See Evaluation of
+Transport Guarantees], and link:jacc.html#a569[See Pre-dispatch
+Decision], were changed to reference the error processing defined in the
+Servlet specification.
+
+link:jacc.html#a576[See Servlet Policy
+Decision Semantics], was rewritten to reflect the qualification of the
+permission names, and the change to conventional permission evaluation
+semantics.
+
+link:jacc.html#a595[See
+WebResourcePermission Matching Rules], link:jacc.html#a601[See
+WebRoleRefPermission Matching Rules], and
+link:jacc.html#a607[See WebUserDataPermission Matching Rules]
+were added to define the permission specific matching semantics
+necessary to support the policy decision semantics.
+
+Section 4.2.2.1, “Servlet URL-Pattern Matching
+Rules”, Section 4.2.2.2, “Servlet Constraint Matching Examples”, and
+Section 4.2.3, “WebRoleRefPermission Processing Semantics” were removed
+from the document, as the change to qualified pattern names made these
+sections unnecessary.
+
+link:jacc.html#a614[See Policy
+Enforcement by EJB Containers], was modified to require that containers
+use Policy to make access control decisions.
+
+link:jacc.html#a624[See EJB Policy
+Decision Semantics], was replaced with a simplified section that
+references link:jacc.html#a576[See Servlet Policy Decision
+Semantics].
+
+link:jacc.html#a627[See
+EJBMethodPermission Matching Rules], and
+link:jacc.html#a697[See EJBRoleRefPermission Matching Rules],
+were added to define the permission specific matching semantics
+necessary to support the policy decision semantics. These new sections
+replaced Section 4.4.2, “EJB Permission Matching Rules”.
+
+The last paragraph of
+link:jacc.html#a703[See Component runAs Identity], was modified
+to ensure that the AccessControlContext includes a
+SubjectDomainCombiner.
+
+In link:jacc.html#a710[See Policy
+Context Handlers], changed the last sentence of the paragraph to “...if
+these actions will cause the container to fail in its processing of the
+associated request”.
+
+In link:jacc.html#a715[See Container
+Subject Policy Context Handler] replaced “caller’s identify” with
+“caller’s identity”.
+
+In link:jacc.html#a719[See SOAPMessage
+Policy Context Handler], reduce to only EJB container, and added
+additional qualification of the request coming in at the ServiceEndpoint
+method interface.
+
+In link:jacc.html#a725[See EJB
+Arguments Policy Context Handler], clarified that this handler may not
+be used if the request came in on the ServiceEndpoint method interface.
+Also changed the return type when there are no arguments to an empty
+array.
+
+Renamed section
+link:jacc.html#a727[See Checking AccessControlContext
+Independent Grants] and changed it to reflect the changes made to
+WebUserDataPermissions such that they are no longer “excluded”
+permissions.
+
+In link:jacc.html#a745[See Missing
+Policy Contexts], changed replaced contains with inService method.
+
+=== Changes to API
+
+A new class diagram was imported to reflect the
+changes to the API, most notably the introduction of the
+PolicyContextException class.
+
+The javadocs were regenerated to conceal
+implementation specific private instance variables.
+
+Added “ServiceEndpoint” to the list of
+alternative MethodInterface identifiers for EJBMethodPermissions.
+
+More completely specified EJBMethodPermission
+matching of methodNameSpec in implies
+
+Added policy context life cycle, including
+description, and state table to PolicyConfiguration interface.
+
+Added new methods “commit” and inService to the
+PolicyConfiguration interface.
+
+Changed all the method signatures of the
+PolicyConfiguration interface to throw PolicyContextException, and
+described the other exceptions that implementations are required to
+throw.
+
+Changed the documentation of
+getPolicyConfigurationFactory to properly identify the system property.
+
+Added a new parameter to the
+getPolicyConfiguration method of PolicyConfigurationFactory to indicate
+whether or not all the policy statements should be removed from the
+policy context.
+
+Renamed contains of PolicyConfigurationFactory
+class to inService.
+
+Changed all the method signatures of the
+PolicyConfigurationFactory class to throw PolicyContextException, and
+described the other exceptions that implementations are required to
+throw.
+
+Changed authorization requirement of the
+PolicyContext class to allow containers to be responsible for deciding
+how callers of this method must be authorized.
+
+Changed the getContext and registerHandler
+methods of the PolicyContext class to declare that they throw
+PolicyContextException., and described the other exceptions that these
+methods are required to throw.
+
+Changed the format of the name used to
+construct a WebResourcePermission to contain a URLPatternSpec, and
+described the restrictions on the patterns appearing in the
+URLPatternList.
+
+Modified the specification of the implies and
+equals methods of WebResourcePermission to account for the
+URLPatternSpec.
+
+Changed the format of the name used to
+construct a WebUserDataPermission to contain a URLPatternSpec, and
+described the restrictions on the patterns appearing in the
+URLPatternList.
+
+Changed BNF for “actions” of
+WebUserDataPermission such that a separating “:” is not required if a
+transportType is not explicitly specified.
+
+Replaced transportTypeList in actions of
+WebuserdataPermission with a single transportType value.
+
+Modified the specification of the implies and
+equals methods of WebUserDataPermission to account for the
+URLPatternSpec.
+
+Comparable Interface was removed from
+WebResourcePermission and WebUserDataPermission.
+
+description of the second clause of the
+“servlet matching rules” of WebResourcePermission.implies and
+WebUserDataPermission.implies were changed to properly reflect the
+servlet matching semantics; where for example, /a/b/* must match /a/b in
+addition to /a/b/z.
+
+In WebUserDataPermission constructor removed
+extra “and” in “...by calling and HttpServletRequest.isSecure()”.
+
+In description of
+PolicyContextHandler.getContext, removed extra “the” from “and obtain
+from it the the”.
+
+=== Changes to References
+
+Upgraded document version references for [J2EE
+specification], [J2SE specification], [EJB specification], and [Servlet
+specification] to 1.4, 1.4.0, 2.1, and 2.4 respectively. Also updated
+URL for [J2EE specification].
+
+=== Changes to Issues
+
+Added new issue,
+link:jacc.html#a812[See Implementing Web Security Constraints
+as Permission].
+
+Added new issue,
+link:jacc.html#a815[See Exception Handling].
+
+Added new issue,
+link:jacc.html#a818[See PolicyConfiguration Commit].
+
+Added new issue,
+link:jacc.html#a821[See Support for ServiceEndpoint
+methodInterface].
+
+=== Changes in Proposed Final Draft 2 Expert Draft 2
+
+=== Changes to Preface
+
+fixed typos, and added additional RI team
+member to credits.
+
+=== Changes to Policy Configuration Subcontract
+
+In link:jacc.html#a347[See Servlet
+URL-Pattern Matching Rules], added additional clause to support
+universal matching by “/*”.
+
+In link:jacc.html#a354[See Example],
+Added comments to security-constraint elements, Also corrected qualified
+URL Pattern Names occurring in link:jacc.html#a399[See
+Qualified URL Pattern Names from Example] and
+link:jacc.html#a416[See Permissions and PolicyConfiguration
+Operations from Example].
+
+In link:jacc.html#a527[See Deploying
+an Application or Module], changed the text of the footnote to properly
+reflect that policy contexts are linked by object not by identifier.
+
+=== Changes to Policy Decision and Enforcement Subcontract
+
+In link:jacc.html#a563[See Evaluation
+of Transport Guarantees], and link:jacc.html#a569[See
+Pre-dispatch Decision], changed the corresponding construction
+descriptions to be less prescriptive such that calling any constructor
+that results in the proper name being established would be allowed. Also
+indicated that the resulting url-pattern is to be “unqualified”.
+
+Modified link:jacc.html#a576[See
+Servlet Policy Decision Semantics], to require that the policy
+statements of the default policy context be included in the access
+decisions and to require that the subject based policy statements be
+tested when the status is unresolved following the excluded and
+unchecked evaluations.
+
+Added a new link:jacc.html#a579[See
+Matching Qualified URL Pattern Names] to describe URLPatternSpec
+matching, and replaced the duplicate descriptions of this processing in
+sections link:jacc.html#a595[See WebResourcePermission Matching
+Rules] and link:jacc.html#a607[See WebUserDataPermission
+Matching Rules] with a reference to this new section. Also modified the
+description of the comparison to support symmetric implication as
+necessary to support consistent semantics between the implies and equals
+methods of these permissions.
+
+Added requirement that the comparisons defined
+by link:jacc.html#a595[See WebResourcePermission Matching
+Rules], link:jacc.html#a601[See WebRoleRefPermission Matching
+Rules], link:jacc.html#a607[See WebUserDataPermission Matching
+Rules], link:jacc.html#a627[See EJBMethodPermission Matching
+Rules], and link:jacc.html#a697[See EJBRoleRefPermission
+Matching Rules] be case sensitive.
+
+The word “form” was changed to “from” in first
+paragraph of link:jacc.html#a727[See Checking
+AccessControlContext Independent Grants].
+
+In bullets 4 and 5 of
+link:jacc.html#a727[See Checking AccessControlContext
+Independent Grants], removed “that was constructed without static
+permissions and”.
+
+Rewrote link:jacc.html#a747[See
+Default Policy Context] to indicate describe the properties of the
+default policy context, and to require that its policy statements be
+included in every access decision.
+
+=== Changes to API
+
+comments on HttpServletRequest based
+constructors for WebResourcePermission and WebUserDataPermission were
+changed so as not to imply that this is the only constructor that may be
+used by a container “prior to checking” a Servlet request.
+
+the description of the implies method of
+WebResourcePermission and WebUserDataPermission was modified to support
+the maxim that two permission objects p1 and p2 are equivalent iff
+p1.implies(p2) and p2.implies(p1). To do so required handling the case
+where the name of the argument permission (to implies) is a qualified
+URLPatternSpec.
+
+the description of the servlet matching rules
+in the implies method of WebResourcePermission and WebUserDataPermission
+was corrected to account for universal matching by “/*”.
+
+=== Changes in Proposed Final Draft 2 Expert Draft 3
+
+=== Changes to Policy Configuration Subcontract
+
+Added a new first paragraph to
+link:jacc.html#a281[See Translating security-constraint
+Elements], to describe the treatment of patterns overridden by and made
+irrelevant by the presence of the “/*” pattern in the a
+web-resource-collection within the deployment descriptor.
+
+Moved the last paragraph in
+link:jacc.html#a288[See Qualified URL Pattern Names]” to be its
+first, and added a new paragraph to its end to describe irrelevant
+patterns and their treatment by the permission constructors. Clarified
+the syntax and description of URLPattern qualification. Indicated that
+patterns qualified by other qualifying patterns may be dropped from the
+list of qualifying patterns (and described why).
+
+In link:jacc.html#a354[See Example],
+removed the “/*” pattern from the first web-resource-collection of the
+first security constraint, and made the corresponding changes to the
+table of qualified URL pattern names and the table of constructed
+permissions.
+
+Added a new column to
+link:jacc.html#a399[See Qualified URL Pattern Names from
+Example] of link:jacc.html#a354[See Example] to represent the
+canonical form of the qualified names.The description of
+link:jacc.html#a416[See Permissions and PolicyConfiguration
+Operations from Example] was modified to indicate that the names in its
+second column were obtained from the first column of
+link:jacc.html#a399[See Qualified URL Pattern Names from
+Example], and that any equivalent form of the qualified names, including
+their canonical forms, could have been used in the permission
+constructions.
+
+=== Changes to Policy Decision and Enforcement Subcontract
+
+In link:jacc.html#a563[See Evaluation
+of Transport Guarantees], clarified the actions value used for a request
+that arrives on an unprotected connection.
+
+=== Changes to API
+
+The URLPatternList descriptions of the
+WebResourcePermission and WebUserDataPermission classes; were modified
+to require that no pattern in a URLPatternList may imply the first
+pattern of the URLPatternSpec, as otherwise the URLPatternSpec could not
+imply itself which would violate the required equals semantics.
+
+The definition of the equals method of the
+WebResourcePermission and WebUserDataPermission classes; was modified
+such that different URLPatternList values are equal if the lists imply
+the same patterns.
+
+=== Changes in Proposed Final Draft 2 Expert Draft 4
+
+=== Changes to API
+
+The serialization (see Serialized Form on html
+Javadocs) of the javax.security.jacc permission classes was described
+more completely and to remove unnecessary constraints on
+implementations.
+
+The canonical forms produced by the getActions
+methods of the WebResourcePermission and WebUserDataPermission classes
+were more completely specified.
+
+=== Changes in Final Release
+
+=== Changes to License
+
+License was replaced
+
+=== Changes to the Preface
+
+The preface was changed to reflect the purpose
+of the Final Release.
+
+Additional contributor names were added.
+
+=== Changes to Overview
+
+Added requirement to support
+link:jacc.html#a736[See Checking the Caller for a Permission],
+to ensure that policy providers not place extra requirements on
+containers.
+
+=== Changes to Provider Configuration Subcontract
+
+Added another catch clause to the code sample
+in link:jacc.html#a196[See What the Application Server Must
+Do], to support verification that the loaded object is an instanceof
+javax.security.Policy.
+
+=== Changes to Policy Configuration Subcontract
+
+Added definition of what it means for two
+translations to be “equivalent” to link:jacc.html#a235[See What
+a Java EE Platform’s Deployment Tools Must Do].
+
+Added clarification to
+link:jacc.html#a281[See Translating security-constraint
+Elements] to allow for “equivalent” translations.
+
+Restated the translation description of
+link:jacc.html#a281[See Translating security-constraint
+Elements], such that it no longer prescribes the number of permissions
+that must be constructed.
+
+Modified the title of the second column of
+link:jacc.html#a332[See transport-guarantee to Acceptable
+Connection Mapping].
+
+Restated the translation description of
+link:jacc.html#a343[See Translating Servlet security-role-ref
+Elements], such that it no longer is as prescriptive with respect to the
+“construction” of permissions, and such that it defines the name to use
+for the “additional” permissions.
+
+Fixed a syntax problem, missing "<" in
+"urlPattern>", in link:jacc.html#a354[See Example].
+
+Changed some of the actions values of
+link:jacc.html#a416[See Permissions and PolicyConfiguration
+Operations from Example], such that they are all in canonical form.
+Added table footnote to that effect.
+
+Added clarification to
+link:jacc.html#a518[See Translating EJB method-permission
+Elements] to allow for “equivalent” translations.
+
+Restated the translation description of
+link:jacc.html#a518[See Translating EJB method-permission
+Elements], such that it no longer such that it no longer prescribes the
+number of permissions that must be constructed.
+
+Clarified the linking requirements of
+link:jacc.html#a527[See Deploying an Application or Module] and
+of link:jacc.html#a540[See Redeploying a Module].
+
+In link:jacc.html#a533[See Undeploying
+an Application or Module], link:jacc.html#a536[See Deploying to
+an existing Policy Configuration], and in
+link:jacc.html#a540[See Redeploying a Module], changed “must
+stop accepting” to “must stop dispatching” requests.
+
+=== Changes to Policy Decision and Enforcement Contract
+
+Added special rule for checking "/" to
+link:jacc.html#a563[See Evaluation of Transport Guarantees],
+and link:jacc.html#a569[See Pre-dispatch Decision].
+
+In link:jacc.html#a563[See Evaluation
+of Transport Guarantees], link:jacc.html#a569[See Pre-dispatch
+Decision], link:jacc.html#a572[See Application Embedded
+Privilege Test], link:jacc.html#a616[See EJB Pre-dispatch
+Decision], and link:jacc.html#a620[See EJB Application Embedded
+Privilege Test], changed the description of how the checked permission
+is "obtained".
+
+Added clarification of "the scope of a
+containers processing of a component request" to
+link:jacc.html#a710[See Policy Context Handlers].
+
+Added a clarification to
+link:jacc.html#a710[See Policy Context Handlers], allowing
+containers to delay the registration of the required handlers.
+
+In link:jacc.html#a723[See
+EnterpriseBean Policy Context Handler], restricted the use of this
+handler to the business method of the EJB Remote, Local, or
+ServiceEndpoint interfaces of the EnterpriseBean object.
+
+Added a footnote to
+link:jacc.html#a736[See Checking the Caller for a Permission],
+to clarify why calling Policy.getPermissions is not recommended.
+
+Added link:jacc.html#a753[See
+Optimization of Permission Evaluations] to describe the circumstances
+under which containers may caching the results of permission
+evaluations.
+
+=== Changes to API
+
+Added package description
+
+Changed MethodSpec and constructor descriptions
+of EJBMethodPermission to provide support for additional method-intf
+values.
+
+Clarified the syntax of typeName as used in
+methodParams of EJBMethodPermission. Also specified the corresponding
+affect on the canonical form returned by getActions.
+
+For both WebResourcePermission nd
+WebUserDataPermission, specified the effect of constructing these
+permissions with a null name. Also clarified that the empty string is a
+supported exact pattern.
+
+For both WebResourcePermission nd
+WebUserDataPermission, corrected definition of HttpServletRequest based
+constructors such that they obtain the permission name from the
+RequestURI minus the contextPath, except for the special case where the
+name would be "/", in which case the empty string is used as the
+permission name.
+
+In WebUserDataPermission, Fixed errors in the
+BNF for transportType.
+
+Added text to javadoc of JACC permission
+classes to make it clear that these permissions may implement
+newPermissionCollection or inherit its implementation from their
+superclass.
+
+Modified the definition of the PolicyContext
+class to allow for implementations that restrict access to the security
+sensitive methods of this utility class without necessarily resorting to
+checking the setPolicy SecurityPermission.
+
+=== Changes to Appendix A: Related Documents
+
+Updated the copyright dates.
+
+=== Changes to Appendix B: Issues
+
+Added descriptions of 3 new issues:
+link:jacc.html#a824[See TypeNames of EJBMethodPermission Array
+Parameters], link:jacc.html#a827[See Checking Permission on the
+root of a Web Application], and link:jacc.html#a830[See Calling
+isUserInRole from JSP not mapped to a Servlet].
+
+=== Changes in Errata A
+
+=== Changes to Policy Configuration Subcontract
+
+Page 24: added requirement to
+link:jacc.html#a343[See Translating Servlet security-role-ref
+Elements]" for extra WebRoleRefPermission objects to be created to
+support calls to isUserInRole from unmapped JSPs.
+
+=== Changes to Policy Enforcement Subcontract
+
+Page 37: added requirement to
+link:jacc.html#a572[See Application Embedded Privilege Test]"
+to support calling isUserInRole from an unmapped (to servlet) web
+resource.
+
+page 47: added footnote to
+link:jacc.html#a736[See Checking the Caller for a Permission]"
+to act as a forward reference to optimization by reuse of
+unauthenticated results as allowed for by new text added to
+link:jacc.html#a753[See Optimization of Permission
+Evaluations]". This optimization allows a container to optimize
+authorization checks on unprotected resources.
+
+Page 50: added new clarifying text to
+link:jacc.html#a753[See Optimization of Permission
+Evaluations]" to support performance optimization based on reuse of
+evaluation results. In addition to reuse of equivalent evaluations,
+added text to support reuse of unauthenticated evaluations to authorize
+evaluations independent of caller identity. Described a common practice
+that could be implemented by containers and providers, and that would
+cause containers to be notified by providers of policy changes. By
+following the suggested practice providers would be able to tell when
+containers expect to be notified, for containers to determine if they
+will be notified, and for containers to determine if their provider has
+other properties necessary to sustain reuse.
+
+=== Changes to API
+
+Page 87: Clarified Description of
+WebRoleRefPermission class.
+
+Page 88: Modified description of name parameter
+of WebRoleRefPermission constructor to describe use of empty-string
+name.
+
+=== Changes to Appendix B: Issues
+
+Page 105: removed sentence from description of
+resolution of issue B19, link:jacc.html#a830[See Calling
+isUserInRole from JSP not mapped to a Servlet]", that had indicated that
+the resolution would NOT be adopted until the Servlet spec was changed.
+As a result of this errata, the resolution to issue B19 has been fully
+integrated.
+
+=== Changes in Errata B
+
+=== Changes to Overview
+
+Page 7: modified requirement 9 to allow for and
+describe the circumstances under which a container may run without a
+SecurityManager.
+
+Page 8: added link:jacc.html#a154[See
+Running Without a SecurityManager] to describe the changes to this
+contract that apply to containers running without a J2SE
+SecurityManager.
+
+=== Change log for Errata C
+
+=== Changes Made Throughout the Document
+
+Changed the "J2EE" and "J2SE" platform names
+(when not used with a specific version such as J2EE 1.4) to "Java EE"
+and "Java SE" respectively.
+
+Changed improper uses of "affect" to "effect".
+
+=== Changes to Overview
+
+In link:jacc.html#a120[See
+Assumptions]", clarified assumptions 1 and 3 to indicate that contract
+is intended to apply and be required by future versions of the Java EE
+platform.
+
+=== Changes to Provider Configuration Contract
+
+Generalized the J2EE 1.4 version specific
+requirements such that they also apply to later versions of the EE
+platform.
+
+=== Changes to Policy Configuration Contract
+
+Extended the chapter abstract to indicate that
+the subcontract applies to the configuration of policy providers from
+authorization rules defined within Java code using common annotations.
+
+In link:jacc.html#a235[See What a Java
+EE Platform’s Deployment Tools Must Do] and 18, described the deployment
+tool requirements relating to annotation processing, and the merging of
+annotations into the deployment descriptor such that the translation may
+occur using the deployment descriptor translation rules.
+
+In link:jacc.html#a271[See Servlet
+Policy Context Identifiers], described why each module of a multi-module
+web application must be deployed to a separate policy context.
+
+In link:jacc.html#a343[See Translating
+Servlet security-role-ref Elements], clarified that the set of all roles
+defined for the application is used to determine the additional
+permissions to be constructed.
+
+In link:jacc.html#a512[See EJB Policy
+Context Identifiers], added rule to ensure that no two EJBs in a policy
+context share the same ejb-name. If this rule is not observed the policy
+statements for the EJBs would be inappropriately combined.
+
+=== Changes to Policy Decision and Enforcement Contract
+
+Inserted new section
+link:jacc.html#a560[See Permission Names for Transport and
+Pre-Dispatch Decisions], to call attention to the description of how the
+corresponding permissions names are constructed. This section was
+intended to account for the welcome file processing defined by the
+Servlet specification. The corresponding clarification of the
+relationship between welcome file processing and servlet-constraint
+processing was not made to the Servlet spec, so, consistent with the
+assumptions under which this spec. was defined, clarifying semantics
+will not be prescribed by this spec. until they are adopted by the
+Servlet specification.
+
+Revised section
+link:jacc.html#a563[See Evaluation of Transport Guarantees] and
+section link:jacc.html#a569[See Pre-dispatch Decision], to
+refer to the newly inserted section for the definition of their
+respective permission names.
+
+Added new sentence the description of the
+link:jacc.html#a723[See EnterpriseBean Policy Context Handler]
+to account for EJB 3.0 Session and Entity beans which are not required
+to implement the javax.ejb.EnterpriseBean interface.
+
+=== Changes to API
+
+On page 69, clarified the description of the
+PolicyConfiguration.commit() method to indicate that it also throws an
+UnsupportedOperationException when completing the commit would cause
+there to be two or more inService and linked policy contexts with
+different principal-to-role mappings.
+
+Changes to the description of the
+HttpServletRequest based constructors of the WebResourcePermission and
+WebUserDataPermission intended to clarify that welcome file processing
+must have been performed before permission construction were deferred
+pending clarification of the corresponding functionality in the Servlet
+Specification
+
+=== Change log for Errata D
+
+=== Changes Made Throughout the Document
+
+Changed The specification version from 1.0 to
+1.1
+
+=== Changes to Policy Configuration Contract
+
+Amended link:jacc.html#a281[See
+Translating security-constraint Elements] to support the translation of
+security-constraints containing extension methods as defined in IETF RFC
+2616 "Hypertext Transfer Protocol -- HTTP/1.1".
+
+Added a new subsection,
+link:jacc.html#a318[See HTTP Method Exception List]", to
+describe the representation of non-enumerable HTTP method subsets as
+necessary, for example, to identify all methods not named in a
+security-constraint.
+
+Modified the actions entries in Table 3-4:
+"Permissions and PolicyConfiguration Operations from
+Example" to conform to the translation changes required to support
+non-enumerable http extension methods.
+
+=== Changes to Policy Decision and Enforcement Contract
+
+Inserted new link:jacc.html#a589[See
+Matching HTTP Method Specifications] to describe the HTTPMethodSpec as
+revised (by the definition of the HTTPMethodExceptionList) to support
+HTTP extension methods.
+
+Modified link:jacc.html#a595[See
+WebResourcePermission Matching Rules] and
+link:jacc.html#a607[See WebUserDataPermission Matching Rules]
+to refer to the new section describing the matching of HTTP method
+specifications.
+
+=== Changes to API
+
+Modified the WebResourcePermission class to
+support HTTP extension methods. Extended the permission's actions syntax
+to represent HTTP method exception lists so that non-enumerable method
+subsets can be represented in the permission's actions. Exception lists
+are used to represent unconstrained http method subsets.
+
+Modified the WebUserDataPermission class to
+support HTTP extension methods. Extended the permission's actions syntax
+to represent HTTP method exception lists as was done for the
+WebResourcePermission class.
+
+=== Changes to Appendix B: Issues
+
+Added new issue
+link:jacc.html#a833[See Support for HTTP Extension Methods].
+Resolution describes consequences with respect to backward
+compatibility:
+
+Added new issue
+link:jacc.html#a836[See Welcome File and security-constraint
+Processing] to describe the need for clarification of the relationship
+between welcome file processing, which can change the effective request
+URI, and the url-patterns applied in security-constraint processing.
+
+Added new issue
+link:jacc.html#a839[See Colons Within path-segment of Request
+URI] to document the potential ambiguity resulting from the use, by the
+WebResourcePermission and WebUserDataPermission classes, of the colon
+character to distinguish qualifying patterns.
+
+=== Change log for Errata E
+
+=== Changes Made Throughout the Document
+
+Changed the specification version from 1.1 to
+1.2
+
+=== Changes to Overview
+
+In link:jacc.html#a136[See
+Requirements]", clarified requirement 4 to indicate that a policy
+provider in a Servlet or EJB only container need only satisfy the
+requirements corresponding to the supported container.
+
+Corrected bullet 3 of
+link:jacc.html#a154[See Running Without a SecurityManager]", by
+removing prohibition on AccessControlContext.checkPermission.
+
+Added new bullet 4 to
+link:jacc.html#a154[See Running Without a SecurityManager]", to
+ensure that container sets AccessControlContext if it uses the
+AccessController.checkPermission technique.
+
+Added new section,
+link:jacc.html#a160[See Servlet or EJB only containers], to
+differentiate requirements that must be satisfied by web containers from
+those that must be satisfied by EJB containers.
+
+=== Changes to Policy Configuration Contract
+
+in link:jacc.html#a235[See What a
+Java EE Platform’s Deployment Tools Must Do], modified the definition of
+equivalence to accept as equivalent a translation in which permissions
+that are implied by excluded permissions are removed from the role and
+unchecked permission collections. Limited the definition of equivalence
+to apply only to those permission types that are the subject of the
+translation. Added footnote to describe why equivalence cannot always be
+evaluated by PermissionCollection.implies().
+
+in link:jacc.html#a276[See
+Translating Servlet Deployment Descriptors] and in
+link:jacc.html#a516[See Translating EJB Deployment
+Descriptors], relaxed requirement that the value true be passed as the
+second argument to getPolicyConfiguration. Changed text to require that
+the policy statements be removed, and added footnotes to describe
+implementation choices.
+
+added a requirement to
+link:jacc.html#a288[See Qualified URL Pattern Names], that the
+translation use escaped encoding to differentiate colons occurring
+within the Pattern and QualifyingPattern elements from those used to
+construct the QualifyingPatternList.
+
+Corrected determination of permission name in
+link:jacc.html#a524[See Translating EJB security-role-ref
+Elements] such that the name is acquired from the ejb-name of the
+element containing the security-role-ref.
+
+Added a new paragraph in
+link:jacc.html#a524[See Translating EJB security-role-ref
+Elements] to describe the creation of additional EJBRoleRefPermission
+objects to support optional declaration of security-role-ref elements
+(as required by the EJB 3.0 specification)
+
+Added a footnote to
+link:jacc.html#a524[See Translating EJB security-role-ref
+Elements] to indicate that the requirements of this section apply to any
+elements that are permitted by the EJB deployment descriptor schema to
+contain security-role-ref elements. This was done in anticipation of
+support for inclusion of this element in the message-driven element
+
+=== Changes to Policy Decision and Enforcement Contract
+
+In link:jacc.html#a560[See Permission
+Names for Transport and Pre-Dispatch Decisions], added the requirement
+that all colon characters occurring within the name of the checked
+permission be represented using escaped encoding.
+
+In link:jacc.html#a616[See EJB
+Pre-dispatch Decision] corrected requirement that an
+RMISecurityException be thrown by requiring that the container throw an
+exception as required by the corresponding EJB Specification.
+
+Added footnote to
+link:jacc.html#a710[See Policy Context Handlers] to make it
+explicit that the requirement that a handler return a null value when
+called outside of the context of an invocation, need not apply to any
+additional handlers registered with the container.
+
+Modified the requirements of
+link:jacc.html#a710[See Policy Context Handlers] to allow
+containers to effectively delay registrations that would otherwise
+impede performance. As a result of the change, containers (especially
+EJB containers) may return null when, during the processing of a
+request, an attempt is made to invoke a required but not yet registered
+handler.
+
+In link:jacc.html#a727[See Checking
+AccessControlContext Independent Grants] corrected return result of
+AccessController.checkPermission when exception is not thrown.
+
+In link:jacc.html#a750[See Policy
+Compatibility Requirements]. corrected the reference to the
+_javax.security.auth.Policy.getPolicy_ method.
+
+=== Changes to API
+
+Added requirement to the HttpServletRequest
+based constructors of WebResourcePermission and WebUserDataPermission
+that the constructors must transform all colon characters occurring in
+the name to escaped encoding.
+
+Added requirement that all colons occurring
+within the URLPattern elements of the name and URLPatternSpec arguments
+passed to the String based constructors of WebResoucePermission and
+WebUserDataPermission must be represented in escaped encoding.
+
+=== Changes to Issues
+
+Added recommended resolution to issue,
+link:jacc.html#a836[See Welcome File and security-constraint
+Processing].
+
+Added resolution to issue,
+link:jacc.html#a839[See Colons Within path-segment of Request
+URI].
+
+=== Change log for Errata F
+
+=== Changes Made Throughout the Document
+
+Changed the specification version from 1.2 to
+1.3.
+
+=== Changes to Policy Configuration Subcontract
+
+in link:jacc.html#a281[See
+Translating security-constraint Elements], modified the translation to
+handle http-method-omission elements introduced by servlet 3.0.
+
+added new link:jacc.html#a302[See
+Combining HTTP Methods], to define the combination of http-method and
+http-method-omission elements, and to describe the translation of the
+results to the actions string used to construct WebResourcePermission
+and WebUserDataPermission objects.
+
+In link:jacc.html#a354[See Example],
+modified the excluding auth constraint to demonstrate the use of an
+http-method-omission list. Also changed link:jacc.html#a416[See
+Permissions and PolicyConfiguration Operations from Example] to contain
+the corresponding translation.
+
+In link:jacc.html#a524[See
+Translating EJB security-role-ref Elements], added an example in a
+footnote.
+
+=== Change log for Errata G (maintenance Release 7)
+
+=== Changes Made Throughout the Document
+
+Changed the specification version from 1.3 to
+1.4.
+
+Changed the JCP version to 2.7
+
+=== Changes to Policy Configuration Subcontract
+
+In link:jacc.html#a253[See Policy
+Contexts and Policy Context Identifiers], added a footnote to describe
+exceptional case of EJBs bundled within a WAR.
+
+In link:jacc.html#a271[See Servlet
+Policy Context Identifiers], added paragraph to ensure that EJBs defined
+in web modules are assigned to a separate policy context to ensure that
+the EJBcontext can be put in service before the policy context of the
+web module (which may depend on being able to call the EJB) . Also added
+a footnote with reference to section link:jacc.html#a512[See
+EJB Policy Context Identifiers] for further clarification.
+
+Added link:jacc.html#a278[See
+Programmatic Servlet Registrations], to describe how the servlet policy
+translation defined by this subcontract can be applied to the security
+configuration resulting from the programmatic registration and security
+configuration enabled by Servlet 3.0. Also added a description of how an
+existing policy context may be retranslated while presrving its links to
+other policy contexts.
+
+In link:jacc.html#a512[See EJB Policy
+Context Identifiers], added paragraph to ensure that EJBs defined in web
+modules are assigned to a separate policy context to ensure that the EJB
+context can be put in service before the policy context of the web
+module (which may depend on being able to call the EJB).
+
+Clarified link:jacc.html#a527[See
+Deploying an Application or Module], to allow translations, links, and
+commits of individual modules to be interleaved as necessary to support
+runtime initialization of servlet policy (as required by Servlet 3.0)
+while preserving the ability of a ServletContextListener to make a local
+call to an EJB in the same application (and without getting an access
+exception).
+
+In the optional
+link:jacc.html#a536[See Deploying to an existing Policy
+Configuration], added an additional paragraph to describe what must be
+done to capture the effects of any programmatic registrations and
+security configurations that may happen during initialization in a
+Servlet 3.0 container.
+
+Simplified link:jacc.html#a540[See
+Redeploying a Module], by having it refer to
+link:jacc.html#a527[See Deploying an Application or Module],
+which, as described above, has been changed to handle Servlet 3.0.
+
+=== Changes to API
+
+Added clarification to removeUncheckedPolicy,
+removeExcludedPolicy, and removeRole methods (of the PolicyConfiguration
+interface) to indicate that these methods have no effect on the linkages
+among policy contexts.
+
+Added requirement that the removeRole method
+of the PolicyConfiguration interface remove all roles when called with a
+role name of "*" and when no role by that name exists in the
+PolicyConfiguration..
+
+Added clarification to the
+getPolicyConfiguration method of PolicyConfigurationFactory to indicate
+that it removes policy statements and linkages when the value of the
+remove parameter is true.
+
+=== Change log for Errata H(maintenance Release 8)
+
+=== Changes Made Throughout the Document
+
+Changed the specification version from 1.4 to
+1.5.
+
+updated the license page
+
+=== Changes to Policy Configuration Subcontract
+
+In link:jacc.html#a278[See
+Programmatic Servlet Registrations], changed reference to Servlet 3.0 to
+"beginning with Servlet 3.0".
+
+In link:jacc.html#a281[See
+Translating security-constraint Elements], added text to describe the
+handling of the role-name "**" in an auth-constraint, and to indicate
+that the "*" role does not imply the "**" role unless the application
+has defined its own role named "**". Amended description of permissions
+created for uncovered methods, to require that they be added to either
+the excluded or unchecked permission collections, based on the uncovered
+method semantic in effect for the web-module.
+
+In link:jacc.html#a343[See
+Translating Servlet security-role-ref Elements], and
+link:jacc.html#a524[See Translating EJB security-role-ref
+Elements], added description of the handling of the "any authenticated
+user" role "**".
+
+In link:jacc.html#a518[See
+Translating EJB method-permission Elements], ammended description of the
+translation of role-names in method-permission elements, to include
+support for the role named "**".
+
+In link:jacc.html#a544[See What the
+Provider Must Do], added requirement that the provider grant all
+permissions assigned to role "**" to any authenticated user.

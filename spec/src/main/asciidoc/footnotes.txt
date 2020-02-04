@@ -1,0 +1,122 @@
+=== 
+
+'''''
+
+[.footnoteNumber]# 1.# [[a1250]]For some permission
+types, such as the EJBMethodPermission, it will generally not be
+possible to use the implies method of the PermissionCollection to
+compute collection equivalence (because the implies method is unable to
+determine when a collection contains all the permissions implied by a
+wild carded form of the permission).
+
+[.footnoteNumber]# 2.# [[a1251]]An exception to this
+rule is described in link:jacc.html#a512[See EJB Policy Context
+Identifiers]”.
+
+[.footnoteNumber]# 3.# [[a1252]]See
+link:jacc.html#a512[See EJB Policy Context Identifiers]” for
+further clarification.
+
+[.footnoteNumber]# 4.# [[a1253]]This can be achieved
+by passing _true_ as the second parameter in the call to
+_getPolicyConfiguration_ , or by calling _delete_ on the
+PolicyConfiguration before calling _getPolicyConfiguration_ to
+transition it to the open state.
+
+[.footnoteNumber]# 5.# [[a1254]]The
+WebUserDataPermission objects allow a container to determine when to
+reject a request before redirection if it would ultimately be rejected
+as the result of an excluding _auth-constraint_ .
+
+[.footnoteNumber]# 6.# [[a1255]] _The value null
+should be used as the actions value in the construction of a
+WebUserDataPermission when_ both _the HTTP method specification, and the
+representation of the acceptable connection type may be represented by
+null. If only one of the action components may be represented by null
+the other should be used as the actions value._
+
+[.footnoteNumber]# 7.# [[a1256]]The set of all
+possible HTTP methods is non-enumerable and contains the traditional
+HTTP methods (i.e., DELETE, GET, HEAD, OPTIONS, POST, PUT, TRACE) and
+any method conforming to the “extension-method” syntax defined in IETF
+RFC 2616 “Hypertext Transfer Protocol -- HTTP/1.1”. A null or the
+emptyString HTTP method specification is used to this set.
+
+[.footnoteNumber]# 8.# [[a1257]]Qualifying patterns
+implied by another qualifying pattern may be dropped because the use of
+the reduced list to qualify a pattern will yield a URLPatternSpec
+“equal” to the URLPatternSpec produced by qualifying the pattern with
+the full list (for example, /a/*:/a/b:/a/b/*:/a/b/c/* is equal to
+/a/*:/a/b/*).
+
+[.footnoteNumber]# 9.# [[a1258]]See
+link:jacc.html#a839[See Colons Within path-segment of Request
+URI] for details.
+
+[.footnoteNumber]# 10.# [[a1259]]These additional
+WebRoleRefPermission objects support the use of isUserInRole from
+unmapped (to a Servlet) JSP components.
+
+[.footnoteNumber]# 11.# [[a1260]]The canonical form
+for the set of all HTTP Methods (including all extension methods) is
+null.
+
+[.footnoteNumber]# 12.# [[a1261]]This can be achieved
+by passing _true_ as the second parameter in the call to
+_getPolicyConfiguration_ , or by calling _delete_ on the
+PolicyConfiguration before calling _getPolicyConfiguration_ to
+transition it to the open state.
+
+[.footnoteNumber]# 13.# [[a1262]]EJB 3.0 supports
+inclusion of security-role-ref elements in entity and session elements.
+Future versions could support inclusion in message-driven.
+
+[.footnoteNumber]# 14.# [[a1263]]For example, if an
+application declares roles \{R1, R2, R3} and defines a session EJB named
+“shoppingCart” that contains one security-role-ref __ element with
+role-name R1, then an additional EJBRoleRefPermission must be added to
+each of the roles R2 and R3. The name of both permissions must be
+“shoppingCart”, and the actions value of the permission added to role R2
+must be “R2”, and the actions value of the permission added to role R3
+must be “R3”.
+
+[.footnoteNumber]# 15.# [[a1264]]Policy context
+linking is transitive and symmetric, and this specification should not
+be interpreted as requiring that linkConfiguration be called on every
+combination of policy contexts that must share the same
+principal-to-role mapping, or that all contexts must be linked before
+any can be committed.
+
+[.footnoteNumber]# 16.# [[a1265]]Such as having a
+Servlet 3.0 ServletContextListener configured that could
+programmatically register a servlet and configure its security
+constraints and that could also perform a local invocation of an EJB in
+another module of the application.
+
+[.footnoteNumber]# 17.# [[a1266]]The
+HttpServletRequest based constructors of WebResourcePermission and
+WebUserDataPermission must perform the escaped ecoding. For all other
+constructors, the encoding must be performed prior to invoking the
+constructor. See issue link:jacc.html#a839[See Colons Within
+path-segment of Request URI].
+
+[.footnoteNumber]# 18.# [[a1267]]The syntax and
+semantics of an HTTPMethodExceptionList are described in a subsection of
+link:jacc.html#a281[See Translating security-constraint
+Elements]”.
+
+[.footnoteNumber]# 19.# [[a1268]]Whether or not this
+requirement applies to an additional PolicyContextHandler depends on the
+definition of the handler.
+
+[.footnoteNumber]# 20.#
+link:jacc.html#a753[See Optimization
+of Permission Evaluations]" allows containers to reuse granted results
+obtained for unauthenticated callers (i.e. with no principals) to
+authorize, independent of caller identity, permissions implied by such
+results.
+
+[.footnoteNumber]# 21.# [[a1270]]Not all policy
+systems support this query. Also, the Policy provider does not see the
+permission being checked, and therefore cannot use the permission to
+identify when to invoke a particular policy context handler.
