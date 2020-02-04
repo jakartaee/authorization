@@ -1,0 +1,1261 @@
+== CHAPTER 3 - 
+
+[[a232]]Policy Configuration
+Subcontract
+
+The link:jacc.html#a232[See Policy
+Configuration Subcontract] defines the interactions between container
+deployment tools and providers to support the translation of declarative
+Java EE authorization policy into policy statements within a Java SE
+Policy provider.
+
+This subcontract also applies to the
+translation of authorization policy annotations that have an equivalent
+representation in Java EE deployment descriptor policy constructs (i.e.,
+_security-constraint_ , _method-permission_ , _security-role-ref_ , and
+_exclude-list_ elements).
+
+=== [[a235]]What a Java EE Platform’s Deployment Tools Must Do
+
+The _getPolicyConfigurationFactory_ method
+must be used in every JRE to which the components of the application or
+module are being deployed to find or instantiate
+PolicyConfigurationFactory objects.
+
+===  _PolicyConfigurationFactory pcf =_
+
+===  _PolicyConfigurationFactory.getPolicyConfigurationFactory();_
+
+The _getPolicyConfiguration_ method of the
+factories must be used to find or instantiate _PolicyConfiguration_
+objects corresponding to the application or modules being deployed.
+
+===  _String petContextID = “acme-pet-server /petstore”_ ;
+
+===  _PolicyConfiguration petPC =_
+
+===  _pcf.getPolicyConfiguration(petContextID,true);_
+
+The declarative authorization policy
+statements derived from the application or module deployment
+descriptor(s) must be translated to create instances of the
+corresponding _javax.security.jacc_ Permission classes.
+
+=== WebResourcePermission webPerm =
+
+===  new WebResourcePermission(“/elephant”,“GET”);
+
+Methods of the _PolicyConfiguration_
+interface must be used with the permissions resulting from the
+translation to create policy statements within the _PolicyConfiguration_
+objects.
+
+=== petPC.addToRole(“customer”,webPerm);
+
+The _PolicyConfiguration_ objects must be
+linked such that the same principal-to-role mapping will be applied to
+all the modules of the application.
+
+===  _petPC.linkConfiguration(petFoodPC);_
+
+The PolicyConfiguration objects must be
+placed in Service such that they will be assimilated into the Policy
+providers used by the containers to which the application has been
+deployed.
+
+=== petPC.commit();
+
+Independent of this specification, J2EE
+deployment tools must translate and complete the declarative policy
+statements appearing in deployment descriptors into a form suitable for
+securing applications on the platform. On versions of the Java EE
+platform that require support for authorization policy annotations, the
+deployment tools must combine policy annotations in Java code with
+policy statements appearing in deployment descriptors to yield complete
+representations of authorization policy suitable for securing
+applications on the platform. The rules for combining authorization
+policy annotations with declarative policy statements are described in
+the versions of the EJB, Servlet, and Java EE platform specifications
+that require support for the annotations. Independent of whether
+annotations factor in the translation, the resulting policy statements
+may differ in form from the policy statements appearing in the
+deployment descriptors. The policy translation defined by this
+subcontract is described assuming that the policy statement form used by
+a platform is identical to that used to express policy in the deployment
+descriptors. Where this is not the case, the output of the translation
+must be equivalent to the translation that would occur if policy was
+completely specified in the deployment descriptors and the translation
+had proceeded directly from the deployment descriptors to the Java SE
+policy forms defined by this subcontract. Two translations are
+equivalent if they produce corresponding collections of unchecked,
+excluded, and role permissions, and if all of the permissions of each
+such collection are impliedlink:#a1250[1] by the permissions of
+the corresponding or excluded collection of the other translation.
+Translation equivalence is only required with respect to the permission
+types that are the subject of the translation.
+
+=== [[a253]]Policy Contexts and Policy Context Identifiers
+
+It must be possible to define separate
+authorization policy contexts corresponding to each deployed instance of
+a Java EE module. This per module scoping of policy context is necessary
+to provide for the independent administration of policy contexts
+corresponding to individual application modules (perhaps multiply
+deployed) within a common Policy provider.
+
+Each policy context contains all of the
+policy statements (as defined by this specification) that effect access
+to the resourceslink:#a1251[2] in one or more deployed modules.
+At policy configuration, a _PolicyConfiguration_ object is created for
+each policy context, and populated with the policy statements
+(represented by permission objects) corresponding to the context. Each
+policy context has an associated policy context identifier.
+
+In the link:jacc.html#a556[See
+Policy Decision and Enforcement Subcontract], access decisions are
+performed by checking permissions that identify resources by name and
+perhaps action. When a permission is checked, this specification
+requires identification of the authorization policy context in which the
+evaluation is to be performed (see link:jacc.html#a707[See
+Setting the Policy Context]).
+
+=== [[a257]]Policy Context Life Cycle
+
+link:jacc.html#a268[See
+PolicyConfiguration State Table] depicts the policy context life cycle
+as effected through the methods of the PolicyConfiguration interface. A
+policy context is in one of three states and all implementations of the
+PolicyConfiguration interface must implement the state semantics defined
+in this section.
+
+*  open
+
+A policy context in the open state must be
+available for configuration by any of the methods of the
+PolicyConfiguration interface. A policy context in the open state must
+not be assimilated at Policy.refresh into the policy statements used by
+the Policy provider in performing its access decisions.
+
+* inService
+
+A policy context in the inService state must
+be assimilated at Policy.refresh into the policy statements used by its
+provider. When a provider's refresh method is called, it must assimilate
+only policy contexts that are in the inService state and it must ensure
+that the policy statements put into service for each policy context are
+only those defined in the context at the time of the call to refresh. A
+policy context in the inService state must be unavailable for additional
+configuration. A policy context in the inService state must be
+transitioned to the open state when it is returned as a result of a call
+to getPolicyConfiguration. A policy context is transitioned to the
+inService state by calling the commit method, and only a policy context
+in the open state may be transitioned to the inService state.
+
+* deleted
+
+A policy context in the deleted state must be
+unavailable for configuration and it must be unavailable for
+assimilation into its associated Provider. A policy context in the
+deleted state must be transitioned to the open state when it is returned
+as a result of a call to getPolicyConfiguration. A policy context is
+transitioned to the deleted state by calling the delete method.
+
+
+
+Note that for a provider implementation to be
+compatible with multi-threaded environments, it may be necessary to
+synchronize the refresh method of the provider with the methods of its
+PolicyConfiguration interface and with the getPolicyConfiguration and
+inService methods of its PolicyConfigurationFactory.
+
+
+
+image:PolicyConfigurationStateTable.png[image]
+
+=== [[a268]]PolicyConfiguration State Table
+
+=== [[a269]]Linking Policy Contexts
+
+In the Java EE security model,
+principal-to-role mappings have application scope; that is, the same
+principal-to-role mappings must apply in the access decisions applied at
+all of the modules (that may represent separate policy contexts) that
+comprise an application. Same application policy contexts must be
+associated by calling the _PolicyConfiguration.linkConfiguration_
+method. This method must create a transitive and symmetric relationship
+within the provider and between this _PolicyConfiguration_ and the
+argument _PolicyConfiguration_ , such that they and all
+PolicyConfiguration objects otherwise linked to either of them share the
+same principal-to-role mappings. The semantics of the association must
+preserve the invariant that at most one principal-to-role mapping may
+apply to any _PolicyConfiguration_ .
+
+=== [[a271]]Servlet Policy Context Identifiers
+
+Servlet requests may be directed to a logical
+host using various physical or virtual host names or addresses, and an
+application server may be composed of multiple logical hosts. A virtual
+application server may be realized as a cluster of physical application
+servers, each hosting some subset of the logical hosts of the virtual
+application server. This specification uses the term hostname to refer
+to the name of a logical host that processes Servlet requests. A servlet
+container is responsible for mapping the target name or address
+information of an HTTP request to the appropriate hostname.
+
+To satisfy this specification, an application
+server must establish servlet policy context identifiers sufficient to
+differentiate all instances of a web application deployed on the logical
+host or on any other logical host that may share the same policy
+statement repository. One way to satisfy this requirement is to compose
+policy context identifiers by concatenating the hostname with the
+context path (as defined in the Servlet specification) identifying the
+web application at the host.
+
+When an application is composed of multiple
+web modules, a separate policy context must be defined per module. This
+is necessary to ensure that url-pattern based and servlet name based
+policy statements configured for one module do not interfere with those
+configured for another.
+
+In Servlet containers that support the
+programmatic registration and security configuration of servlets (e.g.,
+Servlet 3.0 compatible Servlet containers), the policy contexts assigned
+to web applications and web modules must be distinct from those to which
+any EJBlink:#a1252[3] components are assigned.
+
+=== [[a276]]Translating Servlet Deployment Descriptors
+
+A reference to a _PolicyConfiguration_ object
+must be obtained by calling the _getPolicyConfiguration_ method on the
+_PolicyConfigurationFactory_ implementation class of the provider
+configured into the container. The policy context identifier used in the
+call to the _getPolicyConfiguration_ method must be a _String_ composed
+as described in link:jacc.html#a271[See Servlet Policy Context
+Identifiers]. The _security-constraint_ and _security-role-ref_ elements
+in the deployment descriptor must be translated into permissions and
+added to the _PolicyConfiguration_ object as defined in the following
+sections. Before the translation is performed, all policy statements
+must have been removedlink:#a1253[4] from the policy context
+associated with the returned _PolicyConfiguration_ .
+
+=== [[a278]]Programmatic Servlet Registrations
+
+In Servlet containers that support the
+programmatic registration and security configuration of servlets (e.g.,
+Servlet 3.0 compatible Servlet containers), the servlet policy
+translation defined by this subcontract is described assuming that all
+such programmatic registration and security configuration has completed
+(for the servlet module corresponding to the policy context) before the
+translation is performed and that the resulting security related
+configuration has been represented in its equivalent form within the
+deployment descriptors on which the translation is performed. Where this
+is not the case, the result of the translation must be equivalent, as
+described previously, to the translation that would occur if it was the
+case. The mapping to equivalent deployment descriptor representation of
+security related configuration corresponding to programmatically
+registered servlets is defined in the Servlet specification (beginning
+with version 3.0).
+
+If the results of a prior translation are
+invalidated by subsequent programmatic registration and security
+configuration (as might occur if an initial translation is performed
+before the programmatic effects), the translation must be repeated.
+Before the translation is repeated, a reference must be obtained to the
+_PolicyConfiguration_ object in the open state, and its policy
+statements must be removed. If the PolicyConfiguration has already been
+linked to other committed policy contexts, then it may be necessary or
+preferable (in order to satisfy the linking requirements defined in
+link:jacc.html#a527[See Deploying an Application or Module]”)
+to obtain the reference and remove the policy statements while
+preserving the linkages established for the context by the prior
+translation. Policy statements may be removed while preserving linkages
+by calling the _removeUncheckedPolicy_ , _removeExcludedPolicy_ , and
+_removeRole_ methods on the open _PolicyConfiguration_ object.
+
+=== [[a281]]Translating security-constraint Elements
+
+ _The paragraphs of this section describe the
+translation of security-constraints into WebResourcePermission and
+WebUserDataPermission objects constructed using qualified URL pattern
+names. In the exceptional case, as defined in
+link:jacc.html#a288[See Qualified URL Pattern Names]”, where a
+pattern is made irrelevant by a qualifying pattern, the permission
+instantiations that would result from the translation of the pattern, as
+described below, must not be performed. Otherwise, the translation of
+URL patterns in security constraints must yield an equivalent
+translation to the translation that would result from following the
+instructions in the remainder of this section._
+
+ _A WebResourcePermission and a
+WebUserDataPermissionlink:#a1254[5] object must be added to the
+excluded policy statements for each distinct_ _url-pattern_ _occurring
+in the_ _security-constraint_ _elements that contain an_
+_auth-constraint_ _naming no roles (i.e an excluding_ _auth-constraint_
+_). The permissions must be constructed using the qualified (as defined
+in link:jacc.html#a288[See Qualified URL Pattern Names]”)
+pattern as their name and with actions obtained by combining (as defined
+in link:jacc.html#a302[See Combining HTTP Methods]”) the
+collections containing the pattern and occurring in a constraint with an
+excluding_ _auth-constraint_ _. The constructed permissions must be
+added to the excluded policy statements by calling the_
+_addToExcludedPolicy_ _method on the_ _PolicyConfiguration_ _object._
+
+ _A WebResourcePermission must be added to
+the corresponding role for each distinct combination in the
+cross-product of_ _url-pattern_ _and_ _role-name_ _occurring in the_
+_security-constraint_ _elements that contain an_ _auth-constraint_
+_naming roles. If the “any authenticated user” role-name, “**”, occurs
+in an auth-constraint, a WebResourcePermission must also be added to the
+“**” role. When an_ _auth-constraint_ _names the reserved_ _role-name_
+_, "*", all of the patterns in the containing_ _security-constraint_
+_must be combined with all of the roles defined in the web application;
+which must not include the role “**” unless the application has defined
+an application role named “**”. Each WebResourcePermission object must
+be constructed using the qualified pattern as its name and with actions
+defined by combining (as defined in link:jacc.html#a302[See
+Combining HTTP Methods]”) the collections containing the pattern and
+occurring in a constraint that names (or implies via "*") the role to
+which the permission is being added. The resulting permissions must be
+added to the corresponding roles by calling the_ _addToRole_ _method on
+the_ _PolicyConfiguration_ _object._
+
+ _A WebResourcePermission must be added to
+the unchecked policy statements for each distinct_ _url-pattern_
+_occurring in the_ _security-constraint_ _elements that do not contain
+an_ _auth-constraint_ _. Each WebResourcePermission object must be
+constructed using the qualified pattern as its name and with actions
+defined by combining (as defined in link:jacc.html#a302[See
+Combining HTTP Methods]”) the collections containing the pattern and
+occurring in a_ _security-constraint_ _without an_ _auth-constraint_ _.
+The resulting permissions must be added to the unchecked policy
+statements by calling the_ _addToUncheckedPolicy_ _method on the_
+_PolicyConfiguration_ _object._
+
+ _A WebUserDataPermission must be added to
+the unchecked policy statements for each distinct combination of_
+_url-pattern_ _and acceptable connection type resulting from the
+processing of the_ _security-constraint_ _elements that do not contain
+an excluding_ _auth-constraint_ _. The mapping of security-constraint to
+acceptable connection type must be as defined in
+link:jacc.html#a330[See Mapping Transport Guarantee to
+Connection Type]”. Each WebUserDataPermission object must be constructed
+using the qualified pattern as its name and with actions defined by
+appendinglink:#a1255[6] a representation of the acceptable
+connection type to the HTTP method specification obtained by combining
+(as defined in link:jacc.html#a302[See Combining HTTP Methods])
+the collections containing the pattern and occurring in a_
+_security-constraint_ _that maps to the connection type and that does
+not contain an excluding_ _auth-constraint_ _. The resulting permissions
+must be added to the unchecked policy statements by calling the_
+_addToUncheckedPolicy_ _method on the_ _PolicyConfiguration_ _object._
+
+ _A WebResourcePermission and a
+WebUserDataPermission must be obtained for each_ _url-pattern_ _in the
+deployment descriptor and the default pattern, "/", that is not combined
+by the_ _web-resource-collection_ _elements of the deployment descriptor
+with every possible HTTP method valuelink:#a1256[7]. The
+permission objects must be constructed using the qualified pattern as
+their name and with actions represented by an HTTP method specification
+that identifies all of the HTTP methods that do not occur in combination
+with the pattern. The form of the HTTP method specification used in the
+permission construction depends on the representation of the methods
+that occurred in combination with the pattern. If the methods that
+occurred are represented by an HttpMethodExceptionList as defined in
+link:jacc.html#a318[See HTTP Method Exception List]”), the
+permissions must be constructed using an HTTPMethodList naming all of
+the HTTP methods named in the exception list. Conversely, if the methods
+that occurred are represented by an HTTPMethodList, the permissions must
+be constructed using an HTTPMethodExceptionList naming all of the HTTP
+methods that occurred with the pattern. If a deny uncovered HTTP methods
+semantic is in effect for the web module associated with the
+PolicyContext, the resulting permissions must be added to the excluded
+policy statements by calling the_ _addToExcludedPolicy_ _method on the_
+_PolicyConfiguration_ _object. Otherwise, the permissions must be added
+to the unchecked policy statements by calling the_ _addToUncheckedPolic_
+_y method on the_ _PolicyConfiguration_ _object._
+
+=== [[a288]]Qualified URL Pattern Names
+
+The URL pattern qualification described in
+this section serves to capture the best-matching semantics of the
+Servlet constraint model in the qualified names such that the
+WebResourcePermission and WebUserDataPermission objects can be tested
+using the standard Java SE permission evaluation logic.
+
+The WebResourcePermission and
+WebUserDataPermission objects resulting from the translation of a
+Servlet deployment descriptor must be constructed with a name produced
+by qualifying the URL pattern. The rules for qualifying a URL pattern
+are dependent on the rules for determining if one URL pattern matches
+another as defined in link:jacc.html#a347[See Servlet
+URL-Pattern Matching Rules]”, and are described as follows:
+
+* If the pattern is a path prefix pattern, it
+must be qualified by every path-prefix pattern in the deployment
+descriptor matched by and different from the pattern being qualified.
+The pattern must also be qualified by every exact pattern appearing in
+the deployment descriptor that is matched by the pattern being
+qualified.
+* If the pattern is an extension pattern, it
+must be qualified by every path-prefix pattern appearing in the
+deployment descriptor and every exact pattern in the deployment
+descriptor that is matched by the pattern being qualified.
+* If the pattern is the default pattern, "/",
+it must be qualified by every other pattern except the default pattern
+appearing in the deployment descriptor.
+* If the pattern is an exact pattern, its
+qualified form must not contain any qualifying patterns.
+
+URL patterns are qualified by appending to
+their String representation, a colon separated representation of the
+list of patterns that qualify the pattern. Duplicates must not be
+included in the list of qualifying patterns, and any qualifying pattern
+matched by another qualifying pattern maylink:#a1257[8] be
+dropped from the list.
+
+=== QualifyingPatternList ::=
+
+ empty string | colon QualifyingPattern |
+
+===  QualifyingPatternList colon QualifyingPattern
+
+=== QualifiedPattern ::= Pattern QualifyingPatternList
+
+All colon characters occurring within Pattern
+and QualifyingPattern elements must be transformed to escaped
+encodinglink:#a1258[9] prior to inclusion of the corresponding
+element in the QualifiedPattern.
+
+Any pattern, qualified by a pattern that
+matches it, is overridden and made irrelevant (in the translation) by
+the qualifying pattern. Specifically, all extension patterns and the
+default pattern are made irrelevant by the presence of the path prefix
+pattern "/*" in a deployment descriptor. Patterns qualified by the "/*"
+pattern violate the URLPatternSpec constraints of WebResourcePermission
+and WebUserDataPermission names and must be rejected by the
+corresponding permission constructors.
+
+=== [[a302]]Combining HTTP Methods
+
+The section defines the rules for combining
+HTTP method names occurring in _web-resource-collection_ elements that
+apply to a common _url-pattern_ . The rules are commutative and
+associative and are as follows:
+
+* Lists of _http-method_ elements combine to
+yield a list of _http-method_ elements containing the union (without
+duplicates) of the _http-method_ elements that occur in the individual
+lists.
+* Lists of _http-method-omission_ elements
+combine to yield a list containing only the _http-method-omission_
+elements that occur in all of the individual lists (i.e., the
+intersection).
+* A list of _http-method-omission_ elements
+combines with a list of _http-method_ elements to yield the list of
+_http-method-omission_ elements minus any elements whose method name
+occurs in the _http-method_ list.
+* An empty list (of _http-method_ and
+_http-method-omission_ elements) represents the set of all possible HTTP
+methods, including when it results from combination according to the
+rules described in this section. An empty list combines with any other
+list to yield the empty list.
+
+When these combining rules are applied to a
+list of collections, the result is always either an empty list, a
+non-empty list of _http-method_ elements, or a non-empty list of
+_http-method-omission_ elements. When the result is an empty list, the
+corresponding actions value is the null (or the empty string) value.
+When the result is a non-empty list of _http-method_ elements the
+corresponding actions value is a comma separated list of the HTTP method
+names occurring in the _http-method_ elements of the list. When the
+result is a non-empty list of _http-method-omission_ elements the
+corresponding actions value is an HTTP method exception list (as defined
+in link:jacc.html#a318[See HTTP Method Exception
+List]link:jacc.html#a318[See HTTP Method Exception List]”)
+containing the HTTP method names occurring in the _http-method-omission_
+elements of the list. The following table contains the three alternative
+combination results and their corresponding actions values.
+
+=== HTTP Method Combination to Actions Correspondence
+
+Combination Result
+
+Actions Value
+
+empty list
+
+null or empty string
+
+list of http-method elements
+
+HttpMethodList (e.g., “GET,POST”)
+
+list of http-method-omission elements
+
+HttpMethodExceptionList (e.g.,”!PUT,DELETE”)
+
+=== [[a318]]HTTP Method Exception List
+
+An HTTP method exception list is used to
+represent, by set difference, a non-enumerable subset of the set of all
+possible HTTP methods. An exception list represents the subset of the
+complete set of HTTP methods formed by subtracting the methods named in
+the exception list from the complete set.
+
+An exception list is distinguished by its
+first character, which must be the exclamation point (i.e., “!”)
+character. A comma separated list of one or more HTTP method names must
+follow the exclamation point. The syntax of an HTTP method list is
+formally defined as follows:
+
+=== ExtensionMethod ::= any token as defined by IETF RFC 2616
+
+ (i.e., 1*[any CHAR except CTLS or separators
+as defined in RFC 2616])
+
+
+
+HTTPMethod ::= “GET” | “POST” | “PUT” |
+“DELETE” | “HEAD” |
+
+ “OPTIONS” | “TRACE” | ExtensionMethod
+
+
+
+HTTPMethodList ::= HTTPMethod |
+HTTPMethodList comma HTTPMethod
+
+
+
+HTTPMethodExceptionList ::= exclaimationPoint
+HTTPMethodList
+
+=== [[a330]]Mapping Transport Guarantee to Connection Type
+
+A _transport-guarantee_ (in a
+_user-data-constraint_ ) of NONE, or a _security-constraint_ without a
+_user-data-constraint_ , indicates that the associated URL patterns and
+HTTP methods may be accessed over any (including an unprotected)
+transport. A _transport-guarantee_ of INTEGRAL indicates that acceptable
+connections are those deemed by the container to be integrity protected.
+A _transport-guarantee_ of CONFIDENTIAL indicates that acceptable
+connections are those deemed by the container to be protected for
+confidentiality.
+
+=== [[a332]]transport-guarantee to Acceptable Connection Mapping
+
+transport-guarantee in
+constraint
+
+connection type
+
+String value
+
+INTEGRAL
+
+":INTEGRAL"
+
+CONFIDENTIAL
+
+":CONFIDENTIAL"
+
+NONE
+
+(including no user-data-constraint)
+
+null
+
+=== [[a343]]Translating Servlet security-role-ref Elements
+
+For each _security-role-ref_ appearing in the
+deployment descriptor a corresponding WebRoleRefPermission must be added
+to the corresponding role. The name of the WebRoleRefPermission must be
+the _servlet-name_ in whose context the _security-role-ref_ is defined.
+The actions of the WebRoleRefPermission must be the value of the
+_role-name_ (that is the reference), appearing in the
+_security-role-ref_ . The deployment tools must call the _addToRole_
+method on the _PolicyConfiguration_ object to add the
+WebRoleRefPermission object resulting from the translation to the _role_
+identified in the _role-link_ appearing in the _security-role-ref_ .
+
+Additional WebRoleRefPermission objects must
+be added to the PolicyConfiguration as follows. For each servlet element
+in the deployment descriptor a WebRoleRefPermission must be added to
+each _security-role_ of the application whose name does not appear as
+the _role-name_ in a _security-role-ref_ within the servlet element. If
+the “any authenticated user” _role-name_ , “**”, does not appear in a
+_security-role-ref_ within the servlet, a WebRoleRefPermission must also
+be added for it. The name of each such WebRoleRefPermission must be the
+servlet-name of the corresponding servlet element. The actions (that is,
+reference) of each such WebRoleRefPermission must be the corresponding
+(non-appearing) _role-name_ . The resulting permissions must be added to
+the corresponding roles by calling the _addToRole_ method on the
+_PolicyConfiguration_ object.
+
+For each security-role defined in the
+deployment descriptor and the “any authenticated user” role, “**”, an
+additional WebRoleRefPermission mustlink:#a1259[10] be added to
+the corresponding role by calling the addToRole method on the
+PolicyConfiguration object. The name of all such permissions must be the
+empty string, and the actions of each such permission must be the
+role-name of the corresponding role.
+
+=== [[a347]]Servlet URL-Pattern Matching Rules
+
+This URL pattern matches another pattern if
+they are related, by case sensitive comparison, as follows:
+
+* their pattern values are String equivalent,
+or
+* this pattern is the path-prefix pattern
+"/*", or
+* this pattern is a path-prefix pattern (that
+is, it starts with "/" and ends with "/*") and the other pattern starts
+with the substring of this pattern, minus its last 2 characters, and the
+next character of the other pattern, if there is one, is "/", or
+* this pattern is an extension pattern (that
+is, it starts with "*.") and the other pattern ends with this pattern,
+or
+* this pattern is the special default
+pattern, "/", which matches all other patterns.
+
+=== [[a354]]Example
+
+This example demonstrates the
+WebResourcePermission and WebUserDataPermission objects that would
+result from the translation of a deployment descriptor that contained
+the following _security-constraint_ elements.
+
+=== <!--
+
+The following security-constraint excludes
+access to the patterns and method combinations defined by the two
+contained web-resource-collections. The first collection excludes access
+by all methods except GET and POST, while the second collection excludes
+access by all HTTP methods.
+
+-->
+
+<security-constraint>
+
+ <web-resource-collection>
+
+
+<web-resource-name>sc1.c1</web-resource-name>
+
+ <url-pattern>/a/*</url-pattern>
+
+ <url-pattern>/b/*</url-pattern>
+
+ <url-pattern>/a</url-pattern>
+
+ <url-pattern>/b</url-pattern>
+
+
+<http-method-omission>GET</http-method-omission>
+
+
+<http-method-omission>POST</http-method-omission>
+
+===  </web-resource-collection>
+
+ <web-resource-collection>
+
+
+<web-resource-name>sc1.c2</web-resource-name>
+
+ <url-pattern>*.asp</url-pattern>
+
+ </web-resource-collection>
+
+ <auth-constraint/>
+
+=== </security-constraint>
+
+=== <!--
+
+The following security-constraint restricts
+access to the patterns and method combinations defined by the two
+contained web-resource-collections to callers in role R1 who connect
+using a confidential transport.
+
+-->
+
+<security-constraint>
+
+ <web-resource-collection>
+
+
+<web-resource-name>sc2.c1</web-resource-name>
+
+ <url-pattern>/a/*</url-pattern>
+
+ <url-pattern>/b/*</url-pattern>
+
+ <http-method>GET</http-method>
+
+===  </web-resource-collection>
+
+ <web-resource-collection>
+
+
+<web-resource-name>sc2.c2</web-resource-name>
+
+ <url-pattern>/b/*</url-pattern>
+
+ <http-method>POST</http-method>
+
+===  </web-resource-collection>
+
+ <auth-constraint>
+
+ <role-name>R1</role-name>
+
+ </auth-constraint>
+
+ <user-data-constraint>
+
+
+<transport-guarantee>CONFIDENTIAL</transport-guarantee>
+
+ </user-data-constraint>
+
+=== </security-constraint>
+
+link:jacc.html#a399[See Qualified
+URL Pattern Names from Example] contains the qualified URL pattern names
+that would result from the translation of the _security-constraint_
+elements (including the qualified form of the default pattern). The
+second column of link:jacc.html#a399[See Qualified URL Pattern
+Names from Example] contains the canonical form of the qualified names.
+The values in the second column have been derived from the values in the
+first column by removing qualifying patterns matched by other qualifying
+patterns.
+
+ 
+
+=== [[a399]]Qualified URL Pattern Names from Example
+
+Qualified URL Pattern Name
+
+Canonical Form
+
+/a
+
+/a
+
+/b
+
+/b
+
+/a/*:/a
+
+/a/*:/a
+
+/b/*:/b
+
+/b/*:/b
+
+*.asp:/a/*:/b/*
+
+*.asp:/a/*:/b/*
+
+/:/a:/b:/a/*:/b/*:*.asp
+
+/:/a/*:/b/*:*.asp
+
+link:jacc.html#a416[See Permissions
+and PolicyConfiguration Operations from Example] represents the
+permissions and PolicyConfiguration operations that would result from
+the translation of the security-constraint elements.The names appearing
+in the second column of the table are those found in the first column of
+link:jacc.html#a399[See Qualified URL Pattern Names from
+Example]. As noted previously, any equivalent form of the qualified
+names, including their canonical forms, could have been used in the
+permission constructions.
+
+ 
+
+=== [[a416]]Permissions and PolicyConfiguration Operations from Example
+
+Permission
+
+Type
+
+Name
+
+Actions
+
+Policy
+
+Configuration
+
+Add To
+
+WebResource
+
+/a/*:/a
+
+!GET,POST
+
+excluded
+
+WebUserData
+
+/a/*:/a
+
+!GET,POST
+
+excluded
+
+WebResource
+
+/b/*:/b
+
+!GET,POST
+
+excluded
+
+WebUserData
+
+/b/*:/b
+
+!GET,POST
+
+excluded
+
+WebResource
+
+/a
+
+!GET,POST
+
+excluded
+
+WebUserData
+
+/a
+
+ !GET,POST
+
+excluded
+
+WebResource
+
+/b
+
+ !GET,POST
+
+excluded
+
+WebUserData
+
+/b
+
+ !GET,POST
+
+excluded
+
+WebResource
+
+*.asp:/a/*:/b/*
+
+{empty} nulllink:#a1260[11]
+
+excluded
+
+WebUserData
+
+*.asp:/a/*:/b/*
+
+ null
+
+excluded
+
+WebResource
+
+/a/*:/a
+
+ GET
+
+role(R1)
+
+WebResource
+
+/b/*:/b
+
+ GET,POST
+
+role(R1)
+
+WebUserData
+
+/a/*:/a
+
+ GET:CONFIDENTIAL
+
+unchecked
+
+WebUserData
+
+/b/*:/b
+
+ GET,POST:CONFIDENTIAL
+
+unchecked
+
+WebResource
+
+/a/*:/a
+
+ POST
+
+unchecked
+
+WebUserData
+
+/a/*:/a
+
+ POST
+
+unchecked
+
+WebResource
+
+/a
+
+ GET,POST
+
+unchecked
+
+WebUserData
+
+/a
+
+ GET,POST
+
+unchecked
+
+WebResource
+
+/b
+
+ GET,POST
+
+unchecked
+
+WebUserData
+
+/b
+
+ GET,POST
+
+unchecked
+
+WebResource
+
+/:/a:/b:/a/*:/b/*:*.asp
+
+ null
+
+unchecked
+
+WebUserData
+
+/:/a:/b:/a/*:/b/*:*.asp
+
+ null
+
+unchecked
+
+=== [[a512]]EJB Policy Context Identifiers
+
+To satisfy this specification, an application
+server must establish EJB policy context identifiers sufficient to
+differentiate all instances of the deployment of an EJB jar on the
+application server, or on any other application server with which the
+server may share the same policy statement repository.
+
+When an application is composed of multiple
+EJB jars, no two jars that share at least one ejb-name value in common
+may share the same policy context identifiers.
+
+In cases where EJBs may be packaged in war
+files, the application server must assign the EJBs to a policy context
+distinct from that to which any web components are assigned.
+
+=== [[a516]]Translating EJB Deployment Descriptors
+
+A reference to a _PolicyConfiguration_ object
+must be obtained by calling the _getPolicyConfiguration_ method on the
+_PolicyConfigurationFactory_ implementation class of the provider
+configured into the container. The policy context identifier used in the
+call to _getPolicyConfiguration_ must be a _String_ that satisfies the
+requirements described in link:jacc.html#a512[See EJB Policy
+Context Identifiers]. The _method-permission, exclude-list,_ and
+_security-role-ref_ elements appearing in the deployment descriptor must
+be translated into permissions and added to the _PolicyConfiguration_
+object to yield an equivalent translation as that defined in the
+following sections and such that every EJB method for which the
+container performs pre-dispatch access decisions is implied by at least
+one permission resulting from the translation. Before the translation is
+performed, all policy statements must have been
+removedlink:#a1261[12] from the policy context associated with
+the returned _PolicyConfiguration._
+
+=== [[a518]]Translating EJB method-permission Elements
+
+For each method element of each
+method-permission element, an EJBMethodPermission object translated from
+the method element must be added to the policy statements of the
+PolicyConfiguration object. The name of each such EJBMethodPermission
+object must be the ejb-name from the corresponding method element, and
+the actions must be established by translating the _method_ element into
+a method specification according to the methodSpec syntax defined in the
+documentation of the EJBMethodPermission class. The actions translation
+must preserve the degree of specificity with respect to method-name,
+method-intf, and method-params inherent in the method element.
+
+If the _method-permission_ element contains
+the _unchecked_ element _,_ then the deployment tools must call the
+_addToUncheckedPolicy_ method to add the permissions resulting from the
+translation to the _PolicyConfiguration_ object. Alternatively, if the
+_method-permission_ element contains one or more _role-name_ elements,
+then the deployment tools must call the _addToRole_ method to add the
+permissions resulting from the translation to the corresponding roles of
+the _PolicyConfiguration_ object. These addToRole calls must be made for
+any role-name used in the method-permision which may include the
+role-name “**”; which, by default, is mapped to any authenticated user.
+
+=== [[a521]]Translating the EJB exclude-list
+
+An EJBMethodPermission object must be created
+for each _method_ element occurring in the _exclude-list_ element of the
+deployment descriptor. The name and actions of each EJBMethodPermission
+must be established as described in link:jacc.html#a518[See
+Translating EJB method-permission Elements].”
+
+The deployment tools must use the
+_addToExcludedPolicy_ method to add the EJBMethodPermission objects
+resulting from the translation of the _exclude-list_ to the excluded
+policy statements of the _PolicyConfiguration_ object.
+
+=== [[a524]]Translating EJB security-role-ref Elements
+
+For each _security-role-ref_ element
+appearing in the deployment descriptor, a corresponding
+EJBRoleRefPermission must be created. The value of the ejb-name element
+within the element containing the security-role-ref element must be used
+as the name of the EJBRoleRefPermission. The actions used to construct
+the permission must be the value of the _role-name_ (that is the
+reference), appearing in the _security-role-ref_ . The deployment tools
+must call the _addToRole_ method on the _PolicyConfiguration_ object to
+add a policy statement corresponding to the EJBRoleRefPermission to the
+role identified in the _role-link_ appearing in the _security-role-ref_
+.
+
+Additional EJBRoleRefPermission objects must
+be added to the PolicyConfiguration as follows. For each element in the
+deployment descriptor for which the EJB descriptor schema
+supportslink:#a1262[13] inclusion of security-role-ref elements,
+an EJBRoleRefPermission must be added to each _security-role_ of the
+application whose name does not appear as the _role-name_ in a
+_security-role-ref_ within the element. If the “any authenticated user”
+_role-name_ , “**”, does not appear in a _security-role-ref_ within the
+element, a EJBRoleRefPermission must also be added for it. The name of
+each such EJBRoleRefPermission must be the value of the ejb-name element
+within the element in which the security-role-ref elements could
+otherwise occur. The actions (that is, reference) of each such
+EJBRoleRefPermission must be the corresponding (non-appearing)
+_role-name_ . The resulting permissions must be
+addedlink:#a1263[14] to the corresponding roles by calling the
+_addToRole_ method on the _PolicyConfiguration_ object.
+
+=== [[a527]]Deploying an Application or Module
+
+The application server’s deployment tools
+must translate the declarative authorization policy appearing in the
+application or module deployment descriptor(s) into policy statements
+within the Policy providers used by the containers to which the
+components of the application or module are being deployed. In Servlet
+3.0 containers, the policy statements resulting from the deployment and
+initialization of a web module, must represent the effects of any
+programmatic registration and security configuration of servlets that
+occurred during the initialization of the module.
+
+When a module is deployed, its policy context
+must be linked to all the other policy contexts with which it must share
+the same principal-to-role mapping. When an application is deployed,
+every policy context of the application must be linked to every other
+policy context of the application with which it shares a common Policy
+provider. Policy contexts are linkedlink:#a1264[15] by calling
+the linkConfiguration method on the PolicyConfiguration objects of the
+provider.
+
+After the translation and linking has
+occurred (note that they may occur in either order) for a policy
+context, the _commit_ method must be called on the corresponding
+_PolicyConfiguration_ object to place it in service such that its policy
+statements will be assimilated by the corresponding Policy providers.
+These three operations, translate, link and commit, must be performed
+for all of the policy contexts of the application.
+
+Once the translation, linking, and committing
+has occurred, a call must be made to _Policy.refresh_ on the Policy
+provider used by each of the containers to which the application or
+module is being deployed. The calls to _Policy.refresh_ must occur
+before the containers will accept requests for the deployed resources.
+If a module corresponding to a policy context may have inter-module,
+initialization-time, dependencies that must be satisfied before the
+translation of the policy context of the dependent module can be
+completedlink:#a1265[16], the _commit_ of the depended upon
+modules must occur before the initialization of the dependent module,
+and the calls to _Policy.refresh_ described above must additionally
+occur after the processing of the depended upon modules and before the
+initialization of the dependent module.
+
+The policy context identifiers corresponding
+to the deployed application or module must be recorded in the
+application server so that they can be used by containers to establish
+the policy context as required by link:jacc.html#a707[See
+Setting the Policy Context]” of the link:jacc.html#a556[See
+Policy Decision and Enforcement Subcontract], and such that the Deployer
+may subsequently remove or modify the corresponding policy contexts as a
+result of the undeployment or redeployment of the application.
+
+=== [[a533]]Undeploying an Application or Module
+
+To ensure that there is not a period during
+undeployment when the removal of policy statements on application
+components renders what were protected components unprotected, the
+application server must stop dispatching requests for the application’s
+components before undeploying an application or module.
+
+To undeploy an application or module, the
+deployment tools must indicate at all the Policy providers to which
+policy contexts of the application or module have been deployed that the
+policy contexts associated with the application or module that have been
+configured in the provider are to be removed from service. A deployment
+tool indicates that a policy context is to be removed from service
+either by calling getPolicyConfiguration with the identifier of the
+policy context on the provider’s PolicyConfigurationFactory or by
+calling delete on the corresponding PolicyConfiguration object. If the
+getPolicyConfiguration method is used, the value _true_ should be passed
+as the second argument to cause the corresponding policy statements to
+be deleted from the context. After the policy contexts are marked for
+removal from service, a call must be made to _Policy.refresh_ on all of
+the Policy providers from which at least one module of the application
+or module was marked for removal from service.
+
+=== [[a536]]Deploying to an existing Policy Configuration
+
+Containers are not required to deploy to an
+existing policy configuration. Containers that chose to provide this
+functionality must satisfy the following requirements.
+
+To associate an application or module with an
+existing set of linked policy contexts, the identifiers of the existing
+policy contexts must be applied by the relevant containers in fulfilling
+their obligations as defined in the link:jacc.html#a556[See
+Policy Decision and Enforcement Subcontract]. The policy contexts should
+be verified for existence, by calling the _inService_ method of the
+_PolicyConfigurationFactory_ of the Policy providers of the relevant
+containers. The deployment tools must call _Policy.refresh_ on the
+Policy provider of each of the relevant containers, and the containers
+must not perform pre-dispatch decisions or dispatch requests for the
+deployed resources until these calls have completed.
+
+In Servlet 3.0 containers, if any
+programmatic registration and security configuration of servlets has
+occurred during the initialization of a web module associated with a
+pre-exiting policy context, the corresponding PolicyConfiguration object
+must be opened, its policy statements must be removed, and the policy
+translation of the module must be repeated to include the programmatic
+effects. The PolicyConfiguration object must be committed, and an
+additional call to _Policy.refresh_ must be made after all such
+PolicyConfiguration objects are committed.
+
+=== [[a540]]Redeploying a Module
+
+Containers are not required to implement
+redeployment functionality. Containers that chose to provide this
+functionality must satisfy the following requirements.
+
+To ensure redeployment does not create a
+situation where the removal of policy statements on application
+components renders what were protected components unprotected, the
+application server must stop dispatching requests for the application’s
+components before redeployment begins. The application server must not
+resume dispatching requests for the application’s components until after
+the calls to Policy.refresh, described in
+link:jacc.html#a527[See Deploying an Application or Module]”,
+have completed.
+
+To redeploy a module, the deployment tools
+must indicate at all of the Policy providers to which the module is to
+be redeployed that the policy context associated with the module is to
+be removed from service. If the module is to be redeployed to the same
+policy context at a provider, all policy statements and linkages must be
+removed from the policy context at the provider. After the policy
+contexts have been marked for removal from service and emptied of policy
+statements and linkages (as necessary), the deployment tools must
+proceed as described in link:jacc.html#a527[See Deploying an
+Application or Module]”.
+
+=== [[a544]]What the Provider Must Do
+
+The provider must include an implementation
+of the _javax.security.jacc.PolicyConfigurationFactory_ class along with
+a matched implementation of a class that implements the
+_javax.security.jacc.PolicyConfiguration_ interface. In addition to
+providing a _PolicyConfiguration_ interface for integration with the
+application server’s deployment tools, the provider must also include a
+management interface for policy administrators to use to grant the
+collections of permissions that comprise roles, to principals. This
+interface need not be standardized.
+
+The provider must ensure that all of the
+permissions added to a role in a policy context are granted to any
+principal mapped to the role by the policy administrator. For the any
+“authenticated user role”, “**”, and unless an application specific
+mapping has been established for this role, the provider must ensure
+that all permissions added to the role are granted to any authenticated
+user. The provider must ensure that the same principal-to-role mappings
+are applied to all linked policy contexts.
+
+The provider must ensure that excluded policy
+statements take precedence over overlapping unchecked policy statements,
+and that both excluded and unchecked policy statements take precedence
+over overlapping role based policy statements.
+
+This specification does not prescribe the
+policy language or the methods used within providers to implement the
+policy and role requirements described above.
+
+=== [[a549]]Permission to Configure Policy
+
+The _getPolicyConfigurationFactory_ , and
+_inService_ methods of the abstract factory class,
+_javax.security.jacc.PolicyConfigurationFactory_ , must throw a
+SecurityException when called by an AccessControlContext that has not
+been granted the “setPolicy” SecurityPermission.
+
+The _getPolicyConfiguration_ method of all
+implementations of the _PolicyConfigurationFactory_ abstract class must
+throw a SecurityException when called by an AccessControlContext that
+has not been granted the “setPolicy” SecurityPermission.
+
+All of the public methods of all of the
+concrete implementations of the _PolicyConfiguration_ interface must
+throw a SecurityException when called by an AccessControlContext that
+has not been granted the “setPolicy” SecurityPermission.
+
+In cases where a required permission is not
+held by a caller, the implementation must return without changing the
+state of the policy statement repository.
+
+The containers of an application server must
+be granted the “getPolicy” SecurityPermission and the “setPolicy”
+SecurityPermission. J2EE 1.3 Containers that choose to support this
+contract must be granted the “getPolicy” AuthPermission and the
+“setPolicy” AuthPermission.

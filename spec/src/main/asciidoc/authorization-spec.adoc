@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2017, 2019 Contributors to the Eclipse Foundation
+// Copyright (c) 2017, 2020 Contributors to the Eclipse Foundation
 //
 
 = Jakarta Authorization
@@ -23,6 +23,27 @@ endif::[]
 :sectnums!:
 include::license-efsl.adoc[]
 
-// == Scope
+// == Toc
 :sectnums:
-include::scope.adoc[]
+include::preface.adoc[]
+
+:doc-part: 1
+include::chapters/1_overview.adoc[]
+
+:doc-part: 2
+include::chapters/2_provider-configuration.adoc[]
+
+:doc-part: 3
+include::chapters/3_policy-configuration.adoc[]
+
+:doc-part: 4
+include::chapters/4_policy-decision.adoc[]
+
+:doc-part: A
+include::chapters/a_related-documents.adoc[]
+
+:doc-part: B
+include::chapters/b_issues.adoc[]
+
+:doc-part: C
+include::chapters/c_revision-history.adoc[]
