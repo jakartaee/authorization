@@ -1,386 +1,298 @@
-== CHAPTER 1 - 
+== Overview
 
-Overview
-
-This specification defines a contract between
-Java EE containers and authorization policy modules such that container
-authorization functionality can be provided as appropriate to suit the
-operational environment.
+This specification defines a contract between Jakarta EE containers and authorization 
+policy modules such that container authorization functionality can be provided as 
+appropriate to suit the operational environment.
 
 === Introduction
 
-The contract defined by this specification is
-divided into three subcontracts. Taken together, these subcontracts
-describe the installation and configuration of authorization providers
-such that they will be used by containers in performing their access
-decisions. The three subcontracts are the
-link:jacc.html#a173[See Provider Configuration Subcontract],
-the link:jacc.html#a232[See Policy Configuration Subcontract],
-and the link:jacc.html#a556[See Policy Decision and Enforcement
-Subcontract].
+The contract defined by this specification is divided into three subcontracts. Taken 
+together, these subcontracts describe the installation and configuration of 
+authorization providers such that they will be used by containers in performing their access
+decisions. The three subcontracts are the <<a173>>, <<a232>>, and the <<a556>>.
 
-
-
-image:authz-1.png[image]
-
-=== [[a76]]Policy Configuration and Enforcement Subcontracts
+[#fig:001] 
+[[a76]]
+image::authz-1.svg[caption="Figure {doc-part}-{counter:figure} ", reftext="Figure {doc-part}-{figure}", title="Policy Configuration and Enforcement Subcontracts", align="center"]
 
 === Terminology
 
-=== Java EE application
+[frame=none]
+[grid=none]
+[cols="20%,80%",options="noheader"] 
+|===
+2+| *Jakarta EE application*
 
-A collection of Java EE modules that must
-share a common principal-to-role-mapping
+| | A collection of Jakarta EE modules that must share a common principal-to-role-mapping
 
-=== deploy (e.g. an application)
+2+| *deploy (e.g. an application)*
 
- The sequence of operations comprised of
-completing the declaration of an application or module’s dependencies on
-container facilities, binding the declared dependencies to specific
-mechanisms or features of an operational environment, installing or
-distributing the application software and related configuration
-information to one or more application servers, and activating the
+| | The sequence of operations comprised of _completing the declaration_ of an application or module’s dependencies on
+container facilities, _binding the declared dependencies_ to specific
+mechanisms or features of an operational environment, _installing or distributing_ 
+the application software and related configuration
+information to one or more application servers, and _activating_ the
 software such that it is available to service requests.
 
-=== undeploy (e.g. an application)
+2+| *undeploy (e.g. an application)*
 
-The combined process of stopping an
-application and then removing the software and configuration information
-corresponding to the application or a module of the application from one
-or more application servers.
+| | The combined process of _stopping_ an application and then _removing_ the software and configuration information
+corresponding to the application or a module of the application from one or more application servers.
 
-=== redeploy (e.g. a module of an application)
+2+| *redeploy (e.g. a module of an application)*
 
-The repackaging of an application or module
+| | The _repackaging_ of an application or module
 to accommodate modification of implementation and or of declared
 dependencies and or of the binding of declared dependencies to
-mechanisms, combined with undeploying a corresponding module or
-application, followed by redistribution and activation of the modified
+mechanisms, combined with _undeploying_ a corresponding module or
+application, followed by _redistribution_ and _activation_ of the modified
 software and or configuration.
 
-=== grant
+2+| *grant*
 
-The act of assigning to entities the right to
+| | The act of assigning to entities the right to
 perform a set of activities that is the subject of an authorization
 decision (that is, a permission).
 
-=== hostname
+2+| *hostname*
 
-The name of a logical host of an application
+| | The name of a logical host of an application
 server, as may be used in the composition of a servlet policy context
 identifier.
 
-=== [[a90]]JAAS Policy interface
+[[a90]]
+2+| *JAAS Policy interface*
 
- The _javax.security.auth.Policy_ abstract
-class.
+| | The `javax.security.auth.Policy` abstract class.
 
-=== [[a92]]JAAS Policy provider
+2+| [[a92]] *JAAS Policy provider*
 
- An instance of a class that implements the
-JAAS Policy interface.
+| | An instance of a class that implements the JAAS Policy interface.
 
-=== permission
+2+| *permission*
 
-Represents a set of activities (a set of one
-or more operations on some set of one or more resources) that is the
-target of an authorization decision.
+| | Represents a set of activities (a set of one or more operations on some set of
+one or more resources) that is the target of an authorization decision.
 
-=== Policy Context
+2+| *Policy Context*
 
-The collection of policy statements within a
+| | The collection of policy statements within a
 policy provider that effect access to the resources of one or more
 deployed modules.
 
-=== Policy Context Identifier
+2+| *Policy Context Identifier*
 
-A unique string value that identifies the
+| | A unique string value that identifies the
 collection of policy statements corresponding to a policy context within
 a policy provider.
 
-=== policy statement
+2+| *policy statement*
 
-A representation of the circumstances under
+| | A representation of the circumstances under
 which the set of activities represented by a permission are to be
 authorized.
 
-=== excluded policy statement
+2+| *excluded policy statement*
 
-A representation of the decision not to
+| | A representation of the decision not to
 authorize a set of activities represented by a permission independent of
 factors that might otherwise effect the outcome of the decision.
 
-=== unchecked policy statement
+2+| *unchecked policy statement*
 
-A representation of the decision to authorize
+| | A representation of the decision to authorize
 a set of activities represented by a permission independent of factors
 that might otherwise effect the outcome of the decision.
 
-=== principal
+2+| *principal*
 
-[1] (Java) A security attribute acquired as a
-result of authentication by entities that perform activities.
+| a| . (Java) A security attribute acquired as a result of authentication by entities that perform activities.
+. An entity that performs activities.
 
-[2] An entity that performs activities.
+2+| *principal-to-role mapping*
 
-=== principal-to-role mapping
-
-The act of granting to principals the set of
+| | The act of granting to principals the set of
 permissions that comprise a role.
 
-=== privilege
+2+| *privilege*
 
- A security attribute that may be assigned to
+| | A security attribute that may be assigned to
 entities and that may be used to differentiate an entity’s right to
 perform activities.
 
-=== Provider
+2+| *Provider*
 
-The software component that contains
+| | The software component that contains
 implementations of the policy configuration, and policy decision classes
 defined by this specification.
 
-=== reference-to-role mapping
+2+| *reference-to-role mapping*
 
-The component-scoped transformation of
+| | The component-scoped transformation of
 component embedded role aliases into application-scoped role names. The
 transformation is defined at application deployment and perhaps modified
 by policy management.
 
-=== role
+2+| *role*
 
-[1] A named set of permissions that may be
-granted to principals.
+| a| . A named set of permissions that may be granted to principals.
+. A principal that has been granted permissions or that is used as a privilege.
 
-[2] A principal that has been granted
-permissions or that is used as a privilege.
+|===
 
-=== [[a120]]Assumptions
+[[a120]]
+=== Assumptions
 
-The contract defined in this JSR must be
-applicable to both J2EE 1.3 platforms and J2EE 1.4 platforms and to
-future versions of the Java EE platform.
+. The contract defined in this specifiction must be applicable to Jakarta EE 9 and future versions of the Jakarta EE platform.
 
-We are defining a contract to be satisfied by
-“standard” Java SE Policy providers. In a J2EE 1.3 context we expect the
-provider to include a JAAS Policy provider.
+. We are defining a contract to be satisfied by “standard” Java SE Policy providers. 
 
-J2EE 1.4 platforms will be required to
-implement the contract defined by this JSR. This contract will be a
-required element of subsequent versions of the Java EE platform.
+. Jakarta EE 9 platforms will be required to implement the contract defined by this specification. This contract will be a
+required element of subsequent versions of the Jakarta EE platform.
 
-Support for the contract by J2EE 1.3
-platforms is optional. It is expected that there may be aspects of the
-contract that are Java EE release specific.
+. We do not expect to add new decision interfaces to Policy (JAAS or Java SE) to accomplish the work of this specification.
 
-We do not expect to add new decision
-interfaces to Policy (JAAS or Java SE) to accomplish the work of this
-JSR.
+. Jakarta EE application roles will be modeled as collections of permissions that are granted to principals.
 
-Java EE application roles will be modeled as
-collections of permissions that are granted to principals.
+. A principal that is in a role is granted all the permissions of the collection. However, the converse is not true.
+That is, a principal that has been granted all the permissions of a role is not necessarily in the role (as determined by
+`isCallerInRole()`).
 
-A principal that is in a role is granted all
-the permissions of the collection. However, the converse is not true.
-That is, a principal that has been granted all the permissions of a role
-is not necessarily in the role (as determined by isCallerInRole()).
+. This contract will shift the responsibility for performing all of the authorization decisions pertaining to a Jakarta
+EE application to the policy provider. Accordingly, the following mappings will become the responsibility of the provider.
+** permissions to roles
+** principals to roles
+** (Application embedded) role references to role names
 
-This contract will shift the responsibility
-for performing all of the authorization decisions pertaining to a Java
-EE application to the policy provider. Accordingly, the following
-mappings will become the responsibility of the provider.
+. It is assumed that there are providers that are unable to enumerate all the permissions that pertain to a
+subject/protection domain before returning from `Policy.getPermissions()`.
 
-* permissions to roles
-* principals to roles
-* (Application embedded) role references to
-role names
+. Any interfaces that this contract defines to be used by containers and or container deployment tools to create policy
+statements within a policy provider must be compatible with a module-at-a-time application deployment mechanism.
 
-It is assumed that there are providers that
-are unable to enumerate all the permissions that pertain to a
-subject/protection domain before returning from Policy.getPermissions().
+. Where the Jakarta Enterprise Beans or Jakarta Servlet specifications are incomplete or ambiguous in their
+specification of authorization functionality, the contract defined in this document may require additional semantics. 
+Additional or clarifying semantics will only be adopted by this specification based on their acceptance by the 
+committers of the corresponding component specification.
 
-Any interfaces that this contract defines to
-be used by containers and or container deployment tools to create policy
-statements within a policy provider must be compatible with a
-module-at-a- time application deployment mechanism.
+. The Jakarta Enterprise Beans policy decisions performed by providers may require access to the arguments of the 
+Enterprise Bean invocation and or (for entity beans) the container managed Enterprise Bean instance state.
 
-Where the Enterprise JavaBeansTM (EJBTM) or
-Java ServletTM specifications are incomplete or ambiguous in their
-specification of authorization functionality, the contract defined in
-this document may require additional semantics. Additional or clarifying
-semantics will only be adopted by this specification based on their
-acceptance by the spec lead and expert group of the corresponding
-component specification.
+[[a136]]
+=== Requirements
 
-The EJB policy decisions performed by
-providers may require access to the arguments of the EJB invocation and
-or (for entity beans) the container managed EJB instance state.
+. This contract must support providers that are unable to determine, before returning from `Policy.getPermissions()`, 
+all the permissions that pertain to a subject/protection domain.
 
-=== [[a136]]Requirements
+. Each Policy provider that satisfies this contract must perform or delegate to another provider all the permission
+evaluations requested via its interface in the JRE; not just those made by the container to implement 
+Jakarta EE security functionality.
 
-This contract must support providers that are
-unable to determine, before returning from Policy.getPermissions(), all
-the permissions that pertain to a subject/protection domain.
+. Each provider must export interfaces (defined by this contract) for use by containers and or container deployment
+tools to create policy statements within the policy store of the provider. These interfaces must be used when an 
+application or module is deployed in a container.
 
-Each Policy provider that satisfies this
-contract must perform or delegate to another provider all the permission
-evaluations requested via its interface in the JRE; not just those made
-by the container to implement Java EE security functionality.
+. Each provider must satisfy all of the authorization requirements of the Jakarta Enterprise Beans and 
+Jakarta Servlet specifications corresponding to the target platform. The provider is not required to
+satisfy the authorization requirements pertaining to any of the above specifications for which the target platform 
+is not a compatible implementation.
 
-Each provider must export interfaces (defined
-by this contract) for use by containers and or container deployment
-tools to create policy statements within the policy store of the
-provider. These interfaces must be used when an application or module is
-deployed in a container.
+. The evaluation of a permission corresponding to a resource must identify the context of the resource's use such that
+different policy can be applied to a resource used in different contexts (that is, applications or instances of an application).
 
-Each provider must satisfy all of the
-authorization requirements of the EJB and Servlet specifications
-corresponding to the target platform. The provider is not required to
-satisfy the authorization requirements pertaining to any of the above
-specifications for which the target platform is not a compatible
-implementation.
+. In the case of Jakarta Servlet resources, the provider must be able to associate a distinct policy context with each
+context root (including context roots created to support virtual hosting) hosted by the server.
 
-The evaluation of a permission corresponding
-to a resource must identify the context of the resource's use such that
-different policy can be applied to a resource used in different contexts
-(that is, applications or instances of an application).
+. In protecting Jakarta Servlet resources, a provider must select the policy statements that apply to a request according to
+the constraint matching and servlet mapping rules defined by the Jakarta Servlet specification.
 
-In the case of Servlet resources, the
-provider must be able to associate a distinct policy context with each
-context root (including context roots created to support virtual
-hosting) hosted by the server.
+. To support this contract in a Jakarta Servlet environment, a container or its deployment tools must create policy
+statements as necessary to support Servlet’s “default role-ref semantic”.
 
-In protecting Servlet resources, a provider
-must select the policy statements that apply to a request according to
-the constraint matching and servlet mapping rules defined by the Servlet
-specification.
+. For a container to support this contract, it must execute in an environment controlled by a Java SE `SecurityManager`.
+Containers may also execute in environments that are not controlled by a Java SE SecurityManager. 
+<<a154>> defines changes to this contract that apply to containers running without a Java SE `SecurityManager`.
 
-To support this contract in a Servlet
-environment, a container or its deployment tools must create policy
-statements as necessary to support Servlet’s “default role-ref
-semantic”.
-
-For a container to support this contract, it
-must execute in an environment controlled by a Java SE SecurityManager.
-Containers may also execute in environments that are not controlled by a
-Java SE SecurityManager. link:jacc.html#a154[See Running
-Without a SecurityManager] defines changes to this contract that apply
-to containers running without a Java SE SecurityManager.
-
-Policy providers must perform the permission
-evaluations corresponding to container pre-dispatch decisions and
-application embedded privilege tests (i.e isUserInRole and
-isCallerInRole) without requiring that containers establish particular
-values for any of the non-principal attributes of the one or more
-java.security.ProtectionDomain objects that are the subject of the
-evaluation.
+. Policy providers must perform the permission evaluations corresponding to container pre-dispatch decisions and
+application embedded privilege tests (i.e `isUserInRole` and `isCallerInRole`) without requiring that containers 
+establish particular values for any of the non-principal attributes of the one or more
+`java.security.ProtectionDomain` objects that are the subject of the evaluation.
 
 === Non Requirements
 
-This JSR does not require that containers
+. This specification does not require that containers
 support server-side authentication module plug-ins for the purpose of
 populating subjects with authorization provider specific principals.
 
-This JSR does not require that subjects be
+. This specification does not require that subjects be
 attributed with role principals as a result of authentication.
 
-This JSR does not define or mandate a
+. This specification does not define or mandate a
 specific policy language to be used by providers. Each provider must
 define its own syntax, mechanisms, and administrative interfaces for
 granting permissions to principals.
 
-The JSR does not require that providers
+. The specification does not require that providers
 support a policy syntax for granting to principals roles as collections
 of permissions.
 
-Although the JSR is focused on defining
-permissions and policy for use by Java EE containers, we make no
+. Although the specification is focused on defining
+permissions and policy for use by Jakarta EE containers, we make no
 restrictions on the use of this information by other containers or
 applications, or on support by containers or providers of other
 permissions or policy.
 
-It is not the intent of this JSR to extend or
-modify the Java EE authorization model to be equivalent to standard RBAC
+. It is not the intent of this specification to extend or
+modify the Jakarta EE authorization model to be equivalent to standard RBAC
 models for access control.
 
-=== [[a154]] Running Without a SecurityManager
+[[a154]] 
+=== Running Without a SecurityManager
 
-The following list defines changes to this
-contract that apply to containers running without a Java SE
-SecurityManager.
+The following list defines changes to this contract that apply to containers running without a Java SE
+`SecurityManager`.
 
-The restrictions defined in
-link:jacc.html#a549[See Permission to Configure Policy] need
-not be enforced. Also, the containers of the application server must not
-be denied permission to perform any operation that would have been
-permitted in the presence of a SecurityManager.
+. The restrictions defined in <<a549>> need not be enforced. 
+Also, the containers of the application server must not be denied permission to perform any operation that would have been
+permitted in the presence of a `SecurityManager`.
 
-Such containers are not required (before
-dispatching a call) to associate an AccessControlContext with the call
-thread (as otherwise required by link:jacc.html#a569[See
-Pre-dispatch Decision] and link:jacc.html#a616[See EJB
-Pre-dispatch Decision]).
+. Such containers are not required (before dispatching a call) to associate an `AccessControlContext` with the call
+thread (as otherwise required by <<a569>> and <<a616>>).
 
-When performing the operations defined in
-link:jacc.html#a727[See Checking AccessControlContext
-Independent Grants] and in link:jacc.html#a736[See Checking the
-Caller for a Permission], such containers must not employ the
-SecurityManager.checkPermission techniques defined in these sections.
+. When performing the operations defined in <<a727>> and in <<a736>>, such containers must not employ the
+`SecurityManager.checkPermission` techniques defined in these sections.
 
-When using the
-AccessController.checkPermission technique of
-link:jacc.html#a736[See Checking the Caller for a Permission],
-the calling container must ensure that the principals of the caller are
-contained in the AccessControlContext associated with the thread on
-which the call to checkPermission is made.
+. When using the `AccessController.checkPermission` technique of <<a736>>, the calling container must ensure that 
+the principals of the caller are contained in the `AccessControlContext` associated with the thread on
+which the call to `checkPermission` is made.
 
-=== [[a160]]Servlet or EJB only containers
+[[a160]]
+=== Servlet or EJB only containers
 
-The requirements of this specification that
-must be satisfied by a target platform that is a compatible
-implementation of one but not both of the Servlet and EJB specifications
+The requirements of this specification that must be satisfied by a target platform that is a compatible
+implementation of one but not both of the Jakarta Servlet and Jakarta Enterprise Beans specifications
 are reduced as described in the next two sections.
 
 === Servlet Only Containers
 
-A platform that is a compatible
-implementation of the Servlet specification and that is not a compatible
-implementation of the EJB specification must satisfy all of the
-requirements of this specification with the following exceptions:
+A platform that is a compatible implementation of the Jakarta Servlet specification and that is not a compatible
+implementation of the Jakarta Enterprise Beans specification must satisfy all of the requirements of this 
+specification with the following exceptions:
 
-{empty}the policy configuration requirements
-defined in link:jacc.html#a512[See EJB Policy Context
-Identifiers] and in link:jacc.html#a516[See Translating EJB
-Deployment Descriptors]
+. the policy configuration requirements defined in <<a512>> and in <<a516>>
 
-{empty}the policy enforcement requirements
-defined in link:jacc.html#a614[See Policy Enforcement by EJB
-Containers] and link:jacc.html#a622[See Provider Support for
-EJB Policy Enforcement]
+. the policy enforcement requirements defined in <<a614>> and <<a622>>
 
-{empty}the policy context handler
-requirements defined in link:jacc.html#a719[See SOAPMessage
-Policy Context Handler], and link:jacc.html#a723[See
-EnterpriseBean Policy Context Handler], and
-link:jacc.html#a725[See EJB Arguments Policy Context Handler]
+. the policy context handler requirements defined in <<a719>>, and <<a723>>, and <<a725>>
 
 === EJB Only Containers
 
-A platform that is is a compatible
-implementation of the EJB specification and that is not a compatible
-implementation of the Servlet specification must satisfy all of the
-requirements of this specification with the following exceptions:
+A platform that is is a compatible implementation of the Jakarta Enterprise beans specification and that is not a compatible
+implementation of the Jakara Servlet specification must satisfy all of the requirements of this specification with the following 
+exceptions:
 
-{empty}the policy configuration requirements
-defined in link:jacc.html#a271[See Servlet Policy Context
-Identifiers] and in .link:jacc.html#a276[See Translating
-Servlet Deployment Descriptors]
+. the policy configuration requirements defined in <<a271>> and in <<a276>>
 
-{empty}the policy enforcement requirements
-defined in link:jacc.html#a558[See Policy Enforcement by
-Servlet Containers] and link:jacc.html#a574[See Provider
-Support for Servlet Policy Enforcement]
+. the policy enforcement requirements defined in <<a558>> and <<a574>>
 
-{empty}the policy context handler
-requirements defined in .link:jacc.html#a721[See
-HttpServletRequest Policy Context Handler]
+. the policy context handler requirements defined in <<a721>>
