@@ -1,31 +1,17 @@
-=== Related Documents
+[appendix]
+== Related Documents
 
-This specification refers to the following
-documents. The terms used to refer to the documents in this
+This specification refers to the following documents. The terms used to refer to the documents in this
 specification are included in brackets.
 
-S. Bradner, “Key words for use in RFCs to
-Indicate Requirement Levels,” RFC 2119, [Keywords] Harvard University,
-March 1997
+_S. Bradner, “Key words for use in RFCs to Indicate Requirement Levels,” RFC 2119, Harvard University, March 1997, [Keywords]_
 
- _Java™ 2 Platform, Enterprise Edition
-Specification Version 1.4_ [Java EE specification] Copyright 1999-2003,
-Sun Microsystems, Inc. Available at _http://java.sun.com/j2ee/docs.html_
-.
+_Jakarta EE 9 Specification [Jakarta EE 9 Specification], available at: https://github.com/eclipse-ee4j/jakartaee-platform_
 
- _Java™ 2 Platform, Standard Edition, v1.4.0
-API Specification_ [Java SE specification]. Copyright 1993-2003, Sun
-Microsystems, Inc. Available at
-_http://java.sun.com/j2se/1.4/docs/api/index.html_ .
+_Jakarta Servlet Specification, Version 5.0 [Jakarta Servlet Specification], available at: https://github.com/eclipse-ee4j/servlet-api_
 
- _Enterprise JavaBeans™ Specification, Version
-2.1_ [EJB specification]. Copyright 1998-2003, Sun Microsystems, Inc.
-Available at _http://java.sun.com/products/ejb_ .
+_Jakarta Enterprise Beans, Version 4.0 [Jakarta Enterprise Beans Specification], available at: _https://github.com/eclipse-ee4j/ejb-api_
 
- _Java™ Servlet Specification, Version 2.4_
-[Servlet specification]. Copyright 1998-2003, Sun Microsystems, Inc.
-Available at _http://java.sun.com/products/servlet_ .
+_Java™, Standard Edition, Version 8.0 API Specification [Java SE 8 Specification], available at: https://docs.oracle.com/javase/8/docs/api_
 
- _Java™ Authentication and Authorization
-Service_ (JAAS) 1.0 [JAAS specification]. Copyright 1999-2003, Sun
-Microsystems, Inc. Available at _http://java.sun.com/products/jaas_ .
+_Java™ Authentication and Authorization Service_ (JAAS) [JAAS Specification], available at: https://docs.oracle.com/javase/8/docs/technotes/guides/security/jaas/JAASRefGuide.html_
