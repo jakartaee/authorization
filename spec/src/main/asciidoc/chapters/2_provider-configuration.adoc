@@ -52,10 +52,7 @@ policy contexts within the associated `Policy` provider. The method is
 `getPolicyConfiguration` and the interface is
 `jakarta.security.jacc.PolicyConfiguration` .
 
-The abstract `PolicyConfigurationFactory`
-class and the `PolicyConfiguration` interface are defined in
-<<a760>>. Use of the `PolicyConfiguration`
-interface is defined in <<a232>>.
+Use of the `PolicyConfiguration` interface is defined in <<a232>>.
 
 [[a184]]
 === PolicyContext Class and Context Handlers
@@ -84,10 +81,7 @@ static methods that allow `Policy` providers to activate registered
 handlers to obtain additional policy relevant context to apply in their
 access decisions.
 
-The `PolicyContext` utility class and the
-`PolicyContextHandler` interface are defined in
-<<a760>>. Use of the `PolicyContext` class
-is defined in <<a232>>.
+Use of the `PolicyContext` class is defined in <<a232>>.
 
 === What a Provider Must Do
 
