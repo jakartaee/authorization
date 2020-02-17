@@ -84,7 +84,6 @@ PolicyContext into a PolicyConfiguration with null identifier.
 
 . Resolved issue <<a791>>
 . Resolved issue <<a800>>
-. Added new issue <<a803>>
 . Added new issue <<a806>>
 
 === Changes in Public Draft Version 0.2
