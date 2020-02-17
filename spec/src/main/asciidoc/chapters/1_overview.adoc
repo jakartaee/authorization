@@ -60,8 +60,8 @@ decision (that is, a permission).
 server, as may be used in the composition of a servlet policy context
 identifier.
 
-[[a90]]
-2+| *JAAS Policy interface*
+
+2+| [[a90]] *JAAS Policy interface*
 
 | | The `javax.security.auth.Policy` abstract class.
 

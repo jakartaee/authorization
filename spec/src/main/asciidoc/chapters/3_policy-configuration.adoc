@@ -137,9 +137,9 @@ evaluation is to be performed (<<a707>>).
 ===== Policy Context Life Cycle
 
 <<a268>> depicts the policy context life cycle
-as effected through the methods of the <<PolicyConfiguration>> interface. A
+as effected through the methods of the `PolicyConfiguration` interface. A
 policy context is in one of three states and all implementations of the
-<<PolicyConfiguration>> interface must implement the state semantics defined
+`PolicyConfiguration` interface must implement the state semantics defined
 in this section.
 
 *  open
