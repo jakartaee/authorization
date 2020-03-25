@@ -38,7 +38,7 @@
         to transform security constraints for specific containers (such as Jakarta Servlet or Jakarta Enterprise Beans) into 
         these permissions.
     </description>
-    <url>https://github.com/eclipse-ee4j/jacc</url>
+    <url>https://github.com/eclipse-ee4j/authorization</url>
     <licenses>
         <license>
             <name>EPL 2.0</name>
@@ -58,9 +58,9 @@
     </modules>
 
     <scm>
-        <connection>scm:git:ssh://git@github.com/eclipse-ee4j/jacc.git</connection>
-        <developerConnection>scm:git:ssh://git@github.com/eclipse-ee4j/jacc.git</developerConnection>
-        <url>https://github.com/eclipse-ee4j/jacc</url>
+        <connection>scm:git:ssh://git@github.com/eclipse-ee4j/authorization.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/eclipse-ee4j/authorization.git</developerConnection>
+        <url>https://github.com/eclipse-ee4j/authorization</url>
     </scm>
 
     <build>

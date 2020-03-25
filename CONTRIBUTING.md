@@ -18,7 +18,7 @@ more.
 
 The project maintains the following source code repositories
 
-* https://github.com/eclipse-ee4j/jacc
+* https://github.com/eclipse-ee4j/authorization
 
 ## Eclipse Contributor Agreement
 
