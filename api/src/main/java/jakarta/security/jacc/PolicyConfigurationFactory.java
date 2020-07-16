@@ -125,7 +125,11 @@ public abstract class PolicyConfigurationFactory {
             if (clazz != null) {
                 Object factory = clazz.newInstance();
 
-                policyConfigurationFactory = (PolicyConfigurationFactory) factory;
+                if (factory instanceof PolicyConfigurationFactory) {
+                    policyConfigurationFactory = (PolicyConfigurationFactory) factory;
+                } else {
+                    throw new ClassCastException("Jakarta Authorization:Error PolicyConfigurationFactory : class not PolicyConfigurationFactory : " + className[0]);
+                }
             }
 
         } catch (ClassNotFoundException cnfe) {
@@ -134,8 +138,6 @@ public abstract class PolicyConfigurationFactory {
             throw new PolicyContextException("Jakarta Authorization:Error PolicyConfigurationFactory : cannot access class : " + className[0], iae);
         } catch (InstantiationException ie) {
             throw new PolicyContextException("Jakarta Authorization:Error PolicyConfigurationFactory : cannot instantiate : " + className[0], ie);
-        } catch (ClassCastException cce) {
-            throw new ClassCastException("Jakarta Authorization:Error PolicyConfigurationFactory : class not PolicyConfigurationFactory : " + className[0]);
         }
 
         return policyConfigurationFactory;
