@@ -26,8 +26,8 @@
         <version>1.0.6</version>
     </parent>
 
-    <groupId>org.eclipse.ee4j.jacc</groupId>
-    <artifactId>jacc-parent</artifactId>
+    <groupId>org.eclipse.ee4j.authorization</groupId>
+    <artifactId>authorization-parent</artifactId>
     <version>2.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
@@ -69,7 +69,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
-                <version>3.0.0-M2</version>
+                <version>3.0.0-M3</version>
                 <executions>
                     <execution>
                         <id>enforce-maven</id>
