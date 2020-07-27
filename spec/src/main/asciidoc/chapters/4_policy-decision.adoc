@@ -550,8 +550,8 @@ authenticated, this handler must return the value null.
 
 All Jakarta Enterprise Beans containers must register a
 `PolicyContextHandler` whose `getContext` method returns a
-`javax.xml.soap.SOAPMessage` object when invoked with the key
-“javax.xml.soap.SOAPMessage”. If the request being processed by the
+`jakarta.xml.soap.SOAPMessage` object when invoked with the key
+“jakarta.xml.soap.SOAPMessage”. If the request being processed by the
 container arrived as a SOAP request at the `ServiceEndpoint` method
 interface, the container must return the SOAP message object when this
 handler is activated. Otherwise, this handler must return the value
@@ -562,8 +562,8 @@ null.
 
 All Jakarta Servlet containers must register a
 `PolicyContextHandler` whose `getContext` method returns a
-`javax.servlet.http.HttpServletRequest` object when invoked with the key
-“javax.servlet.http.HttpServletRequest”. When this handler is activated,
+`jakarta.servlet.http.HttpServletRequest` object when invoked with the key
+“jakarta.servlet.http.HttpServletRequest”. When this handler is activated,
 the container must return the `HttpServletRequest` object corresponding to
 the component request being processed by the container.
 
@@ -572,8 +572,8 @@ the component request being processed by the container.
 
 All Jakarta Enterprise Beans containers must register a
 `PolicyContextHandler` whose `getContext` method returns a
-`javax.ejb.EnterpriseBean` object when invoked with the key
-“javax.ejb.EnterpriseBean”. When this handler is activated, the
+`jakarta.ejb.EnterpriseBean` object when invoked with the key
+“jakarta.ejb.EnterpriseBean”. When this handler is activated, the
 container must return the `EnterpriseBean` object corresponding to the Jakarta Enterprise Beans
 component request (as restricted below) being processed by the
 container. The `EnterpriseBean` object must only be returned when this
@@ -581,7 +581,7 @@ handler is activated within the scope of a container's processing of a
 business method of the Jakarta Enterprise Beans `Remote`, `Local`, or `ServiceEndpoint` interfaces
 of the `EnterpriseBean` object. The value null must be returned if the
 bean implementation class does not implement the
-`javax.ejb.EnterpriseBean` interface.
+`jakarta.ejb.EnterpriseBean` interface.
 
 [[a725]]
 ===== Jakarta Enterprise Beans Arguments Policy Context Handler
