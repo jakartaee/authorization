@@ -10,11 +10,11 @@ determine when a collection contains all the permissions implied by a
 wild carded form of the permission).
 
 [.footnoteNumber]# 2.# [[a1251]]An exception to this
-rule is described in link:jacc.html#a512[See EJB Policy Context
+rule is described in link:jacc.html#a512[See Jakarta Enterprise Beans Policy Context
 Identifiers]”.
 
 [.footnoteNumber]# 3.# [[a1252]]See
-link:jacc.html#a512[See EJB Policy Context Identifiers]” for
+link:jacc.html#a512[See Jakarta Enterprise Beans Policy Context Identifiers]” for
 further clarification.
 
 [.footnoteNumber]# 4.# [[a1253]]This can be achieved
@@ -72,7 +72,7 @@ inclusion of security-role-ref elements in entity and session elements.
 Future versions could support inclusion in message-driven.
 
 [.footnoteNumber]# 14.# [[a1263]]For example, if an
-application declares roles \{R1, R2, R3} and defines a session EJB named
+application declares roles \{R1, R2, R3} and defines a session Jakarta Enterprise Beans named
 “shoppingCart” that contains one security-role-ref __ element with
 role-name R1, then an additional EJBRoleRefPermission must be added to
 each of the roles R2 and R3. The name of both permissions must be
@@ -90,7 +90,7 @@ any can be committed.
 [.footnoteNumber]# 16.# [[a1265]]Such as having a
 Servlet 3.0 ServletContextListener configured that could
 programmatically register a servlet and configure its security
-constraints and that could also perform a local invocation of an EJB in
+constraints and that could also perform a local invocation of an Jakarta Enterprise Beans in
 another module of the application.
 
 [.footnoteNumber]# 17.# [[a1266]]The
