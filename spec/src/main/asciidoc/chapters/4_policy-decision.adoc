@@ -586,7 +586,7 @@ bean implementation class does not implement the
 [[a725]]
 ===== Jakarta Enterprise Beans Arguments Policy Context Handler
 
-All EJB containers must register a
+All Jakarta Enterprise Beans containers must register a
 `PolicyContextHandler` whose `getContext` method returns an array of objects
 (`Object[]`) containing the arguments of the Jakarta Enterprise Beans method invocation (in the
 same order as they appear in the method signature) when invoked with the

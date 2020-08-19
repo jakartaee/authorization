@@ -267,13 +267,13 @@ the principals of the caller are contained in the `AccessControlContext` associa
 which the call to `checkPermission` is made.
 
 [[a160]]
-=== Servlet or EJB only containers
+=== Jakarta Servlet or Jakarta Enterprise Beans only containers
 
 The requirements of this specification that must be satisfied by a target platform that is a compatible
 implementation of one but not both of the Jakarta Servlet and Jakarta Enterprise Beans specifications
 are reduced as described in the next two sections.
 
-=== Servlet Only Containers
+=== Jakarta Servlet Only Containers
 
 A platform that is a compatible implementation of the Jakarta Servlet specification and that is not a compatible
 implementation of the Jakarta Enterprise Beans specification must satisfy all of the requirements of this 
@@ -285,10 +285,10 @@ specification with the following exceptions:
 
 . the policy context handler requirements defined in <<a719>>, and <<a723>>, and <<a725>>
 
-=== EJB Only Containers
+=== Jakarta Enterprise Beans Only Containers
 
 A platform that is is a compatible implementation of the Jakarta Enterprise beans specification and that is not a compatible
-implementation of the Jakara Servlet specification must satisfy all of the requirements of this specification with the following 
+implementation of the Jakarta Servlet specification must satisfy all of the requirements of this specification with the following
 exceptions:
 
 . the policy configuration requirements defined in <<a271>> and in <<a276>>
