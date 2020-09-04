@@ -5,7 +5,7 @@
 === Status of Document
 
 This document is the Final Release of the
-Java _TM_ Authorization Contract for Containers Version 1.5
+Java _TM_ Authorization Contract for Containers Version 2.0
 specification and represents the definition of this technology as
 implemented by the reference implementation (RI) and verified by the
 technology compatibility kit (TCK) . This specification was developed
