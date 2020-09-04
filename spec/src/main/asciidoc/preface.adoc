@@ -20,7 +20,7 @@ this technology in their products.
 === Abstract
 
 This specification defines new
-java.security.Permission classes to satisfy the Java EE authorization
+java.security.Permission classes to satisfy the Jakarta EE authorization
 model. The specification defines the binding of container access
 decisions to operations on instances of these permission classes. The
 specification defines the semantics of policy providers that employ the
