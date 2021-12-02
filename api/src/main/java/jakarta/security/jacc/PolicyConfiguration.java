@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2021, 2021 Contributors to Eclipse Foundation. All rights reserved.
  * Copyright (c) 1997, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -18,6 +19,7 @@ package jakarta.security.jacc;
 
 import java.security.Permission;
 import java.security.PermissionCollection;
+import java.util.Map;
 
 /**
  * The methods of this interface are used by containers to create policy statements in a Policy provider. An object that
@@ -285,6 +287,34 @@ public interface PolicyConfiguration {
      * encapsulated (during construction) in the thrown PolicyContextException.
      */
     void addToExcludedPolicy(Permission permission) throws PolicyContextException;
+
+    /**
+     * Used to return all per role policy statements that have been added to this PolicyConfiguration via
+     * prior calls to {@link PolicyConfiguration#addToRole(String, Permission)
+     * and PolicyConfiguration#addToRole(String, PermissionCollection), indexed by the role names used
+     * in those calls.
+     *
+     * @return map of all per role policy statements that have been added to this PolicyConfiguration.
+     */
+    Map<String, PermissionCollection> getPerRolePermissions();
+
+    /**
+     * Used to return all unchecked policy statements that have been added to this PolicyConfiguration via
+     * prior calls to {@link PolicyConfiguration#addToUncheckedPolicy(Permission)
+     * and PolicyConfiguration#addToUncheckedPolicy(PermissionCollection).
+     *
+     * @return the collection of all unchecked policy statements that have been added to this PolicyConfiguration.
+     */
+    PermissionCollection getUncheckedPermissions();
+
+    /**
+     * Used to return all excluded policy statements that have been added to this PolicyConfiguration via
+     * prior calls to {@link PolicyConfiguration#addToExcludedPolicy(Permission)
+     * and PolicyConfiguration#addToExcludedPolicy(PermissionCollection).
+     *
+     * @return the collection of all excluded policy statements that have been added to this PolicyConfiguration.
+     */
+    PermissionCollection getExcludedPermissions();
 
     /**
      * Used to remove a role and all its permissions from this PolicyConfiguration. This method has no effect on the links
