@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
+    Copyright (c) 2021, 2021 Contributors to Eclipse Foundation. All rights reserved.
     Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
@@ -29,7 +30,7 @@
 
    <groupId>jakarta.authorization</groupId>
    <artifactId>jakarta.authorization-api</artifactId>
-   <version>2.0.1-SNAPSHOT</version>
+   <version>2.1-SNAPSHOT</version>
 
    <name>Jakarta Authorization</name>
    <description>
@@ -102,7 +103,7 @@
         <dependency>
             <groupId>jakarta.servlet</groupId>
             <artifactId>jakarta.servlet-api</artifactId>
-            <version>5.0.0</version>
+            <version>6.0.0</version>
         </dependency>
     </dependencies>
 
@@ -140,11 +141,11 @@
             </resource>
         </resources>
         <plugins>
-            <!-- Sets minimal Maven version to 3.5.4 -->
+            <!-- Sets minimal Maven version to 3.6.0 -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
-                <version>3.0.0-M3</version>
+                <version>3.0.0</version>
                 <executions>
                     <execution>
                         <id>enforce-maven</id>
@@ -154,7 +155,7 @@
                         <configuration>
                             <rules>
                                 <requireMavenVersion>
-                                    <version>3.5.4</version>
+                                    <version>3.6.0</version>
                                 </requireMavenVersion>
                             </rules>
                         </configuration>
@@ -167,8 +168,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>
                 <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
+                    <source>11</source>
+                    <target>11</target>
                     <compilerArgument>-Xlint:unchecked</compilerArgument>
                 </configuration>
             </plugin>
@@ -180,7 +181,7 @@
                 <version>2.1</version>
                 <configuration>
                     <spec>
-                        <specVersion>2.0</specVersion>
+                        <specVersion>2.1</specVersion>
                         <specImplVersion>${project.version}</specImplVersion>
                         <apiPackage>jakarta.security.jacc</apiPackage>
                     </spec>
@@ -199,7 +200,7 @@
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
-                <version>4.2.1</version>
+                <version>5.1.2</version>
                 <extensions>true</extensions>
                 <executions>
                     <execution>
@@ -252,7 +253,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
-                <version>3.0.1</version>
+                <version>3.2.1</version>
                 <configuration>
                     <includePom>true</includePom>
                 </configuration>
@@ -272,7 +273,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.2.0</version>
+                <version>3.3.1</version>
                 <executions>
                     <execution>
                         <id>attach-api-javadocs</id>
@@ -282,13 +283,14 @@
                         <configuration>
                             <source>1.8</source>
                             <additionalJOption>-Xdoclint:none</additionalJOption>
+                            <quiet>true</quiet>
                             <description>Jakarta Authorization API documentation</description>
                             <doctitle>Jakarta Authorization API documentation</doctitle>
                             <windowtitle>Jakarta Authorization API documentation</windowtitle>
                             <header><![CDATA[<br>Jakarta Authorization API v${project.version}]]></header>
                             <bottom><![CDATA[
 Comments to: <a href="mailto:jacc-dev@eclipse.org">jacc-dev@eclipse.org</a>.<br>
-Copyright &#169; 2018, 2020 Eclipse Foundation. All rights reserved.<br>
+Copyright &#169; 2018, 2021 Eclipse Foundation. All rights reserved.<br>
 Use is subject to <a href="{@docRoot}/doc-files/speclicense.html" target="_top">license terms</a>.]]>
                             </bottom>
                             <docfilessubdirs>true</docfilessubdirs>
