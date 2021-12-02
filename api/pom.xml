@@ -216,7 +216,6 @@
                         <supportedProjectType>jar</supportedProjectType>
                     </supportedProjectTypes>
                     <instructions>
-                        <Automatic-Module-Name>jakarta.security.jacc</Automatic-Module-Name>
                         <Bundle-Version>${spec.bundle.version}</Bundle-Version>
                         <Bundle-SymbolicName>${spec.bundle.symbolic-name}</Bundle-SymbolicName>
                         <Extension-Name>${spec.extension.name}</Extension-Name>
@@ -281,7 +280,7 @@
                             <goal>jar</goal>
                         </goals>
                         <configuration>
-                            <source>1.8</source>
+                            <source>11</source>
                             <additionalJOption>-Xdoclint:none</additionalJOption>
                             <quiet>true</quiet>
                             <description>Jakarta Authorization API documentation</description>
