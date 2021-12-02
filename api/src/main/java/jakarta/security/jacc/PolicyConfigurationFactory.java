@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2021, 2021 Contributors to Eclipse Foundation. All rights reserved.
  * Copyright (c) 1997, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -190,6 +191,56 @@ public abstract class PolicyConfigurationFactory {
      * be encapsulated (during construction) in the thrown PolicyContextException.
      */
     public abstract PolicyConfiguration getPolicyConfiguration(String contextID, boolean remove) throws PolicyContextException;
+
+    /**
+     * This method is used to obtain an instance of the provider specific class that implements the PolicyConfiguration
+     * interface that corresponds to the identified policy context within the provider. The methods of the
+     * PolicyConfiguration interface are used to define the policy statements of the identified policy context.
+     *
+     * <p>
+     * If at the time of the call, the identified policy context does not exist in the provider, then the policy context
+     * will <strong>not</strong> be created in the provider and a null will be returned. No state transition of any kind
+     * is allowed to occur, the <code>PolicyConfiguration</code> instance is to be returned as-is.
+     *
+     * <p>
+     * For a given value of the policy context identifier, this method must always return the same instance of
+     * PolicyConfiguration and there must be at most one actual instance of a PolicyConfiguration with a given policy
+     * context identifier (during a process context).
+     *
+     * @param contextID A String identifying the policy context whose PolicyConfiguration interface is to be returned. The
+     * value passed to this parameter must not be null.
+     *
+     * @return an Object that implements the PolicyConfiguration Interface matched to the Policy provider and corresponding
+     * to the identified policy context, or a null if such an Object is not present.
+     */
+    public abstract PolicyConfiguration getPolicyConfiguration(String contextID);
+
+    /**
+     * This method is used to obtain an instance of the provider specific class that implements the PolicyConfiguration
+     * interface that corresponds to the identified policy context within the provider. The policy context is identified by
+     * the value of the policy context identifier associated with the thread on which the accessor is called. The methods
+     * of the PolicyConfiguration interface are used to define the policy statements of the identified policy context.
+     *
+     * <p>
+     * If at the time of the call, the identified policy context does not exist in the provider, then the policy context
+     * will <strong>not</strong> be created in the provider and a null will be returned. No state transition of any kind
+     * is allowed to occur, the <code>PolicyConfiguration</code> instance is to be returned as-is.
+     *
+     * <p>
+     * For a given determined value of the policy context identifier, this method must always return the same instance of
+     * PolicyConfiguration and there must be at most one actual instance of a PolicyConfiguration with a given policy
+     * context identifier (during a process context).
+     *
+     * <p>
+     * This method should be logically identical to calling {@link PolicyConfigurationFactory#getPolicyConfiguration(String))}
+     * with as input the value returned from {@link PolicyContext#getContextID()}, unless that value is null. In that case
+     * a null should be returned.
+     *
+     *
+     * @return an Object that implements the PolicyConfiguration Interface matched to the Policy provider and corresponding
+     * to the identified policy context, or a null if such an Object is not present.
+     */
+    public abstract PolicyConfiguration getPolicyConfiguration();
 
     /**
      * This method determines if the identified policy context exists with state "inService" in the Policy provider
