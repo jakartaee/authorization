@@ -97,7 +97,7 @@ public final class PolicyContext {
      * this method.
      */
     public static void setContextID(String contextID) {
-    	checkSetPolicyPermission();
+        checkSetPolicyPermission();
 
         threadLocalContextID.set(contextID);
     }
@@ -131,7 +131,7 @@ public final class PolicyContext {
      * this method.
      */
     public static void setHandlerData(Object data) {
-    	checkSetPolicyPermission();
+        checkSetPolicyPermission();
 
         threadLocalHandlerData.set(data);
     }
@@ -232,7 +232,7 @@ public final class PolicyContext {
     // ### Private methods
     
     private static void checkSetPolicyPermission() {
-    	 SecurityManager securityManager = System.getSecurityManager();
+         SecurityManager securityManager = System.getSecurityManager();
          if (securityManager != null) {
              securityManager.checkPermission(new SecurityPermission("setPolicy"));
          }
