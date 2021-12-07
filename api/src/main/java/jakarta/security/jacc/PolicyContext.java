@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2021, 2021 Contributors to Eclipse Foundation. All rights reserved.
  * Copyright (c) 1997, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -213,7 +214,7 @@ public final class PolicyContext {
      * PolicyContextHandler causes it to throw a checked exception that is not accounted for in the signature of this
      * method.
      */
-    public static Object getContext(String key) throws PolicyContextException {
+    public static <T> T getContext(String key) throws PolicyContextException {
         if (key == null) {
             throw new IllegalArgumentException("invalid key");
         }
@@ -224,8 +225,11 @@ public final class PolicyContext {
         }
 
         checkSetPolicyPermission();
+        
+        @SuppressWarnings("unchecked")
+        T returnValue = (T) handler.getContext(key, threadLocalHandlerData.get());
 
-        return handler.getContext(key, threadLocalHandlerData.get());
+        return returnValue;
     }
     
     
