@@ -54,6 +54,12 @@
         <jruby.version>9.3.3.0</jruby.version>
         <!-- status: DRAFT, BETA, etc., or blank for final -->
         <status>DRAFT</status>
+        <maven.build.timestamp.format>MMMM dd, yyyy</maven.build.timestamp.format>
+        <revisiondate>${maven.build.timestamp}</revisiondate>
+        
+        <!-- default is the same for backward compatibility reason
+            Easy to override when building with a system property -->
+        <spec.version>${project.version}</spec.version>
     </properties>
 
     <build>
@@ -112,7 +118,7 @@
                         <configuration>
                             <backend>html5</backend>
                             <sourceDirectory>${basedir}/src/main/asciidoc</sourceDirectory>
-                            <outputFile>${project.build.directory}/generated-docs/jakarta-authorization-spec-${spec.version}.html</outputFile>
+                            <outputFile>${project.build.directory}/generated-docs/jakarta-authorization-spec-${project.version}.html</outputFile>
                             <attributes>
                                 <source-highlighter>coderay</source-highlighter>
                                 <imagesdir>images</imagesdir>
@@ -138,7 +144,7 @@
                         <configuration>
                             <backend>pdf</backend>
                             <sourceDirectory>${basedir}/src/main/asciidoc</sourceDirectory>
-                            <outputFile>${project.build.directory}/generated-docs/jakarta-authorization-spec-${spec.version}.pdf</outputFile>
+                            <outputFile>${project.build.directory}/generated-docs/jakarta-authorization-spec-${project.version}.pdf</outputFile>
                             <attributes>
                                 <source-highlighter>coderay</source-highlighter>
                                 <imagesdir>images</imagesdir>
@@ -163,7 +169,7 @@
                 <configuration>
                     <sourceDocumentName>authorization-spec.adoc</sourceDocumentName>
                     <attributes>
-                        <revnumber>${project.version}</revnumber>
+                        <revnumber>${spec.version}</revnumber>
                         <revremark>${status}</revremark>
                         <revdate>${revisiondate}</revdate>
                     </attributes>
