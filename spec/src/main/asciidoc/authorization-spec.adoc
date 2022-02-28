@@ -3,7 +3,7 @@
 //
 
 = Jakarta Authorization
-:authors: Jakarta Authorization Team, https://projects.eclipse.org/projects/ee4j.jacc
+:authors: Jakarta Authorization Team, https://projects.eclipse.org/projects/ee4j.authorization
 :email: https://dev.eclipse.org/mailman/listinfo/jacc-dev
 :version-label!:
 :doctype: book
