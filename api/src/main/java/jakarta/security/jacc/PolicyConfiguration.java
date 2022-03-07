@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, 2021 Contributors to Eclipse Foundation. All rights reserved.
+ * Copyright (c) 2021, 2022 Contributors to Eclipse Foundation. All rights reserved.
  * Copyright (c) 1997, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -25,11 +25,11 @@ import java.util.Map;
  * The methods of this interface are used by containers to create policy statements in a Policy provider. An object that
  * implements the PolicyConfiguration interface provides the policy statement configuration interface for a
  * corresponding policy context within the corresponding Policy provider.
- * 
+ *
  * <p>
  * The life cycle of a policy context is defined by three states; "open", "inService", and "deleted". A policy context
  * is in one of these three states.
- * 
+ *
  * <p>
  * A policy context in the "open" state is in the process of being configured, and may be operated on by any of the
  * methods of the PolicyConfiguration interface. A policy context in the "open" state must not be assimilated at
@@ -37,7 +37,7 @@ import java.util.Map;
  * decisions. In order for the policy statements of a policy context to be assimilated by the associated provider, the
  * policy context must be in the "inService" state. A policy context in the "open" state is transitioned to the
  * "inService" state by calling the commit method.
- * 
+ *
  * <p>
  * A policy context in the "inService" state is available for assimilation into the policy statements being used to
  * perform access decisions by the associated Policy provider. Providers assimilate policy contexts containing policy
@@ -46,13 +46,13 @@ import java.util.Map;
  * into service for each policy context are only those defined in the context at the time of the call to refresh. A
  * policy context in the "inService" state is not available for additional configuration and may be returned to the
  * "open" state by calling the getPolicyConfiguration method of the PolicyConfigurationFactory.
- * 
+ *
  * <p>
  * A policy context in the "deleted" state is neither available for configuration, nor is it available for assimilation
  * into the Provider. A policy context whose state is "deleted" may be reclaimed for subsequent processing by calling
  * the getPolicyConfiguration method of the associated PolicyConfigurationFactory. A "deleted" policy context is
  * transitioned to the "open" state when it it returned as a result of a call to getPolicyConfiguration.
- * 
+ *
  * <p>
  * The following table captures the correspondence between the policy context life cycle and the methods of the
  * PolicyConfiguration interface. The rightmost 3 columns of the table correspond to the PolicyConfiguration state
@@ -141,7 +141,7 @@ import java.util.Map;
  * </tr>
  * </table>
  * <br>
- * 
+ *
  * <p>
  * For a provider implementation to be compatible with multi-threaded environments, it may be necessary to synchronize
  * the refresh method of the provider with the methods of its PolicyConfiguration interface and with the
@@ -159,7 +159,7 @@ public interface PolicyConfiguration {
 
     /**
      * This method returns this object's policy context identifier.
-     * 
+     *
      * @return this object's policy context identifier.
      *
      * @throws SecurityException if called by an AccessControlContext that has not been granted the "setPolicy"
@@ -174,11 +174,11 @@ public interface PolicyConfiguration {
     /**
      * Used to add permissions to a named role in this PolicyConfiguration. If the named role does not exist in the
      * PolicyConfiguration, it is created as a result of the call to this function.
-     * 
+     *
      * <p>
      * It is the job of the Policy provider to ensure that all the permissions added to a role are granted to principals
      * "mapped to the role".
-     * 
+     *
      * @param roleName the name of the Role to which the permissions are to be added.
      * @param permissions the collection of permissions to be added to the role. The collection may be either a homogeneous
      * or heterogeneous collection.
@@ -198,11 +198,11 @@ public interface PolicyConfiguration {
     /**
      * Used to add a single permission to a named role in this PolicyConfiguration. If the named role does not exist in the
      * PolicyConfiguration, it is created as a result of the call to this function.
-     * 
+     *
      * <p>
      * It is the job of the Policy provider to ensure that all the permissions added to a role are granted to principals
      * "mapped to the role".
-     * 
+     *
      * @param roleName the name of the Role to which the permission is to be added.
      * @param permission the permission to be added to the role.
      *
@@ -220,7 +220,7 @@ public interface PolicyConfiguration {
 
     /**
      * Used to add unchecked policy statements to this PolicyConfiguration.
-     * 
+     *
      * @param permissions the collection of permissions to be added as unchecked policy statements. The collection may be
      * either a homogeneous or heterogeneous collection.
      *
@@ -238,7 +238,7 @@ public interface PolicyConfiguration {
 
     /**
      * Used to add a single unchecked policy statement to this PolicyConfiguration.
-     * 
+     *
      * @param permission the permission to be added to the unchecked policy statements.
      *
      * @throws SecurityException if called by an AccessControlContext that has not been granted the "setPolicy"
@@ -255,7 +255,7 @@ public interface PolicyConfiguration {
 
     /**
      * Used to add excluded policy statements to this PolicyConfiguration.
-     * 
+     *
      * @param permissions the collection of permissions to be added to the excluded policy statements. The collection may be
      * either a homogeneous or heterogeneous collection.
      *
@@ -273,7 +273,7 @@ public interface PolicyConfiguration {
 
     /**
      * Used to add a single excluded policy statement to this PolicyConfiguration.
-     * 
+     *
      * @param permission the permission to be added to the excluded policy statements.
      *
      * @throws SecurityException if called by an AccessControlContext that has not been granted the "setPolicy"
@@ -290,8 +290,8 @@ public interface PolicyConfiguration {
 
     /**
      * Used to return all per role policy statements that have been added to this PolicyConfiguration via
-     * prior calls to {@link PolicyConfiguration#addToRole(String, Permission)
-     * and PolicyConfiguration#addToRole(String, PermissionCollection), indexed by the role names used
+     * prior calls to {@link PolicyConfiguration#addToRole(String, Permission)}
+     * and {@link PolicyConfiguration#addToRole(String, PermissionCollection)}, indexed by the role names used
      * in those calls.
      *
      * @return map of all per role policy statements that have been added to this PolicyConfiguration.
@@ -300,8 +300,8 @@ public interface PolicyConfiguration {
 
     /**
      * Used to return all unchecked policy statements that have been added to this PolicyConfiguration via
-     * prior calls to {@link PolicyConfiguration#addToUncheckedPolicy(Permission)
-     * and PolicyConfiguration#addToUncheckedPolicy(PermissionCollection).
+     * prior calls to {@link PolicyConfiguration#addToUncheckedPolicy(Permission)}
+     * and {@link PolicyConfiguration#addToUncheckedPolicy(PermissionCollection)}.
      *
      * @return the collection of all unchecked policy statements that have been added to this PolicyConfiguration.
      */
@@ -309,8 +309,8 @@ public interface PolicyConfiguration {
 
     /**
      * Used to return all excluded policy statements that have been added to this PolicyConfiguration via
-     * prior calls to {@link PolicyConfiguration#addToExcludedPolicy(Permission)
-     * and PolicyConfiguration#addToExcludedPolicy(PermissionCollection).
+     * prior calls to {@link PolicyConfiguration#addToExcludedPolicy(Permission)}
+     * and {@link PolicyConfiguration#addToExcludedPolicy(PermissionCollection)}.
      *
      * @return the collection of all excluded policy statements that have been added to this PolicyConfiguration.
      */
@@ -319,7 +319,7 @@ public interface PolicyConfiguration {
     /**
      * Used to remove a role and all its permissions from this PolicyConfiguration. This method has no effect on the links
      * between this PolicyConfiguration and others.
-     * 
+     *
      * @param roleName the name of the role to remove from this PolicyConfiguration. If the value of the roleName parameter
      * is "*" and no role with name "*" exists in this PolicyConfiguration, then all roles must be removed from this
      * PolicyConfiguration.
@@ -372,16 +372,16 @@ public interface PolicyConfiguration {
      * Creates a relationship between this configuration and another such that they share the same principal-to-role
      * mappings. PolicyConfigurations are linked to apply a common principal-to-role mapping to multiple separately
      * manageable PolicyConfigurations, as is required when an application is composed of multiple modules.
-     * 
+     *
      * <p>
      * Note that the policy statements which comprise a role, or comprise the excluded or unchecked policy collections in a
      * PolicyConfiguration are unaffected by the configuration being linked to another.
-     * 
+     *
      * <p>
      * The relationship formed by this method is symmetric, transitive and idempotent. If the argument PolicyConfiguration
      * does not have a different Policy context identifier than this PolicyConfiguration no relationship is formed, and an
      * exception, as described below, is thrown.
-     * 
+     *
      * @param link A reference to a different PolicyConfiguration than this PolicyConfiguration.
      *
      * @throws SecurityException if called by an AccessControlContext that has not been granted the "setPolicy"
@@ -403,7 +403,7 @@ public interface PolicyConfiguration {
      * Causes all policy statements to be deleted from this PolicyConfiguration and sets its internal state such that
      * calling any method, other than delete, getContextID, or inService on the PolicyConfiguration will be rejected and
      * cause an UnsupportedOperationException to be thrown.
-     * 
+     *
      * <p>
      * This operation has no affect on any linked PolicyConfigurations other than removing any links involving the deleted
      * PolicyConfiguration.
@@ -423,7 +423,7 @@ public interface PolicyConfiguration {
      * the Policy.refresh method. A policy context whose state is "inService" may be returned to the "open" state by calling
      * the getPolicyConfiguration method of the PolicyConfiguration factory with the policy context identifier of the policy
      * context.
-     * 
+     *
      * <p>
      * When the state of a policy context is "inService", calling any method other than commit, delete, getContextID, or
      * inService on its PolicyConfiguration Object will cause an UnsupportedOperationException to be thrown.

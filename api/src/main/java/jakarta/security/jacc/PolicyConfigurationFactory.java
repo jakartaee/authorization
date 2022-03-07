@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, 2021 Contributors to Eclipse Foundation. All rights reserved.
+ * Copyright (c) 2021, 2022 Contributors to Eclipse Foundation. All rights reserved.
  * Copyright (c) 1997, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -232,7 +232,7 @@ public abstract class PolicyConfigurationFactory {
      * context identifier (during a process context).
      *
      * <p>
-     * This method should be logically identical to calling {@link PolicyConfigurationFactory#getPolicyConfiguration(String))}
+     * This method should be logically identical to calling {@link PolicyConfigurationFactory#getPolicyConfiguration(String)}
      * with as input the value returned from {@link PolicyContext#getContextID()}, unless that value is null. In that case
      * a null should be returned.
      *
