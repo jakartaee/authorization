@@ -198,7 +198,6 @@
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
                 <version>5.1.9</version>
-                <extensions>true</extensions>
                 <executions>
                     <execution>
                         <id>bundle-manifest</id>
@@ -281,7 +280,7 @@
                             <windowtitle>Jakarta Authorization API documentation</windowtitle>
                             <header><![CDATA[<br>Jakarta Authorization API v${project.version}]]></header>
                             <bottom><![CDATA[
-Comments to: <a href="mailto:jacc-dev@eclipse.org">jacc-dev@eclipse.org</a>.<br>
+Comments to: <a href="mailto:es-dev@eclipse.org">es-dev@eclipse.org</a>.<br>
 Copyright &#169; 2018, 2023 Eclipse Foundation. All rights reserved.<br>
 Use is subject to <a href="{@docRoot}/doc-files/speclicense.html" target="_top">license terms</a>.]]>
                             </bottom>
@@ -295,6 +294,33 @@ Use is subject to <a href="{@docRoot}/doc-files/speclicense.html" target="_top">
                                 </group>
                             </groups>
                         </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>flatten-maven-plugin</artifactId>
+                <version>1.5.0</version>
+                <configuration>
+                    <flattenMode>ossrh</flattenMode>
+                </configuration>
+                <executions>
+                    <!-- enable flattening -->
+                    <execution>
+                        <id>flatten</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>flatten</goal>
+                        </goals>
+                    </execution>
+                    <!-- ensure proper cleanup -->
+                    <execution>
+                        <id>flatten.clean</id>
+                        <phase>clean</phase>
+                        <goals>
+                            <goal>clean</goal>
+                        </goals>
                     </execution>
                 </executions>
             </plugin>
