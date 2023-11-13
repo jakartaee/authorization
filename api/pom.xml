@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2021, 2022 Contributors to Eclipse Foundation. All rights reserved.
+    Copyright (c) 2021, 2023 Contributors to Eclipse Foundation. All rights reserved.
     Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
@@ -18,19 +18,19 @@
 
 -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
    <modelVersion>4.0.0</modelVersion>
 
    <parent>
         <groupId>org.eclipse.ee4j</groupId>
         <artifactId>project</artifactId>
-        <version>1.0.6</version>
+        <version>1.0.8</version>
         <relativePath/>
     </parent>
 
    <groupId>jakarta.authorization</groupId>
    <artifactId>jakarta.authorization-api</artifactId>
-   <version>2.1.0-SNAPSHOT</version>
+   <version>3.0.0-SNAPSHOT</version>
 
    <name>Jakarta Authorization</name>
    <description>
@@ -39,7 +39,7 @@
         to transform security constraints for specific containers (such as Jakarta Servlet or Jakarta Enterprise Beans) into 
         these permissions.
     </description>
-   <url>https://github.com/eclipse-ee4j/authorization</url>
+   <url>https://github.com/jakartaee/authorization</url>
    <inceptionYear>2013</inceptionYear>
    <organization>
         <name>Oracle Corporation</name>
@@ -76,22 +76,22 @@
 
    <mailingLists>
         <mailingList>
-            <name>Jakarta Authorization mailing list</name>
-            <post>jacc-dev@eclipse.org</post>
-            <subscribe>https://dev.eclipse.org/mailman/listinfo/jacc-dev</subscribe>
-            <unsubscribe>https://dev.eclipse.org/mailman/listinfo/jacc-dev</unsubscribe>
-            <archive>https://dev.eclipse.org/mhonarc/lists/jacc-dev</archive>
+            <name>Jakarta Security mailing list</name>
+            <post>es-dev@eclipse.org</post>
+            <subscribe>https://dev.eclipse.org/mailman/listinfo/es-dev</subscribe>
+            <unsubscribe>https://dev.eclipse.org/mailman/listinfo/es-dev</unsubscribe>
+            <archive>https://dev.eclipse.org/mhonarc/lists/es-dev</archive>
        </mailingList>
     </mailingLists>
 
    <scm>
-        <connection>scm:git:ssh://git@github.com/eclipse-ee4j/authorization.git</connection>
-        <developerConnection>scm:git:ssh://git@github.com/eclipse-ee4j/authorization.git</developerConnection>
-        <url>https://github.com/eclipse-ee4j/authorization</url>
+        <connection>scm:git:ssh://git@github.com/jakartaee/authorization.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/jakartaee/authorization.git</developerConnection>
+        <url>https://github.com/jakartaee/authorization</url>
     </scm>
    <issueManagement>
         <system>GitHub</system>
-        <url>https://github.com/eclipse-ee4j/authorization/issues</url>
+        <url>https://github.com/jakartaee/authorization/issues</url>
     </issueManagement>
 
    <properties>
@@ -143,9 +143,7 @@
         <plugins>
             <!-- Sets minimal Maven version to 3.6.0 -->
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
-                <version>3.0.0</version>
                 <executions>
                     <execution>
                         <id>enforce-maven</id>
@@ -166,10 +164,9 @@
             <!-- Restricts the Java version -->
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.10.1</version>
+                <version>3.11.0</version>
                 <configuration>
-                    <source>11</source>
-                    <target>11</target>
+                    <release>21</release>
                     <compilerArgument>-Xlint:unchecked</compilerArgument>
                 </configuration>
             </plugin>
@@ -181,7 +178,7 @@
                 <version>2.1</version>
                 <configuration>
                     <spec>
-                        <specVersion>2.1</specVersion>
+                        <specVersion>3.0</specVersion>
                         <specImplVersion>${project.version}</specImplVersion>
                         <apiPackage>jakarta.security.jacc</apiPackage>
                     </spec>
@@ -200,7 +197,7 @@
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
-                <version>5.1.5</version>
+                <version>5.1.9</version>
                 <extensions>true</extensions>
                 <executions>
                     <execution>
@@ -228,6 +225,8 @@
                         <Implementation-Vendor>${project.organization.name}</Implementation-Vendor>
                         <Implementation-Vendor-Id>org.glassfish</Implementation-Vendor-Id>
                         <Export-Package>jakarta.security.jacc</Export-Package>
+                        <_noimportjava>true</_noimportjava>
+                        <_runee>JavaSE-21</_runee>
                     </instructions>
                 </configuration>
             </plugin>
@@ -236,7 +235,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>3.2.2</version>
                 <configuration>
                     <archive>
                         <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
@@ -250,9 +248,7 @@
          
             <!-- Creates the source jar -->
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
-                <version>3.2.1</version>
                 <configuration>
                     <includePom>true</includePom>
                 </configuration>
@@ -270,9 +266,7 @@
                Create Javadoc for API jar
              -->
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.4.0</version>
                 <executions>
                     <execution>
                         <id>attach-api-javadocs</id>
@@ -280,7 +274,6 @@
                             <goal>jar</goal>
                         </goals>
                         <configuration>
-                            <source>11</source>
                             <additionalJOption>-Xdoclint:none</additionalJOption>
                             <quiet>true</quiet>
                             <description>Jakarta Authorization API documentation</description>
@@ -289,7 +282,7 @@
                             <header><![CDATA[<br>Jakarta Authorization API v${project.version}]]></header>
                             <bottom><![CDATA[
 Comments to: <a href="mailto:jacc-dev@eclipse.org">jacc-dev@eclipse.org</a>.<br>
-Copyright &#169; 2018, 2022 Eclipse Foundation. All rights reserved.<br>
+Copyright &#169; 2018, 2023 Eclipse Foundation. All rights reserved.<br>
 Use is subject to <a href="{@docRoot}/doc-files/speclicense.html" target="_top">license terms</a>.]]>
                             </bottom>
                             <docfilessubdirs>true</docfilessubdirs>

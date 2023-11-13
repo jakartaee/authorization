@@ -18,18 +18,18 @@
 
 -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
         <groupId>org.eclipse.ee4j</groupId>
         <artifactId>project</artifactId>
-        <version>1.0.6</version>
+        <version>1.0.8</version>
     </parent>
 
     <groupId>org.eclipse.ee4j.authorization</groupId>
     <artifactId>authorization-parent</artifactId>
-    <version>2.1.0-SNAPSHOT</version>
+    <version>3.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>Jakarta Authorization Parent</name>
@@ -39,7 +39,7 @@
         to transform security constraints for specific containers (such as Jakarta Servlet or Jakarta Enterprise Beans) into 
         these permissions.
     </description>
-    <url>https://github.com/eclipse-ee4j/authorization</url>
+    <url>https://github.com/jakartaee/authorization</url>
     <licenses>
         <license>
             <name>EPL 2.0</name>
@@ -59,17 +59,17 @@
     </modules>
 
     <scm>
-        <connection>scm:git:ssh://git@github.com/eclipse-ee4j/authorization.git</connection>
-        <developerConnection>scm:git:ssh://git@github.com/eclipse-ee4j/authorization.git</developerConnection>
-        <url>https://github.com/eclipse-ee4j/authorization</url>
+        <connection>scm:git:ssh://git@github.com/jakartaee/authorization.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/jakartaee/authorization.git</developerConnection>
+        <url>https://github.com/jakartaee/authorization</url>
     </scm>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
     </properties>
 
     <build>
@@ -78,7 +78,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
-                <version>3.0.0</version>
                 <executions>
                     <execution>
                         <id>enforce-maven</id>
