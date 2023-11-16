@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, 2022 Contributors to Eclipse Foundation. All rights reserved.
+ * Copyright (c) 2021, 2023 Contributors to Eclipse Foundation. All rights reserved.
  * Copyright (c) 1997, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -17,11 +17,7 @@
 
 package jakarta.security.jacc;
 
-import java.security.AccessController;
 import java.security.Permission;
-import java.security.PrivilegedActionException;
-import java.security.PrivilegedExceptionAction;
-import java.security.SecurityPermission;
 
 /**
  * Abstract factory and finder class for obtaining the instance of the class that implements the
@@ -42,7 +38,7 @@ import java.security.SecurityPermission;
  * @author Harpreet Singh
  */
 public abstract class PolicyConfigurationFactory {
-    private static String FACTORY_NAME = "jakarta.security.jacc.PolicyConfigurationFactory.provider";
+    private static final String FACTORY_NAME = "jakarta.security.jacc.PolicyConfigurationFactory.provider";
 
     private static volatile PolicyConfigurationFactory policyConfigurationFactory;
 
@@ -60,9 +56,6 @@ public abstract class PolicyConfigurationFactory {
      *
      * @return the singleton instance of the provider specific PolicyConfigurationFactory implementation class.
      *
-     * @throws SecurityException when called by an AccessControlContext that has not been granted the "setPolicy"
-     * SecurityPermission.
-     *
      * @throws ClassNotFoundException when the class named by the system property could not be found including
      * because the value of the system property has not be set.
      *
@@ -71,18 +64,11 @@ public abstract class PolicyConfigurationFactory {
      * will be encapsulated (during construction) in the thrown PolicyContextException
      */
     public static PolicyConfigurationFactory getPolicyConfigurationFactory() throws ClassNotFoundException, PolicyContextException {
-
-        SecurityManager securityManager = System.getSecurityManager();
-        if (securityManager != null) {
-            securityManager.checkPermission(new SecurityPermission("setPolicy"));
-        }
-
         if (policyConfigurationFactory != null) {
             return policyConfigurationFactory;
         }
 
         synchronized(PolicyConfigurationFactory.class) {
-
             if (policyConfigurationFactory != null) {
                 return policyConfigurationFactory;
             }
@@ -90,47 +76,16 @@ public abstract class PolicyConfigurationFactory {
             final String className[] = { null };
 
             try {
+                className[0] = System.getProperty(FACTORY_NAME);
 
-                Class<?> clazz = null;
-
-                if (securityManager != null) {
-                    try {
-                        clazz = AccessController.doPrivileged(new PrivilegedExceptionAction<Class<?>>() {
-                            @Override
-                            public Class<?> run() throws Exception {
-
-                                className[0] = System.getProperty(FACTORY_NAME);
-
-                                if (className[0] == null) {
-                                    throw new ClassNotFoundException("Jakarta Authorization:Error PolicyConfigurationFactory : property not set : " + FACTORY_NAME);
-                                }
-
-                                return Class.forName(className[0], true, Thread.currentThread().getContextClassLoader());
-                            }
-                        });
-                    } catch (PrivilegedActionException ex) {
-                        Exception e = ex.getException();
-
-                        if (e instanceof ClassNotFoundException) {
-                            throw (ClassNotFoundException) e;
-                        } else if (e instanceof InstantiationException) {
-                            throw (InstantiationException) e;
-                        } else if (e instanceof IllegalAccessException) {
-                            throw (IllegalAccessException) e;
-                        }
-                    }
-                } else {
-                    className[0] = System.getProperty(FACTORY_NAME);
-
-                    if (className[0] == null) {
-                        throw new ClassNotFoundException("Jakarta Authorization:Error PolicyConfigurationFactory : property not set : " + FACTORY_NAME);
-                    }
-
-                    clazz = Class.forName(className[0], true, Thread.currentThread().getContextClassLoader());
+                if (className[0] == null) {
+                    throw new ClassNotFoundException("Jakarta Authorization:Error PolicyConfigurationFactory : property not set : " + FACTORY_NAME);
                 }
 
+                Class<?> clazz = Class.forName(className[0], true, Thread.currentThread().getContextClassLoader());
+
                 if (clazz != null) {
-                    Object factory = clazz.newInstance();
+                    Object factory = clazz.getDeclaredConstructor().newInstance();
 
                     if (factory instanceof PolicyConfigurationFactory) {
                         policyConfigurationFactory = (PolicyConfigurationFactory) factory;
@@ -139,17 +94,14 @@ public abstract class PolicyConfigurationFactory {
                     }
                 }
 
-            } catch (ClassNotFoundException cnfe) {
-                throw new ClassNotFoundException("Jakarta Authorization:Error PolicyConfigurationFactory : cannot find class : " + className[0], cnfe);
-            } catch (IllegalAccessException iae) {
-                throw new PolicyContextException("Jakarta Authorization:Error PolicyConfigurationFactory : cannot access class : " + className[0], iae);
-            } catch (InstantiationException ie) {
-                throw new PolicyContextException("Jakarta Authorization:Error PolicyConfigurationFactory : cannot instantiate : " + className[0], ie);
+            } catch (ReflectiveOperationException e) {
+                throw new PolicyContextException("Jakarta Authorization:Error PolicyConfigurationFactory : cannot instantiate : " + className[0], e);
+            } catch (SecurityException e) {
+                throw new PolicyContextException("Jakarta Authorization:Error PolicyConfigurationFactory : cannot access : " + className[0], e);
             }
         }
 
         return policyConfigurationFactory;
-
     }
 
     /**
@@ -182,9 +134,6 @@ public abstract class PolicyConfigurationFactory {
      *
      * @return an Object that implements the PolicyConfiguration Interface matched to the Policy provider and corresponding
      * to the identified policy context.
-     *
-     * @throws SecurityException when called by an AccessControlContext that has not been granted the "setPolicy"
-     * SecurityPermission.
      *
      * @throws PolicyContextException if the implementation throws a checked exception that has not been
      * accounted for by the getPolicyConfiguration method signature. The exception thrown by the implementation class will
@@ -250,9 +199,6 @@ public abstract class PolicyConfigurationFactory {
      *
      * @return true if the identified policy context exists within the provider and its state is "inService", false
      * otherwise.
-     *
-     * @throws SecurityException when called by an AccessControlContext that has not been granted the "setPolicy"
-     * SecurityPermission.
      *
      * @throws PolicyContextException if the implementation throws a checked exception that has not been
      * accounted for by the inService method signature. The exception thrown by the implementation class will be

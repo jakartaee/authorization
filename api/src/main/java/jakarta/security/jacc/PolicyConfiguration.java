@@ -162,9 +162,6 @@ public interface PolicyConfiguration {
      *
      * @return this object's policy context identifier.
      *
-     * @throws SecurityException if called by an AccessControlContext that has not been granted the "setPolicy"
-     * SecurityPermission.
-     *
      * @throws PolicyContextException if the implementation throws a checked exception that has not been
      * accounted for by the getContextID method signature. The exception thrown by the implementation class will be
      * encapsulated (during construction) in the thrown PolicyContextException.
@@ -182,9 +179,6 @@ public interface PolicyConfiguration {
      * @param roleName the name of the Role to which the permissions are to be added.
      * @param permissions the collection of permissions to be added to the role. The collection may be either a homogeneous
      * or heterogeneous collection.
-     *
-     * @throws SecurityException if called by an AccessControlContext that has not been granted the "setPolicy"
-     * SecurityPermission.
      *
      * @throws UnsupportedOperationException if the state of the policy context whose interface is this
      * PolicyConfiguration Object is "deleted" or "inService" when this method is called.
@@ -206,9 +200,6 @@ public interface PolicyConfiguration {
      * @param roleName the name of the Role to which the permission is to be added.
      * @param permission the permission to be added to the role.
      *
-     * @throws SecurityException if called by an AccessControlContext that has not been granted the "setPolicy"
-     * SecurityPermission.
-     *
      * @throws UnsupportedOperationException if the state of the policy context whose interface is this
      * PolicyConfiguration Object is "deleted" or "inService" when this method is called.
      *
@@ -224,9 +215,6 @@ public interface PolicyConfiguration {
      * @param permissions the collection of permissions to be added as unchecked policy statements. The collection may be
      * either a homogeneous or heterogeneous collection.
      *
-     * @throws SecurityException if called by an AccessControlContext that has not been granted the "setPolicy"
-     * SecurityPermission.
-     *
      * @throws UnsupportedOperationException if the state of the policy context whose interface is this
      * PolicyConfiguration Object is "deleted" or "inService" when this method is called.
      *
@@ -240,9 +228,6 @@ public interface PolicyConfiguration {
      * Used to add a single unchecked policy statement to this PolicyConfiguration.
      *
      * @param permission the permission to be added to the unchecked policy statements.
-     *
-     * @throws SecurityException if called by an AccessControlContext that has not been granted the "setPolicy"
-     * SecurityPermission.
      *
      * @throws UnsupportedOperationException if the state of the policy context whose interface is this
      * PolicyConfiguration Object is "deleted" or "inService" when this method is called.
@@ -259,9 +244,6 @@ public interface PolicyConfiguration {
      * @param permissions the collection of permissions to be added to the excluded policy statements. The collection may be
      * either a homogeneous or heterogeneous collection.
      *
-     * @throws SecurityException if called by an AccessControlContext that has not been granted the "setPolicy"
-     * SecurityPermission.
-     *
      * @throws UnsupportedOperationException if the state of the policy context whose interface is this
      * PolicyConfiguration Object is "deleted" or "inService" when this method is called.
      *
@@ -275,9 +257,6 @@ public interface PolicyConfiguration {
      * Used to add a single excluded policy statement to this PolicyConfiguration.
      *
      * @param permission the permission to be added to the excluded policy statements.
-     *
-     * @throws SecurityException if called by an AccessControlContext that has not been granted the "setPolicy"
-     * SecurityPermission.
      *
      * @throws UnsupportedOperationException if the state of the policy context whose interface is this
      * PolicyConfiguration Object is "deleted" or "inService" when this method is called.
@@ -324,9 +303,6 @@ public interface PolicyConfiguration {
      * is "*" and no role with name "*" exists in this PolicyConfiguration, then all roles must be removed from this
      * PolicyConfiguration.
      *
-     * @throws SecurityException if called by an AccessControlContext that has not been granted the "setPolicy"
-     * SecurityPermission.
-     *
      * @throws UnsupportedOperationException if the state of the policy context whose interface is this
      * PolicyConfiguration Object is "deleted" or "inService" when this method is called.
      *
@@ -340,12 +316,6 @@ public interface PolicyConfiguration {
      * Used to remove any unchecked policy statements from this PolicyConfiguration. This method has no effect on the links
      * between this PolicyConfiguration and others.
      *
-     * @throws SecurityException if called by an AccessControlContext that has not been granted the "setPolicy"
-     * SecurityPermission.
-     *
-     * @throws UnsupportedOperationException if the state of the policy context whose interface is this
-     * PolicyConfiguration Object is "deleted" or "inService" when this method is called.
-     *
      * @throws PolicyContextException if the implementation throws a checked exception that has not been
      * accounted for by the removeUncheckedPolicy method signature. The exception thrown by the implementation class will be
      * encapsulated (during construction) in the thrown PolicyContextException.
@@ -355,9 +325,6 @@ public interface PolicyConfiguration {
     /**
      * Used to remove any excluded policy statements from this PolicyConfiguration. This method has no effect on the links
      * between this PolicyConfiguration and others.
-     *
-     * @throws SecurityException if called by an AccessControlContext that has not been granted the "setPolicy"
-     * SecurityPermission.
      *
      * @throws UnsupportedOperationException if the state of the policy context whose interface is this
      * PolicyConfiguration Object is "deleted" or "inService" when this method is called.
@@ -384,9 +351,6 @@ public interface PolicyConfiguration {
      *
      * @param link A reference to a different PolicyConfiguration than this PolicyConfiguration.
      *
-     * @throws SecurityException if called by an AccessControlContext that has not been granted the "setPolicy"
-     * SecurityPermission.
-     *
      * @throws UnsupportedOperationException if the state of the policy context whose interface is this
      * PolicyConfiguration Object is "deleted" or "inService" when this method is called.
      *
@@ -408,9 +372,6 @@ public interface PolicyConfiguration {
      * This operation has no affect on any linked PolicyConfigurations other than removing any links involving the deleted
      * PolicyConfiguration.
      *
-     * @throws SecurityException if called by an AccessControlContext that has not been granted the "setPolicy"
-     * SecurityPermission.
-     *
      * @throws PolicyContextException if the implementation throws a checked exception that has not been
      * accounted for by the delete method signature. The exception thrown by the implementation class will be encapsulated
      * (during construction) in the thrown PolicyContextException.
@@ -428,9 +389,6 @@ public interface PolicyConfiguration {
      * When the state of a policy context is "inService", calling any method other than commit, delete, getContextID, or
      * inService on its PolicyConfiguration Object will cause an UnsupportedOperationException to be thrown.
      *
-     * @throws SecurityException if called by an AccessControlContext that has not been granted the "setPolicy"
-     * SecurityPermission.
-     *
      * @throws UnsupportedOperationException if the state of the policy context whose interface is this
      * PolicyConfiguration Object is "deleted" when this method is called.
      *
@@ -445,9 +403,6 @@ public interface PolicyConfiguration {
      * "inService" state.
      *
      * @return true if the state of the associated policy context is "inService"; false otherwise.
-     *
-     * @throws SecurityException if called by an AccessControlContext that has not been granted the "setPolicy"
-     * SecurityPermission.
      *
      * @throws PolicyContextException if the implementation throws a checked exception that has not been
      * accounted for by the inService method signature. The exception thrown by the implementation class will be

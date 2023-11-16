@@ -17,7 +17,6 @@
 
 package jakarta.security.jacc;
 
-import java.security.SecurityPermission;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -26,14 +25,14 @@ import java.util.concurrent.ConcurrentHashMap;
  * This utility class is used by containers to communicate policy context identifiers and other policy relevant context
  * to <code>Policy</code> providers. <code>Policy</code> providers use the policy context identifier to select the
  * subset of policy to apply in access decisions.
- * 
+ *
  * <p>
  * The value of a policy context identifier is a <code>
  * String</code> and each thread has an independently established policy context identifier. A container will establish
  * the thread-scoped value of a policy context identifier by calling the static <code>setContextID</code> method. The
  * value of a thread-scoped policy context identifier is available (to <code>Policy</code>) by calling the static
  * <code>getContextID</code> method.
- * 
+ *
  * <p>
  * This class is also used by <code>Policy</code> providers to request additional thread-scoped policy relevant context
  * objects from the calling container. Containers register container-specific <code>PolicyContext</code> handlers using
@@ -42,23 +41,14 @@ import java.util.concurrent.ConcurrentHashMap;
  * <code>setHandlerData</code> to establish a thread-scoped parameter that will be passed to handlers when they are
  * activated by <code>Policy</code> providers. The static <code>getContext</code> method is used to activate a handler
  * and obtain the corresponding context object.
- * 
+ *
  * <p>
  * The static accessor functions provided by this class allow per-thread policy context values to be established and
  * communicated independent of a common reference to a particular PolicyContext instance.
- * 
+ *
  * <p>
  * The PolicyContext class may encapsulate static ThreadLocal instance variables to represent the policy context
  * identifier and handler data values.
- * 
- * <p>
- * The Application server must bundle or install the PolicyContext class, and the containers of the application server
- * must prevent the methods of the PolicyContext class from being called from calling contexts that are not authorized
- * to call these methods. With the exception of the getContextID and GetHandlerKeys methods, containers must restrict
- * and afford access to the methods of the PolicyContext class to calling contexts trusted by the container to perform
- * container access decisions. The PolicyContext class may satisfy this requirement (on behalf of its container) by
- * rejecting calls made from an AccessControlContext that has not been granted the "setPolicy" SecurityPermission, and
- * by ensuring that Policy providers used to perform container access decisions are granted the "setPolicy" permission.
  *
  * @see PolicyContextHandler
  *
@@ -87,26 +77,21 @@ public final class PolicyContext {
     private static Map<String, PolicyContextHandler> handlerTable = new ConcurrentHashMap<String, PolicyContextHandler>();
 
     /**
-     * Authorization protected method used to modify the value of the policy context identifier associated with the thread
+     * Method used to modify the value of the policy context identifier associated with the thread
      * on which this method is called.
-     * 
+     *
      * @param contextID a <code>String</code> that represents the value of the policy context identifier to be assigned to
      * the PolicyContext for the calling thread. The value <code>null
      * </code> is a legitimate value for this parameter.
-     *
-     * @throws SecurityException if the calling AccessControlContext is not authorized by the container to call
-     * this method.
      */
     public static void setContextID(String contextID) {
-        checkSetPolicyPermission();
-
         threadLocalContextID.set(contextID);
     }
 
     /**
      * This static method returns the value of the policy context identifier associated with the thread on which the
      * accessor is called.
-     * 
+     *
      * @return The <code>String</code> (or <code>null</code>) policy context identifier established for the thread. This
      * method must return the default policy context identifier, <code>null</code>, if the policy context identifier of the
      * thread has not been set via <code>setContext</code> to another value.
@@ -119,28 +104,24 @@ public final class PolicyContext {
     }
 
     /**
-     * Authorization protected method that may be used to associate a thread-scoped handler data object with the
+     * Method that may be used to associate a thread-scoped handler data object with the
      * PolicyContext. The handler data object will be made available to handlers, where it can serve to supply or bind the
      * handler to invocation scoped state within the container.
-     * 
+     *
      * @param data a container-specific object that will be associated with the calling thread and passed to any handler
      * activated by a <code>Policy</code> provider (on the thread). The value <code>null</code> is a legitimate value for
      * this parameter, and is the value that will be used in the activation of handlers if the <code>setHandlerData</code>
      * has not been called on the thread.
      *
-     * @throws SecurityException if the calling AccessControlContext is not authorized by the container to call
-     * this method.
      */
     public static void setHandlerData(Object data) {
-        checkSetPolicyPermission();
-
         threadLocalHandlerData.set(data);
     }
 
     /**
-     * Authorization protected method used to register a container specific <code>PolicyContext</code> handler. A handler
+     * Method used to register a container specific <code>PolicyContext</code> handler. A handler
      * may be registered to handle multiple keys, but at any time, at most one handler may be registered for a key.
-     * 
+     *
      * @param key a (case-sensitive) <code>String</code> that identifies the context object handled by the handler. The
      * value of this parameter must not be null.
      * @param handler an object that implements the <code>PolicyContextHandler</code> interface. The value of this parameter
@@ -154,9 +135,6 @@ public final class PolicyContext {
      * value of the replace argument is <code>false</code> and a handler with the same key as the argument handler is
      * already registered.
      *
-     * @throws SecurityException if the calling AccessControlContext is not authorized by the container to call
-     * this method.
-     *
      * @throws PolicyContextException if an operation by this method on the argument
      * PolicyContextHandler causes it to throw a checked exception that is not accounted for in the signature of this
      * method.
@@ -165,17 +143,15 @@ public final class PolicyContext {
         if (handler == null || key == null) {
             throw new IllegalArgumentException("invalid (null) key or handler");
         }
-        
+
         if (!handler.supports(key)) {
             throw new IllegalArgumentException("handler does not support key");
         }
-        
-        checkSetPolicyPermission();
 
         if (handlerTable.containsKey(key) && replace == false) {
             throw new IllegalArgumentException("handler exists");
         }
-        
+
         handlerTable.put(key, handler);
     }
 
@@ -207,9 +183,6 @@ public final class PolicyContext {
      * @throws IllegalArgumentException if a <code>PolicyContextHandler</code> has not been registered for the key
      * or the registered handler no longer supports the key.
      *
-     * @throws SecurityException if the calling AccessControlContext is not authorized by the container to call
-     * this method.
-     *
      * @throws PolicyContextException if an operation by this method on the identified
      * PolicyContextHandler causes it to throw a checked exception that is not accounted for in the signature of this
      * method.
@@ -218,28 +191,16 @@ public final class PolicyContext {
         if (key == null) {
             throw new IllegalArgumentException("invalid key");
         }
-        
+
         PolicyContextHandler handler = handlerTable.get(key);
         if (handler == null || !handler.supports(key)) {
             throw new IllegalArgumentException("unknown handler key");
         }
 
-        checkSetPolicyPermission();
-        
         @SuppressWarnings("unchecked")
         T returnValue = (T) handler.getContext(key, threadLocalHandlerData.get());
 
         return returnValue;
-    }
-    
-    
-    // ### Private methods
-    
-    private static void checkSetPolicyPermission() {
-         SecurityManager securityManager = System.getSecurityManager();
-         if (securityManager != null) {
-             securityManager.checkPermission(new SecurityPermission("setPolicy"));
-         }
     }
 
 }
