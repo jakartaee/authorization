@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, 2021 Contributors to Eclipse Foundation. All rights reserved.
+ * Copyright (c) 2021, 2023 Contributors to Eclipse Foundation. All rights reserved.
  * Copyright (c) 1997, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -165,7 +165,7 @@ public final class PolicyContext {
      * @throws SecurityException if the calling AccessControlContext is not authorized by the container to call
      * this method. Containers may choose to authorize calls to this method by any AccessControlContext.
      */
-    public static Set getHandlerKeys() {
+    public static Set<String> getHandlerKeys() {
         return handlerTable.keySet();
     }
 
