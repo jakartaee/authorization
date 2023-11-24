@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, 2022 Contributors to Eclipse Foundation. All rights reserved.
+ * Copyright (c) 2021, 2023 Contributors to Eclipse Foundation. All rights reserved.
  * Copyright (c) 1997, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -16,6 +16,8 @@
  */
 
 package jakarta.security.jacc;
+
+import static java.util.Collections.list;
 
 import java.security.Permission;
 import java.security.PermissionCollection;
@@ -187,7 +189,11 @@ public interface PolicyConfiguration {
      * accounted for by the addToRole method signature. The exception thrown by the implementation class will be
      * encapsulated (during construction) in the thrown PolicyContextException.
      */
-    void addToRole(String roleName, PermissionCollection permissions) throws PolicyContextException;
+    default void addToRole(String roleName, PermissionCollection permissions) throws PolicyContextException {
+        for (Permission permission : list(permissions.elements())) {
+            addToRole(roleName, permission);
+        }
+    }
 
     /**
      * Used to add a single permission to a named role in this PolicyConfiguration. If the named role does not exist in the
@@ -222,7 +228,11 @@ public interface PolicyConfiguration {
      * accounted for by the addToUncheckedPolicy method signature. The exception thrown by the implementation class will be
      * encapsulated (during construction) in the thrown PolicyContextException.
      */
-    void addToUncheckedPolicy(PermissionCollection permissions) throws PolicyContextException;
+    default void addToUncheckedPolicy(PermissionCollection permissions) throws PolicyContextException {
+        for (Permission permission : list(permissions.elements())) {
+            addToUncheckedPolicy(permission);
+        }
+    }
 
     /**
      * Used to add a single unchecked policy statement to this PolicyConfiguration.
@@ -251,7 +261,11 @@ public interface PolicyConfiguration {
      * accounted for by the addToExcludedPolicy method signature. The exception thrown by the implementation class will be
      * encapsulated (during construction) in the thrown PolicyContextException.
      */
-    void addToExcludedPolicy(PermissionCollection permissions) throws PolicyContextException;
+    default void addToExcludedPolicy(PermissionCollection permissions) throws PolicyContextException {
+        for (Permission permission : list(permissions.elements())) {
+            addToExcludedPolicy(permission);
+        }
+    }
 
     /**
      * Used to add a single excluded policy statement to this PolicyConfiguration.
@@ -396,7 +410,9 @@ public interface PolicyConfiguration {
      * accounted for by the commit method signature. The exception thrown by the implementation class will be encapsulated
      * (during construction) in the thrown PolicyContextException.
      */
-    void commit() throws PolicyContextException;
+    default void commit() throws PolicyContextException {
+        // Not necessarily used when state machine is handled by implementation
+    }
 
     /**
      * This method is used to determine if the policy context whose interface is this PolicyConfiguration Object is in the
@@ -408,5 +424,9 @@ public interface PolicyConfiguration {
      * accounted for by the inService method signature. The exception thrown by the implementation class will be
      * encapsulated (during construction) in the thrown PolicyContextException.
      */
-    boolean inService() throws PolicyContextException;
+    default boolean inService() throws PolicyContextException {
+        // Not used when state machine is handled by implementation
+        return true;
+    }
+
 }
