@@ -38,7 +38,8 @@ import java.security.Permission;
  * @author Harpreet Singh
  */
 public abstract class PolicyConfigurationFactory {
-    private static final String FACTORY_NAME = "jakarta.security.jacc.PolicyConfigurationFactory.provider";
+
+    public static final String FACTORY_NAME = "jakarta.security.jacc.PolicyConfigurationFactory.provider";
 
     private static volatile PolicyConfigurationFactory policyConfigurationFactory;
 

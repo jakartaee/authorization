@@ -57,6 +57,48 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public final class PolicyContext {
 
+    /**
+     * Key to use for getting a `javax.security.auth.Subject` from {@link PolicyContext#getContext(String)}
+     *
+     * When this handler is activated as the result of a policy decision performed by a container before
+     * dispatch into a component, this handler must return a `Subject` containing the principals
+     * and credentials of the “caller” of the component.
+     *
+     * When activated from the scope of a dispatched call, this handler must return a `Subject` containing
+     * the principals and credentials corresponding to the identity established by the container prior to the
+     * activation of the handler.
+     *
+     * The identity established by the container will either be the component’s `runAs` identity or the caller’s identity
+     * (e.g. when a Jakarta Enterprise Beans component calls `isCallerInRole`).
+     *
+     * In all cases, if the identity of the corresponding `Subject` has not been established or authenticated,
+     * this handler must return the value null.
+     */
+    public static final String SUBJECT = "javax.security.auth.Subject.container";
+
+    /**
+     * Key to use for getting a `jakarta.security.jacc.PrincipalMapper` from {@link PolicyContext#getContext(String)}
+     */
+    public static final String PRINCIPAL_MAPPER = "jakarta.security.jacc.PrincipalMapper";
+
+    /**
+     * Key to use for getting an `jakarta.servlet.http.HttpServletRequest` from {@link PolicyContext#getContext(String)}
+     *
+     * When this handler is activated, the container must return the `HttpServletRequest` object corresponding to
+     * the component request being processed by the container.
+     */
+    public static final String HTTP_SERVLET_REQUEST = "jakarta.servlet.http.HttpServletRequest";
+
+    /**
+     * Key to use for getting an `jakarta.xml.soap.SOAPMessage` from {@link PolicyContext#getContext(String)}
+     *
+     * If the request being processed by the container arrived as a SOAP request at the `ServiceEndpoint` method
+     * interface, the container must return the SOAP message object when this handler is activated.
+     * Otherwise, this handler must return the value
+     */
+    public static final String SOAP_MESSAGE = "jakarta.xml.soap.SOAPMessage";
+
+
     private PolicyContext() {
     }
 
