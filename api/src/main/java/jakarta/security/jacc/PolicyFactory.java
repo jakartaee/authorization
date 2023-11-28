@@ -135,7 +135,7 @@ public abstract class PolicyFactory {
      * {@link Policy} and there must be at most one actual instance of a {@link Policy} with a given policy
      * context identifier (during a process context).
      *
-     * @param contextID A String identifying the policy context whose {@link Policy} interface is to be returned. The
+     * @param contextId A String identifying the policy context whose {@link Policy} interface is to be returned. The
      * value passed to this parameter can be null, which corresponds to the system-wide default {@link Policy} instance.
      *
      *
@@ -150,7 +150,7 @@ public abstract class PolicyFactory {
      * <p>
      * If an implementation was set previously, it will be replaced.
      *
-     * @param contextID A String identifying the policy context whose {@link Policy} interface is to be returned. The
+     * @param contextId A String identifying the policy context whose {@link Policy} interface is to be returned. The
      * value passed to this parameter can be null, which corresponds to the system-wide default {@link Policy} instance.
      *
      * @param policy The policy instance, which may be null.
