@@ -30,7 +30,7 @@
 
    <groupId>jakarta.authorization</groupId>
    <artifactId>jakarta.authorization-api</artifactId>
-   <version>3.0.0-SNAPSHOT</version>
+   <version>3.0.0-M1</version>
 
    <name>Jakarta Authorization</name>
    <description>
