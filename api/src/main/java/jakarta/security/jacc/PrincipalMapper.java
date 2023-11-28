@@ -93,7 +93,7 @@ public interface PrincipalMapper {
      * For instance, if a Principal representing the group "adm" is present in the Subject, and the group "adm" is
      * mapped (in a implementation specific way) to "administrator", then "administrator" must be returned here.
      *
-     * @param subject the subject from which the roles are to be retrieved.
+     * @param principals the set of principals from which the roles are to be retrieved.
      * @return a set of logical application roles associated with the caller principal.
      */
     default Set<String> getMappedRoles(Set<Principal> principals) {
