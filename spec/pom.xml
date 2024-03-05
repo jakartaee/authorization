@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
  
-    Copyright (c) 2021, 2022 Contributors to Eclipse Foundation. All rights reserved.
+    Copyright (c) 2021, 2024 Contributors to Eclipse Foundation. All rights reserved.
     Copyright (c) 2017, 2020 Oracle and/or its affiliates. All rights reserved.
  
     This program and the accompanying materials are made available under the
@@ -23,7 +23,7 @@
     <parent>
         <groupId>org.eclipse.ee4j</groupId>
         <artifactId>project</artifactId>
-        <version>1.0.8</version>
+        <version>1.0.9</version>
         <relativePath/>
     </parent>
 
@@ -62,7 +62,7 @@
     <build>
         <defaultGoal>package</defaultGoal>
         <plugins>
-            <!-- Sets minimal Maven version to 3.6.0 -->
+            <!-- Sets minimal Maven version to 3.9.0 -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
@@ -75,7 +75,7 @@
                         <configuration>
                             <rules>
                                 <requireMavenVersion>
-                                    <version>3.6.0</version>
+                                    <version>3.9.0</version>
                                 </requireMavenVersion>
                             </rules>
                         </configuration>
@@ -86,12 +86,12 @@
             <plugin>
                 <groupId>org.asciidoctor</groupId>
                 <artifactId>asciidoctor-maven-plugin</artifactId>
-                <version>2.2.4</version>
+                <version>3.0.0</version>
                 <dependencies>
                     <dependency>
                         <groupId>org.asciidoctor</groupId>
                         <artifactId>asciidoctorj-pdf</artifactId>
-                        <version>2.3.9</version>
+                        <version>2.3.13</version>
                     </dependency>
                 </dependencies>
                 <executions>
