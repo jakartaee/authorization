@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, 2023 Contributors to Eclipse Foundation. All rights reserved.
+ * Copyright (c) 2021, 2024 Contributors to Eclipse Foundation. All rights reserved.
  * Copyright (c) 1997, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -103,6 +103,36 @@ public abstract class PolicyConfigurationFactory {
         }
 
         return policyConfigurationFactory;
+    }
+
+    /**
+     * This static method uses a system property to find and instantiate (via a public constructor) a provider specific
+     * factory implementation class.
+     *
+     * <p>
+     * The name of the provider specific factory implementation class is obtained from the
+     * value of the system property,
+     * <pre>{@code
+     *     jakarta.security.jacc.PolicyConfigurationFactory.provider.
+     * }
+     * </pre>
+     *
+     * <p>
+     * This method is logically equivalent to {@link PolicyConfigurationFactory#getPolicyConfigurationFactory()} with the
+     * difference that any of the declared exceptions are captured into an IllegalStateException.
+     *
+     * @return the singleton instance of the provider specific PolicyConfigurationFactory implementation class.
+     *
+     * @throws IllegalStateException thrown at least when {@link PolicyConfigurationFactory#getPolicyConfigurationFactory()} throws
+     * a ClassNotFoundException or an PolicyContextException; in that case the IllegalStateException contains one of those exceptions
+     * as the cause.
+     */
+    public static PolicyConfigurationFactory get() {
+        try {
+            return PolicyConfigurationFactory.getPolicyConfigurationFactory();
+        } catch (ClassNotFoundException | PolicyContextException e) {
+            throw new IllegalStateException(e);
+        }
     }
 
     /**
