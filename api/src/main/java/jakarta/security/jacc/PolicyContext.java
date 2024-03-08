@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, 2023 Contributors to Eclipse Foundation. All rights reserved.
+ * Copyright (c) 2021, 2024 Contributors to Eclipse Foundation. All rights reserved.
  * Copyright (c) 1997, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -243,6 +243,32 @@ public final class PolicyContext {
         T returnValue = (T) handler.getContext(key, threadLocalHandlerData.get());
 
         return returnValue;
+    }
+
+    /**
+     * This method may be used by a <code>Policy</code> provider to activate the <code>PolicyContextHandler</code>
+     * registered to the context object key and cause it to return the corresponding policy context object from the
+     * container. When this method activates a handler, it passes to the handler the context object key and the handler data
+     * associated with the calling thread.
+     *
+     * @param key a <code>String</code> that identifies the <code>PolicyContextHandler</code> to activate and the context
+     * object to be acquired from the handler. The value of this parameter must not be null.
+     * @return the container and handler specific object containing the desired context. A <code>null</code> value is
+     * returned if the corresponding handler has been registered, and the value of the corresponding context is null.
+     *
+     * @throws IllegalArgumentException if a <code>PolicyContextHandler</code> has not been registered for the key
+     * or the registered handler no longer supports the key.
+     *
+     * @throws IllegalStateException if an operation by this method on the identified
+     * PolicyContextHandler causes it to throw a checked exception that is not accounted for in the signature of this
+     * method. The IllegalStateException may contain a PolicyContextException containing the actual cause.
+     */
+    public static <T> T get(String key) {
+        try {
+            return PolicyContext.getContext(key);
+        } catch (PolicyContextException e) {
+            throw new IllegalStateException(e);
+        }
     }
 
 }
