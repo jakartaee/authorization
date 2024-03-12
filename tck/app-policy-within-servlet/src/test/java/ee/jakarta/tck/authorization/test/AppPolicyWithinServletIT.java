@@ -20,7 +20,7 @@ package ee.jakarta.tck.authorization.test;
 import static ee.jakarta.tck.authorization.util.ShrinkWrap.mavenWar;
 import static org.junit.Assert.assertTrue;
 
-import com.gargoylesoftware.htmlunit.DefaultCredentialsProvider;
+import org.htmlunit.DefaultCredentialsProvider;
 import ee.jakarta.tck.authorization.util.ArquillianBase;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -44,7 +44,7 @@ public class AppPolicyWithinServletIT extends ArquillianBase {
     @Test
     public void testAuthenticated() {
         DefaultCredentialsProvider credentialsProvider = new DefaultCredentialsProvider();
-        credentialsProvider.addCredentials("reza", "secret1");
+        credentialsProvider.addCredentials("reza", "secret1".toCharArray());
 
         getWebClient().setCredentialsProvider(credentialsProvider);
 

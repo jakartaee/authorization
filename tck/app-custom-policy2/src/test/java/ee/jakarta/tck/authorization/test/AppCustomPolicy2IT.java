@@ -21,8 +21,8 @@ import static ee.jakarta.tck.authorization.util.Assert.assertDefaultAccess;
 import static ee.jakarta.tck.authorization.util.Assert.assertDefaultNoAccess;
 import static ee.jakarta.tck.authorization.util.ShrinkWrap.mavenWar;
 
-import com.gargoylesoftware.htmlunit.DefaultCredentialsProvider;
 import ee.jakarta.tck.authorization.util.ArquillianBase;
+import org.htmlunit.DefaultCredentialsProvider;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
@@ -48,7 +48,7 @@ public class AppCustomPolicy2IT extends ArquillianBase {
     @Test
     public void testAuthenticatedWrongRole() {
         DefaultCredentialsProvider credentialsProvider = new DefaultCredentialsProvider();
-        credentialsProvider.addCredentials("reza", "secret1");
+        credentialsProvider.addCredentials("reza", "secret1".toCharArray());
 
         getWebClient().setCredentialsProvider(credentialsProvider);
 
@@ -74,7 +74,7 @@ public class AppCustomPolicy2IT extends ArquillianBase {
     @Test
     public void testNotAuthenticatedWrongName() {
         DefaultCredentialsProvider credentialsProvider = new DefaultCredentialsProvider();
-        credentialsProvider.addCredentials("romo", "secret1");
+        credentialsProvider.addCredentials("romo", "secret1".toCharArray());
 
         getWebClient().setCredentialsProvider(credentialsProvider);
 
@@ -105,7 +105,7 @@ public class AppCustomPolicy2IT extends ArquillianBase {
     @Test
     public void testAuthenticatedSpecial() {
         DefaultCredentialsProvider credentialsProvider = new DefaultCredentialsProvider();
-        credentialsProvider.addCredentials("reza", "secret1");
+        credentialsProvider.addCredentials("reza", "secret1".toCharArray());
 
         getWebClient().setCredentialsProvider(credentialsProvider);
 
