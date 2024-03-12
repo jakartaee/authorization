@@ -27,11 +27,11 @@
         <version>4.0.0-SNAPSHOT</version>
     </parent>
 
-	<artifactId>app-mem-policy3</artifactId>
+	<artifactId>app-policy-use-within-servlet</artifactId>
 	<packaging>war</packaging>
 	
 	<description>
-        Access a Servlet, and check from within that Servlet whether the
+        Access a Servlet (the resource), and check from within that Servlet whether the
         permission checks from the Policy match with the expectations for that request.
     </description>
 
