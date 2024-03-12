@@ -51,8 +51,8 @@
         <module>common</module>
         
         <!-- Setting a Jakarta Authorization policy -->
-        <module>app-policy</module>
-        <module>app-policy2</module>
+        <module>app-custom-policy</module>
+        <module>app-custom-policy2</module>
         <module>app-policy3</module>
     </modules>
 
