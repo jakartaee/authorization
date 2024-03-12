@@ -30,7 +30,7 @@ import org.junit.runner.RunWith;
 
 
 @RunWith(Arquillian.class)
-public class AppPolicy3IT extends ArquillianBase {
+public class AppPolicyWithinServletIT extends ArquillianBase {
 
     @Deployment(testable = false)
     public static Archive<?> createDeployment() {

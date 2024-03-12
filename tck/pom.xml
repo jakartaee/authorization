@@ -46,14 +46,21 @@
                 
                 execute with mvn ... -Dtck.log.response
                 
+                For a somewhat faster execution using GlassFish use:
+                
+                mvn clean install -Dglassfish.keepServerRunning -Dglassfish.keepDeployment -DskipSBOM
+                
     -->
     <modules>
         <module>common</module>
         
-        <!-- Setting a Jakarta Authorization policy -->
+        <!-- Setting a custom Jakarta Authorization policy -->
         <module>app-custom-policy</module>
         <module>app-custom-policy2</module>
-        <module>app-policy3</module>
+        
+        
+        <!-- Using the default Jakarta Authorization policy from within a Servlet -->
+        <module>app-policy-within-servlet</module>
     </modules>
 
     <properties>
@@ -61,8 +68,6 @@
         
         <zipname>${project.artifactId}-${project.version}</zipname>
         <licenseFile>${project.basedir}/LICENSE_EFTL.md</licenseFile>
-        
-        <security-api.version>4.0.0-SNAPSHOT</security-api.version>
         
         <buildDirectory>${project.basedir}/target</buildDirectory>
     </properties>
@@ -276,6 +281,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-dependency-plugin</artifactId>
+                        <inherited>false</inherited>
                         <executions>
                             <execution>
                                 <id>unpack</id>
@@ -293,7 +299,7 @@
                                             <artifactId>glassfish</artifactId>
                                             <version>${glassfish.version}</version>
                                             <type>zip</type>
-                                            <overWrite>true</overWrite>
+                                            <overWrite>false</overWrite>
                                             <outputDirectory>${glassfish.root}</outputDirectory>
                                         </artifactItem>
                                     </artifactItems>
@@ -305,6 +311,7 @@
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-antrun-plugin</artifactId>
                         <version>3.0.0</version>
+                        <inherited>false</inherited>
                         <executions>
                             <execution>
                                 <id>set-port</id>
