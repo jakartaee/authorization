@@ -23,7 +23,7 @@ import static ee.jakarta.tck.authorization.util.Assert.assertDefaultNoAccess;
 import static ee.jakarta.tck.authorization.util.Assert.assertDefaultNotAuthenticated;
 import static ee.jakarta.tck.authorization.util.ShrinkWrap.mavenWar;
 
-import com.gargoylesoftware.htmlunit.DefaultCredentialsProvider;
+import org.htmlunit.DefaultCredentialsProvider;
 import ee.jakarta.tck.authorization.util.ArquillianBase;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
