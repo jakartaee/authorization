@@ -52,7 +52,53 @@ public interface Policy {
      * @param subject holder of the (obscured) caller principal
      * @return true if the caller principal has the requested permission, false otherwise
      */
-    boolean implies(Permission permissionToBeChecked, Subject subject);
+    default boolean implies(Permission permissionToBeChecked, Subject subject) {
+        if (isExcluded(permissionToBeChecked)) {
+            return false;
+        }
+
+        if (isUnchecked(permissionToBeChecked)) {
+            return true;
+        }
+
+        return impliesByRole(permissionToBeChecked, subject);
+    }
+
+    /**
+     * This method checks whether the permission represented by the @{permissionToBeChecked} parameter is
+     * excluded by this policy. Excluded means the permission is not granted to any caller.
+     *
+     * @param permissionToBeChecked the permission this policy is going to check
+     * @return true if the requested permission is excluded, false otherwise
+     */
+    default boolean isExcluded(Permission permissionToBeChecked) {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * This method checks whether the permission represented by the @{permissionToBeChecked} parameter is
+     * unchecked by this policy. Unchecked means the permission is granted to any caller, either authenticated
+     * or not.
+     *
+     * @param permissionToBeChecked the permission this policy is going to check
+     * @return true if the requested permission is unchecked, false otherwise
+     */
+    default boolean isUnchecked(Permission permissionToBeChecked) {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * This method checks whether the permission represented by the @{permissionToBeChecked} parameter is granted to
+     * the caller principal within the @{subject} parameter based on one or more roles associated with that
+     * caller principal.
+     *
+     * @param permissionToBeChecked the permission this policy is going to check
+     * @param subject holder of the (obscured) caller principal
+     * @return true if the caller principal has the requested permission, false otherwise
+     */
+    default boolean impliesByRole(Permission permissionToBeChecked, Subject subject) {
+        throw new UnsupportedOperationException();
+    }
 
     /**
      * Returns a collection of at least all declared permissions associated with the caller principal
