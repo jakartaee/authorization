@@ -61,6 +61,9 @@
         
         <!-- Using the default Jakarta Authorization policy from within a Servlet -->
         <module>app-policy-within-servlet</module>
+        
+        <!-- Instantiating API permission instances and calling equals and hashcode on it -->
+        <module>app-permissions-equals-hashcode</module>
     </modules>
 
     <properties>
