@@ -64,6 +64,9 @@
         
         <!-- Instantiating API permission instances and calling equals and hashcode on it -->
         <module>app-permissions-equals-hashcode</module>
+        
+        <!-- Testing plain Servlet behaviour without anything Jakarta Authorization specific -->
+        <module>app-servlet-constraints</module>
     </modules>
 
     <properties>
@@ -284,7 +287,6 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-dependency-plugin</artifactId>
-                        <inherited>false</inherited>
                         <executions>
                             <execution>
                                 <id>unpack</id>
@@ -314,7 +316,6 @@
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-antrun-plugin</artifactId>
                         <version>3.0.0</version>
-                        <inherited>false</inherited>
                         <executions>
                             <execution>
                                 <id>set-port</id>
@@ -345,6 +346,8 @@
                                 <glassfish.home>${glassfish.root}/glassfish8</glassfish.home>
                                 <glassfish.postBootCommands>
                                     create-file-user --groups foo:bar --passwordfile ${maven.multiModuleProjectDirectory}/reza.pass reza
+                                    create-file-user --groups Administrator:Manager:Employee --passwordfile ${maven.multiModuleProjectDirectory}/javajoe.pass javajoe
+                                    create-file-user --groups Employee --passwordfile ${maven.multiModuleProjectDirectory}/j2ee.pass j2ee
                                 </glassfish.postBootCommands>
                             </systemProperties>
                         </configuration>
@@ -352,6 +355,5 @@
                 </plugins>
             </build>
         </profile>
-
     </profiles>
 </project>
