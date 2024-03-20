@@ -17,6 +17,7 @@
 
 package ee.jakarta.tck.authorization.util;
 
+import static java.util.logging.Level.INFO;
 import static java.util.logging.Level.SEVERE;
 import static org.apache.http.HttpStatus.SC_MULTIPLE_CHOICES;
 import static org.apache.http.HttpStatus.SC_OK;
@@ -26,12 +27,14 @@ import static org.jsoup.parser.Parser.xmlParser;
 import java.io.IOException;
 import java.net.URL;
 import java.util.logging.Logger;
+import org.htmlunit.DefaultCredentialsProvider;
 import org.htmlunit.DefaultCssErrorHandler;
 import org.htmlunit.FailingHttpStatusCodeException;
 import org.htmlunit.Page;
 import org.htmlunit.WebClient;
 import org.htmlunit.WebResponse;
 import org.jboss.arquillian.test.api.ArquillianResource;
+import org.jboss.arquillian.test.api.Secured;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -44,13 +47,24 @@ public class ArquillianBase {
 
     private WebClient webClient;
     private String response;
+    private boolean useBaseSecured;
     private String responsePath;
 
 	@ArquillianResource
     private URL base;
 
+	@Secured(port = 8181)
+	@ArquillianResource
+    private URL baseSecured;
+
     @Rule
     public TestWatcher ruleExample = new TestWatcher() {
+
+        @Override
+        protected void starting(Description description) {
+            logger.log(INFO, "Running " + description.getMethodName());
+        };
+
         @Override
         protected void failed(Throwable e, Description description) {
             super.failed(e, description);
@@ -73,6 +87,7 @@ public class ArquillianBase {
         Logger logger = Logger.getLogger(DefaultCssErrorHandler.class.getName());
         logger.setLevel(SEVERE);
 
+        useBaseSecured = false;
         response = null;
         webClient = new WebClient() {
 
@@ -91,12 +106,22 @@ public class ArquillianBase {
         if (System.getProperty("glassfish.suspend") != null) {
             webClient.getOptions().setTimeout(0);
         }
+        webClient.getOptions().setUseInsecureSSL(true);
     }
 
     @After
     public void tearDown() {
         webClient.getCookieManager().clearCookies();
         webClient.close();
+    }
+
+    protected String readFromServerWithCredentials(String path, String username, String password) {
+        DefaultCredentialsProvider credentialsProvider = new DefaultCredentialsProvider();
+        credentialsProvider.addCredentials(username, password.toCharArray());
+
+        getWebClient().setCredentialsProvider(credentialsProvider);
+
+        return readFromServer(path);
     }
 
     protected String readFromServer(String path) {
@@ -107,6 +132,15 @@ public class ArquillianBase {
         }
 
     	return response;
+    }
+
+    protected WebResponse responseFromServerWithCredentials(String path, String username, String password) {
+        DefaultCredentialsProvider credentialsProvider = new DefaultCredentialsProvider();
+        credentialsProvider.addCredentials(username, password.toCharArray());
+
+        getWebClient().setCredentialsProvider(credentialsProvider);
+
+        return responseFromServer(path);
     }
 
     protected WebResponse responseFromServer(String path) {
@@ -125,14 +159,19 @@ public class ArquillianBase {
     }
 
     protected <P extends Page> P pageFromServer(String path) {
-    	if (base.toString().endsWith("/") && path.startsWith("/")) {
+        URL currentBase = base;
+        if (useBaseSecured) {
+            currentBase = baseSecured;
+        }
+
+    	if (currentBase.toString().endsWith("/") && path.startsWith("/")) {
     		path = path.substring(1);
     	}
 
         try {
             response = "";
 
-            P page = webClient.getPage(base + path);
+            P page = webClient.getPage(currentBase + path);
 
             if (page != null) {
                 WebResponse localResponse = page.getWebResponse();
@@ -178,6 +217,20 @@ public class ArquillianBase {
     protected WebClient getWebClient() {
  		return webClient;
  	}
+
+    /**
+     * @return the useBaseSecured
+     */
+    protected boolean isUseBaseSecured() {
+        return useBaseSecured;
+    }
+
+    /**
+     * @param useBaseSecured the useBaseSecured to set
+     */
+    protected void setUseBaseSecured(boolean useBaseSecured) {
+        this.useBaseSecured = useBaseSecured;
+    }
 
     public static String formatHTML(String html) {
         try {
