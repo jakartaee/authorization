@@ -58,6 +58,7 @@
         <module>app-custom-policy</module>
         <module>app-custom-policy2</module>
         
+        <module>app-custom-trace-policy</module>
         <module>app-custom-trace-policyconfiguration</module>
         <module>app-custom-trace-policyconfigurationfactory</module>
         
