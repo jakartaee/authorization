@@ -31,7 +31,7 @@
 	<packaging>war</packaging>
 	
 	<description>
-        This module installs a policy thats test several aspects of the Policy; 
+        This module installs a policy that tests several aspects of the Policy; 
         whether it's called at all, and if certain context objects are available to it.
     </description>
 
