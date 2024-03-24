@@ -58,6 +58,9 @@
         <module>app-custom-policy</module>
         <module>app-custom-policy2</module>
         
+        <module>app-custom-trace-policyconfiguration</module>
+        <module>app-custom-trace-policyconfigurationfactory</module>
+        
         
         <!-- Using the default Jakarta Authorization policy from within a Servlet -->
         <module>app-policy-within-servlet</module>
@@ -344,6 +347,14 @@
                         <configuration>
                             <systemProperties>
                                 <glassfish.home>${glassfish.root}/glassfish8</glassfish.home>
+                                
+                                <log.file.location>${glassfish.root}/glassfish8/glassfish/domains/domain1/logs</log.file.location>
+                                
+                                <glassfish.systemProperties>
+                                    log.file.location=${glassfish.root}/glassfish8/glassfish/domains/domain1/logs
+                                    vendor.jakarta.security.jacc.PolicyConfigurationFactory.provider=org.glassfish.exousia.modules.def.DefaultPolicyConfigurationFactory
+                                </glassfish.systemProperties>
+                                
                                 <glassfish.postBootCommands>
                                     create-file-user --groups foo:bar --passwordfile ${maven.multiModuleProjectDirectory}/reza.pass reza
                                     create-file-user --groups Administrator:Manager:Employee --passwordfile ${maven.multiModuleProjectDirectory}/javajoe.pass javajoe
