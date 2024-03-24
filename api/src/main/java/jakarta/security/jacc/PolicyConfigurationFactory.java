@@ -106,6 +106,19 @@ public abstract class PolicyConfigurationFactory {
     }
 
     /**
+     * Set the system-wide PolicyFactory implementation.
+     *
+     * <p>
+     * If an implementation was set previously, it will be replaced.
+     *
+     * @param policyConfigurationFactory The PolicyConfigurationFactory instance, which may be null.
+     *
+     */
+    public static synchronized void setPolicyConfigurationFactory(PolicyConfigurationFactory policyConfigurationFactory) {
+        PolicyConfigurationFactory.policyConfigurationFactory = policyConfigurationFactory;
+    }
+
+    /**
      * This static method uses a system property to find and instantiate (via a public constructor) a provider specific
      * factory implementation class.
      *
