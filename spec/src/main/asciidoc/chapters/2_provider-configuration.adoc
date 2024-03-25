@@ -1,234 +1,164 @@
 [[a173]]
 == Provider Configuration Subcontract
 
-The <<a173>> defines the requirements placed on providers
-and containers such that Policy providers may be integrated with
-containers.
+The <<a173>> defines the requirements placed on providers and implementations such that Policy providers may 
+be integrated with implementations.
 
 [[a175]]
 === Policy Implementation Class
 
-The contract defined by this specification
-has been designed to work in Java SE 8 or later Java Standard Edition
-environments with the default `java.security.Policy` implementation
-class.
+The contract defined by this specification has been designed to work in Jakarta EE 11 or later 
+Jakarta EE environments with the default `jakarta.security.jacc.Policy` implementation class.
 
-Java platforms provide standard security
-properties whose values may be defined to cause replacement of the
-default system Policy implementation classes. The security property, “
-`policy.provider` ”, may be used to replace the default
-`java.security.Policy` implementation class. Similarly, the security
-property, "`auth.policy.provider`", may be used to replace the default
-`javax.security.auth.Policy` implementation class. These properties are
-defined in the Java security properties file, and replacement is
-accomplished by setting their value to the fully qualified name of the
-desired Policy implementation class. The contract defined in this
-specification, is dependent on the Policy replacement mechanisms of the
-target Java environment. An application server that supports this
-contract must allow replacement of the top level `java.security.Policy`
-object used by every JRE of the containers of the application server.
+An application server that supports this contract must allow replacement of the top level 
+`jakarta.security.jacc.Policy` object used by the application server for all applications running on it,
+in addition to supporting a `jakarta.security.jacc.Policy` object for individual applications.
 
 === Permission Implementation Classes
 
-This contract defines a Java standard
-extension package, `jakarta.security.jacc`, that contains (among other
-things) `Permission` classes to be used by containers in their access
-decisions.
+This contract defines the package, `jakarta.security.jacc`, that contains (among other things) `Permission`
+classes to be used by containers in their access decisions.
 
 === Policy Configuration Interface
 
-The `jakarta.security.jacc` package defines an
-abstract factory class that implements a static method that uses a
-system property to find and instantiate a provider specific factory
-implementation class. The abstract factory class is
-`jakarta.security.jacc.PolicyConfigurationFactory`, the static method is
-`getPolicyConfigurationFactory`, and the system property is
-`jakarta.security.jacc.PolicyConfigurationFactory.provider` .
+A Policy Configuration implementation is the object that holds the Permission instances a Policy can use
+to make its authorization decisions. The Policy Configuration implementation can be replaced if needed, 
+although for most common uses this should not be needed. 
 
-The abstract factory class also defines an
-abstract public method used to create or locate instances of the
-provider specific class that implements the interface used to define
-policy contexts within the associated `Policy` provider. The method is
-`getPolicyConfiguration` and the interface is
-`jakarta.security.jacc.PolicyConfiguration` .
+Replacement is done via the `jakarta.security.jacc.PolicyConfigurationFactory` abstract factory class. A 
+default static method, `getPolicyConfigurationFactory` is provided that uses the system property 
+`jakarta.security.jacc.PolicyConfigurationFactory.provider` to locate a concrete implementation. The 
+application server can alternatively set a custom `PolicyConfigurationFactory` using the 
+`setPolicyConfigurationFactory` method. In that case the `PolicyConfigurationFactory` implementation
+can come from an application server specific configuration, or in case of the Servlet Container
+from the context property `jakarta.security.jacc.PolicyConfigurationFactory.provider`.
+
+From this factory class a concrete implementation of the Policy Configuration of type 
+`jakarta.security.jacc.PolicyConfiguration` can be obtained using the method `getPolicyConfiguration`.
 
 Use of the `PolicyConfiguration` interface is defined in <<a232>>.
 
 [[a184]]
 === PolicyContext Class and Context Handlers
 
-This `jakarta.security.jacc` package defines a
-utility class that is used by containers to communicate policy context
-identifiers to Policy providers. The utility class is
-`jakarta.security.jacc.PolicyContext`, and this class implements static
-methods that are used to communicate policy relevant context values from
-containers to Policy providers. Containers use the static method
-`PolicyContext.setContextID` to associate a policy context identifier
-with a thread on which they are about to call a decision interface of a
-Policy provider. Policy providers use the static method
-`PolicyContext.getContextID` to obtain the context identifier
-established by a calling container. The role of policy context
-identifiers in access decisions is described in
-<<a253>>.
+This `jakarta.security.jacc` package defines a utility class that is used by containers to communicate policy context
+identifiers to Policy providers. The utility class is `jakarta.security.jacc.PolicyContext`, and this class implements 
+static methods that are used to communicate policy relevant context values from containers to Policy providers. 
 
-In addition to the methods used to
-communicate policy context identifiers, the
-`jakarta.security.jacc.PolicyContext` class also provides static methods
-that allow container specific context handlers that implement the
-`jakarta.security.jacc.PolicyContextHandler` interface to be registered
-with the `PolicyContext` class. The `PolicyContext` class also provides
-static methods that allow `Policy` providers to activate registered
-handlers to obtain additional policy relevant context to apply in their
-access decisions.
+Containers use the static method `PolicyContext.setContextID` to associate a policy context identifier with a thread 
+on which they are about to call a decision interface of a Policy provider. Policy providers use the static method
+`PolicyContext.getContextID` to obtain the context identifier established by a calling container. 
+
+The role of policy context identifiers in access decisions is described in <<a253>>.
+
+In addition to the methods used to communicate policy context identifiers, the `jakarta.security.jacc.PolicyContext` 
+class also provides static methods that allow container specific context handlers that implement the
+`jakarta.security.jacc.PolicyContextHandler` interface to be registered with the `PolicyContext` class. 
+
+The `PolicyContext` class also provides static methods that allow `Policy` providers to activate registered
+handlers to obtain additional policy relevant context to apply in their access decisions.
 
 Use of the `PolicyContext` class is defined in <<a232>>.
 
 === What a Provider Must Do
 
-Each JRE of an application server must be
-provided with classes that implement the `PolicyConfigurationFactory`
-class and `PolicyConfiguration` interface. These classes must be
-compatible with the `Policy` implementation class installed for use by the
-JRE. In the case where the provider is not seeking to replace the `Policy`
-implementation used by the JRE, no other components need be provided.
+A Jakarta Authorization implementation can be provided with custom classes that implement the 
+`PolicyConfigurationFactory` class and `PolicyConfiguration` interface. These classes can be used by the `Policy`
+implementation class installed for use by the Jakarta Authorization implementation.
+In the case where the provider is not seeking to replace the `Policy` implementation used by the Jakarta 
+Authorization implementation, no other components need be provided.
 
-If the provider is seeking to replace the
-`Policy` implementation used by the JRE, then the JRE must be provided
-with an environment specific `Policy` implementation class. If the JRE is
-running a Java SE 8 or later Java Standard Edition environment, then it
-must be provided with an implementation of the `java.security.Policy`
-class. 
+If the provider is seeking to replace the `Policy` implementation used by the Jakarta Authorization implementation, 
+then the Jakarta Authorization implementation must be provided with an environment specific `Policy` implementation
+class.
 
-A replacement `Policy` object must assume
-responsibility for performing all policy decisions within the JRE in
-which it is installed that are requested by way of the `Policy` interface
-that it implements. A replacement Policy object may accomplish this by
-delegating non- `jakarta.security.jacc` policy decisions to the
-corresponding default system `Policy` implementation class. A replacement
-`Policy` object that relies in this way on the corresponding default
-`Policy` implementation class must identify itself in its installation
+A replacement `Policy` object must assume responsibility for performing all policy decisions within the entire
+application server (in case the Jakarta Authorization implementation is integrated into an application server) 
+in which it is installed that are requested by way of the `Policy` interface that it implements. Alternatively or 
+additionally a replacement `Policy` can be installed for an individual (web) application.
+
+A replacement `Policy` object may accomplish this by delegating `jakarta.security.jacc` policy decisions to the
+corresponding default `Policy` implementation class. A replacement `Policy` object that fully or partially relies 
+in this way on the corresponding default `Policy` implementation class must identify itself in its installation
 instructions as a “delegating Policy provider”.
 
-The standard security properties mechanism
-for replacing a default system `Policy` implementation (see
-<<a175>>) should
-not be used to replace a default system `Policy` provider with a
-delegating `Policy` provider.
-
-=== Optional Provider Support for JAAS Policy Object
-
-In Java SE 8, the subject based authorization
-functionality of the JAAS Policy interface has been integrated into
-`java.security.Policy`, and the JAAS Policy interface (as a separate
-entity) has been deprecated. This does not mean that the JAAS Policy
-interface was removed, but rather that the essential parts of it have
-been tightly integrated into the Java SE 8 platform.
-
-According to this contract, a Java SE 8 or
-later Java Standard Edition security environment may support replacement
-of the JAAS Policy object if and only if all `jakarta.security.jacc policy`
-decisions performed by the replacement JAAS Policy object return the
-same result as when the `java.security.Policy` interface is used. To
-satisfy this requirement, the replacement JAAS Policy object must be
-compatible with the implementations of `PolicyConfigurationFactory`
-and `PolicyConfiguration` interface provided for use with the
-`java.security.Policy` implementation class.
 
 [[a196]]
-=== What the Application Server Must Do
+=== What the Jakarta Authorization Implementation Must Do
 
-An application server or container must
-bundle or install the `jakarta.security.jacc` standard extension. This
-package must include the abstract
-`jakarta.security.jacc.PolicyConfigurationFactory` class, the
-`jakarta.security.jacc.PolicyConfiguration` and
-`jakarta.security.jacc.PolicyContextHandler` interfaces, and
-implementations of the `jakarta.security.jacc.PolicyContextException`
-exception, `the jakarta.security.jacc` `Permission` classes, and the
-`jakarta.security.jacc.PolicyContext` utility class. The `Permission` classes
-of the `jakarta.security.jacc` package are:
+A Jakarta Authorization implementation must bundle or install the Jakarta Authorization API. This
+API consists of all types from the `jakarta.security.jacc` package. It must provide default implementations
+of its interfaces and abstract classes.
 
-*  `jakarta.security.jacc.EJBMethodPermission`
-*  `jakarta.security.jacc.EJBRoleRefPermission`
-*  `jakarta.security.jacc.WebResourcePermission`
-*  `jakarta.security.jacc.WebRoleRefPermission`
-*  `jakarta.security.jacc.WebUserDataPermission`
+To enable delegation of `jakarta.security.jacc` policy decisions to default `Policy`
+providers, all Jakarta Authorization implementations must support the following `Policy`
+replacement algorithm. The intent of the algorithm is to ensure that `Policy` objects can capture 
+the instance of the corresponding default `Policy` object during their integration into a container 
+and such that they may delegate policy evaluations to it.
 
-To enable delegation of non-
-`jakarta.security.jacc` policy decisions to default system `Policy`
-providers, all application servers must implement the following `Policy`
-replacement algorithm. The intent of the algorithm is to ensure that
-`Policy` objects can capture the instance of the corresponding default
-system `Policy` object during their integration into a container and such
-that they may delegate non-container policy evaluations to it.
+For each Jakarta EE 11 or later version Jakarta EE compatible implementation, if the system property
+"`jakarta.security.jacc.policy.provider`” is defined, the Jakarta Authorization implementation must construct 
+an instance of the class identified by the system property, confirm that the resulting object is an instance 
+of `jakarta.security.jacc.Policy`, and set, by calling the `jakarta.security.jacc.PolicyFactory#setPolicy` method, 
+the resulting object as the corresponding `Policy` object used by the Jakarta Authorization implementation. 
 
-For each JRE of a Jakarta EE 9 or later version
-Jakarta EE application server, if the system property
-"`jakarta.security.jacc.policy.provider`” is defined, the application
-server must construct an instance of the class identified by the system
-property, confirm that the resulting object is an instance of
-`java.security.Policy`, and set, by calling the
-`java.security.Policy.setPolicy` method, the resulting object as the
-corresponding `Policy` object used by the JRE. For example:
+For example:
 
 
 [source,java]
 ----
-String javaPolicy = System.getProperty("jakarta.security.jacc.policy.provider");
+String javaPolicyClassName = System.getProperty("jakarta.security.jacc.policy.provider");
 
-if (javaPolicy != null) {
+if (javaPolicyClassName != null) {
     try {
-        java.security.Policy.setPolicy((java.security.Policy)
-            Class.forName(javaPolicy).newInstance());
-    } catch (ClassNotFoundException cnfe) {
-        // problem with property value or classpath
-    } catch (IllegalAccessException iae) {
-        // problem with policy class definition
-    } catch (InstantiationException ie) {
-        // problem with policy instantiation
-    } catch (ClassCastException cce) {
-        // Not instance of java.security.policy
+         Policy policy = loadPolicy(javaPolicyClassName);
+         PolicyFactory.getPolicyFactory().setPolicy(policy);
+     } catch (Exception e) {
+         // ...
+     }
+}
+
+private Policy loadPolicy(String javaPolicyClassName) throws ReflectiveOperationException, SecurityException {
+        Object javaPolicyInstance =
+                Thread.currentThread()
+                      .getContextClassLoader()
+                      .loadClass(javaPolicyClassName)
+                      .getDeclaredConstructor()
+                      .newInstance();
+
+        if (!(javaPolicyInstance instanceof Policy)) {
+            throw new RuntimeException("..."));
+        }
+
+        return (Policy) javaPolicyInstance;
+    }
+----
+
+Even when a Jakarta Authorization implementation has used the system property defined in this section to replace a 
+`Policy` object used by the Jakarta Authorization implementation, the Jakarta Authorization implementation MUST be
+prepared for an individual web application to replace the `Policy` object once again.
+
+For example:
+
+[source,java]
+----
+@WebListener
+public class PolicyRegistrationListener implements ServletContextListener {
+
+    @Override
+    public void contextInitialized(ServletContextEvent sce) {
+        PolicyFactory policyFactory = PolicyFactory.getPolicyFactory();
+        policyFactory.setPolicy(new TestPolicy(policyFactory.getPolicy()));
     }
 }
 ----
 
-Once an application server has used either of
-the system properties defined in this section to replace a `Policy` object
-used by a JRE, the application server must not use `setPolicy` to replace
-the corresponding `Policy` object of the running JRE again.
+The Jakarta Authorization implementation MAY forbid setting the `Policy` by an application after that application
+has been taken into service (starting to process requests). 
 
-The requirements of this section have been
-designed to ensure that containers support `Policy` replacement and to
-facilitate delegation to a default system `Policy` provider. These
-requirements should not be interpreted as placing any restrictions on
-the delegation patterns that may be implemented by replacement `Policy`
+The requirements of this section have been designed to ensure that Jakarta Authorization implementations support 
+`Policy` replacement and to facilitate delegation to a default `Policy` provider. These requirements should not be 
+interpreted as placing any restrictions on the delegation patterns that may be implemented by replacement `Policy`
 modules.
 
-=== Modifications to the JAAS SubjectDomainCombiner
 
-The reference implementation of the combine
-method of the JAAS `SubjectDomainCombiner` returns protection domains
-that are constructed with a `java.security.Permissions` collection. This
-is the norm in J2SE 1.3 environments, and it also occurs in J2SE 1.4 and
-Java Standard Edition 5.0 environments when the installed JAAS Policy
-implementation class is not the `com.sun.security.auth.PolicyFile` class
-(that is, the JRE is operating in backward compatibility mode with
-respect to JAAS Policy replacement). The use of
-`java.security.Permissions` by the `SubjectDomainCombiner` forces JAAS
-Policy providers to compute all the permissions that pertain to a
-subject and code source and effectively precludes integration of Policy
-subsystems that are not capable of doing so. To ensure that the
-implementation of the JAAS `SubjectDomainCombiner` does not preclude
-integration of a class of Policy providers, this contract imposes the
-following requirement and recommendation on application servers.
-
-To satisfy the contract defined by this
-specification, an application server must install or bundle,
-such that it is used by every JRE of the application server, a
-`javax.security.auth.SubjectDomainCombiner` whose `combine` method
-returns protection domains constructed using the permission collections
-returned by `javax.security.auth.Policy.getPermisions` . It is
-recommended that this requirement be satisfied by Jakarta EE 9 and
-later version Jakarta EE application servers in the case where
-`javax.security.auth.Policy` is used (in backward compatibility mode) to
-perform `jakarta.security.jacc` policy decisions.

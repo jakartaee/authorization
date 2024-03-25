@@ -1,24 +1,19 @@
 [[a232]]
 == Policy Configuration Subcontract
 
-The <<a232>> defines the interactions between container
-deployment tools and providers to support the translation of declarative
-Jakarta EE authorization policy into policy statements within a Java SE
-Policy provider.
+The <<a232>> defines the interactions between container deployment tools and providers to support the translation 
+of declarative Jakarta EE authorization policy (i.e. constraints in web.xml) into policy statements 
+(Permission instances) within a Jakarta Authorization Policy provider.
 
-This subcontract also applies to the
-translation of authorization policy annotations that have an equivalent
-representation in Jakarta EE deployment descriptor policy constructs (i.e.,
-`security-constraint`, `method-permission`, `security-role-ref`, and
-`exclude-list` elements).
+This subcontract also applies to the translation of authorization policy annotations that have an equivalent
+representation in Jakarta EE deployment descriptor policy constructs (i.e., `security-constraint`, `method-permission`,
+ `security-role-ref`, and `exclude-list` elements).
 
 [[a235]]
 === What a Jakarta EE Platform’s Deployment Tools Must Do
 
-The `getPolicyConfigurationFactory` method
-must be used in every JRE to which the components of the application or
-module are being deployed to find or instantiate
-PolicyConfigurationFactory objects.
+The `getPolicyConfigurationFactory` method must be used in every container to which the components of the application 
+or module are being deployed to find or instantiate `PolicyConfigurationFactory` objects.
 
 [source,java]
 ----
@@ -26,8 +21,7 @@ PolicyConfigurationFactory policyConfigurationFactory =
     PolicyConfigurationFactory.getPolicyConfigurationFactory();
 ----
 
-The `getPolicyConfiguration` method of the
-factories must be used to find or instantiate `PolicyConfiguration`
+The `getPolicyConfiguration` method of the factories must be used to find or instantiate `PolicyConfiguration`
 objects corresponding to the application or modules being deployed.
 
 [source,java]
@@ -38,10 +32,8 @@ PolicyConfiguration petPolicyConfiguration =
     policyConfigurationFactory.getPolicyConfiguration(petContextID, true);
 ----
 
-The declarative authorization policy
-statements derived from the application or module deployment
-descriptor(s) must be translated to create instances of the
-corresponding `jakarta.security.jacc` Permission classes.
+The declarative authorization policy statements derived from the application or module deployment
+descriptor(s) must be translated to create instances of the corresponding `jakarta.security.jacc` Permission classes.
 
 [source,java]
 ----
@@ -49,18 +41,15 @@ WebResourcePermission webResourcePermission =
     new WebResourcePermission("/elephant", "GET");
 ----
 
-Methods of the `PolicyConfiguration`
-interface must be used with the permissions resulting from the
-translation to create policy statements within the `PolicyConfiguration`
-objects.
+Methods of the `PolicyConfiguration` interface must be used with the permissions resulting from the
+translation to create policy statements within the `PolicyConfiguration` objects.
 
 [source,java]
 ----
 petPolicyConfiguration.addToRole("customer", webResourcePermission);
 ----
 
-The `PolicyConfiguration` objects must be
-linked such that the same principal-to-role mapping will be applied to
+The `PolicyConfiguration` objects must be linked such that the same principal-to-role mapping will be applied to
 all the modules of the application.
 
 [source,java]
@@ -68,10 +57,8 @@ all the modules of the application.
 petPolicyConfiguration.linkConfiguration(petFoodPolicyConfiguration);
 ----
 
-The PolicyConfiguration objects must be
-placed in Service such that they will be assimilated into the Policy
-providers used by the containers to which the application has been
-deployed.
+The PolicyConfiguration objects must be placed in Service such that they will be assimilated into the Policy
+providers used by the containers to which the application has been deployed.
 
 [source,java]
 ----
@@ -79,68 +66,54 @@ petPolicyConfiguration.commit();
 ----
 
 
-Independent of this specification, Jakarta EE
-deployment tools must translate and complete the declarative policy
-statements appearing in deployment descriptors into a form suitable for
-securing applications on the platform. These
-deployment tools must combine policy annotations in Java code with
-policy statements appearing in deployment descriptors to yield complete
-representations of authorization policy suitable for securing
-applications on the platform. The rules for combining authorization
-policy annotations with declarative policy statements are described in
+Independent of this specification, Jakarta EE deployment tools must translate and complete the declarative policy
+statements appearing in deployment descriptors into a form suitable for securing applications on the platform. These
+deployment tools must combine policy annotations in Java code with policy statements appearing in deployment 
+descriptors to yield complete representations of authorization policy suitable for securing
+applications on the platform. 
+
+The rules for combining authorization policy annotations with declarative policy statements are described in
 the Jakarta Enterprise Beans, Jakarta Servlet, and Jakarta EE platform specifications. 
-Independent of whether
-annotations factor in the translation, the resulting policy statements
-may differ in form from the policy statements appearing in the
-deployment descriptors. The policy translation defined by this
-subcontract is described assuming that the policy statement form used by
-a platform is identical to that used to express policy in the deployment
-descriptors. Where this is not the case, the output of the translation
-must be equivalent to the translation that would occur if policy was
-completely specified in the deployment descriptors and the translation
-had proceeded directly from the deployment descriptors to the Java SE
-policy forms defined by this subcontract. Two translations are
-equivalent if they produce corresponding collections of unchecked,
-excluded, and role permissions, and if all of the permissions of each
-such collection are impliedfootnote:[For some permission types, such as the `EJBMethodPermission`, it will generally not be possible to use the implies method of the `PermissionCollection` to compute collection equivalence (because the implies method is unable to determine when a collection contains all the permissions implied by a wild carded form of the permission).]
-by the permissions of
-the corresponding or excluded collection of the other translation.
-Translation equivalence is only required with respect to the permission
-types that are the subject of the translation.
+
+Independent of whether annotations factor in the translation, the resulting policy statements may differ in form from
+the policy statements appearing in the deployment descriptors. The policy translation defined by this
+subcontract is described assuming that the policy statement form used by a platform is identical to that used to express
+policy in the deployment descriptors. Where this is not the case, the output of the translation must be equivalent to the
+translation that would occur if policy was completely specified in the deployment descriptors and the translation
+had proceeded directly from the deployment descriptors to the Jakarta Authorization forms defined by this subcontract. 
+
+Two translations are equivalent if they produce corresponding collections of unchecked, excluded, and role permissions, 
+and if all of the permissions of each such collection are impliedfootnote:[For some permission types, such as 
+the `EJBMethodPermission`, it will generally not be possible to use the implies method of the `PermissionCollection` to 
+compute collection equivalence (because the implies method is unable to determine when a collection contains all the 
+permissions implied by a wild carded form of the permission).] by the permissions of the corresponding or excluded collection
+of the other translation.
+
+Translation equivalence is only required with respect to the permission types that are the subject of the translation.
 
 [[a253]]
 ==== Policy Contexts and Policy Context Identifiers
 
-It must be possible to define separate
-authorization policy contexts corresponding to each deployed instance of
-a Jakarta EE module. This per module scoping of policy context is necessary
-to provide for the independent administration of policy contexts
-corresponding to individual application modules (perhaps multiply
-deployed) within a common `Policy` provider.
+It must be possible to define separate authorization policy contexts corresponding to each deployed instance of
+a Jakarta EE module. This per module scoping of policy context is necessary to provide for the independent 
+administration of policy contexts corresponding to individual application modules (perhaps multiply
+deployed) within a common (global) `Policy` provider.
 
-Each `policy` context contains all of the
-policy statements (as defined by this specification) that effect access
-to the resourcesfootnote:[An exception to this rule is described in <<a512>>.]
-in one or more deployed modules.
-At policy configuration, a `PolicyConfiguration` object is created for
-each policy context, and populated with the policy statements
-(represented by permission objects) corresponding to the context. Each
-policy context has an associated policy context identifier.
+Each `policy` context contains all of the policy statements (as defined by this specification) that effect access
+to the resourcesfootnote:[An exception to this rule is described in <<a512>>.] in one or more deployed modules.
+At policy configuration, a `PolicyConfiguration` object is created for each policy context, and populated with the policy
+statements (represented by permission objects) corresponding to the context. Each policy context has an associated policy context identifier.
 
-In the <<a556>>, access decisions are
-performed by checking permissions that identify resources by name and
-perhaps action. When a permission is checked, this specification
-requires identification of the authorization policy context in which the
-evaluation is to be performed (<<a707>>).
+In the <<a556>>, access decisions are performed by checking permissions that identify resources by name and
+perhaps action. When a permission is checked, this specification requires identification of the authorization
+policy context in which the evaluation is to be performed (<<a707>>).
 
 [[a257]]
 ===== Policy Context Life Cycle
 
-<<a268>> depicts the policy context life cycle
-as effected through the methods of the `PolicyConfiguration` interface. A
-policy context is in one of three states and all implementations of the
-`PolicyConfiguration` interface must implement the state semantics defined
-in this section.
+<<a268>> depicts the policy context life cycle as effected through the methods of the `PolicyConfiguration` interface. A
+policy context is in one of three states and all implementations of the `PolicyConfiguration` interface must implement the 
+state semantics defined in this section.
 
 *  open
 +
@@ -174,11 +147,9 @@ deleted state must be transitioned to the open state when it is returned
 as a result of a call to `getPolicyConfiguration`. A policy context is
 transitioned to the deleted state by calling the delete method.
 
-Note that for a provider implementation to be
-compatible with multi-threaded environments, it may be necessary to
-synchronize the refresh method of the provider with the methods of its
-`PolicyConfiguration` interface and with the `getPolicyConfiguration` and
-inService methods of its `PolicyConfigurationFactory`.
+Note that for a provider implementation to be compatible with multi-threaded environments, it may be necessary to
+synchronize the refresh method of the provider with the methods of its `PolicyConfiguration` interface and with the
+ `getPolicyConfiguration` and inService methods of its `PolicyConfigurationFactory`.
 
 [[a268]]
 image::PolicyConfigurationStateTable.png[caption="Figure {doc-part}-{counter:figure} ", reftext="Figure {doc-part}-{figure}", title="PolicyConfiguration State Table", align="center",width=300]
@@ -187,18 +158,13 @@ image::PolicyConfigurationStateTable.png[caption="Figure {doc-part}-{counter:fig
 [[a269]]
 ===== Linking Policy Contexts
 
-In the Jakarta EE security model,
-principal-to-role mappings have application scope; that is, the same
-principal-to-role mappings must apply in the access decisions applied at
-all of the modules (that may represent separate policy contexts) that
-comprise an application. Same application policy contexts must be
-associated by calling the `PolicyConfiguration.linkConfiguration`
-method. This method must create a transitive and symmetric relationship
-within the provider and between this `PolicyConfiguration` and the
-argument `PolicyConfiguration` , such that they and all
-`PolicyConfiguration` objects otherwise linked to either of them share the
-same principal-to-role mappings. The semantics of the association must
-preserve the invariant that at most one principal-to-role mapping may
+In the Jakarta EE security model, principal-to-role mappings have application scope; that is, the same
+principal-to-role mappings must apply in the access decisions applied at all of the modules (that may represent
+separate policy contexts) that comprise an application. Same application policy contexts must be associated by 
+calling the `PolicyConfiguration.linkConfiguration` method. This method must create a transitive and symmetric 
+relationship within the provider and between this `PolicyConfiguration` and the argument `PolicyConfiguration` , such 
+that they and all `PolicyConfiguration` objects otherwise linked to either of them share the same principal-to-role 
+mappings. The semantics of the association must preserve the invariant that at most one principal-to-role mapping may
 apply to any `PolicyConfiguration` .
 
 [[a271]]
@@ -1103,31 +1069,20 @@ proceed as described in <<a527>>.
 [[a544]]
 === What the Provider Must Do
 
-The provider must include an implementation
-of the `jakarta.security.jacc.PolicyConfigurationFactory` class along with
-a matched implementation of a class that implements the
-`jakarta.security.jacc.PolicyConfiguration` interface. In addition to
-providing a `PolicyConfiguration` interface for integration with the
-application server’s deployment tools, the provider must also include a
-management interface for policy administrators to use to grant the
-collections of permissions that comprise roles, to principals. This
-interface need not be standardized.
+If a provider wants to replace the default `PolicyConfiguration` of a Jakarta Authorization implementation, 
+the provider must include an implementation of the `jakarta.security.jacc.PolicyConfigurationFactory` 
+class along with a matched implementation of a class that implements the `jakarta.security.jacc.PolicyConfiguration` 
+interface. 
 
-The provider must ensure that all of the
-permissions added to a role in a policy context are granted to any
-principal mapped to the role by the policy administrator. For the any
-“authenticated user role”, pass:[“**”], and unless an application specific
-mapping has been established for this role, the provider must ensure
-that all permissions added to the role are granted to any authenticated
-user. The provider must ensure that the same principal-to-role mappings
-are applied to all linked policy contexts.
+The provider must ensure that all of the permissions added to a role in a policy context are granted to any
+principal mapped to the role by the policy administrator. For the any “authenticated user role”, pass:[“*”], 
+and unless an application specific mapping has been established for this role, the provider must ensure that all 
+permissions added to the role are granted to any authenticated user. The provider must ensure that the same 
+principal-to-role mappings are applied to all linked policy contexts.
 
-The provider must ensure that excluded policy
-statements take precedence over overlapping unchecked policy statements,
-and that both excluded and unchecked policy statements take precedence
-over overlapping role based policy statements.
+The provider must ensure that excluded policy statements take precedence over overlapping unchecked policy statements,
+and that both excluded and unchecked policy statements take precedence over overlapping role based policy statements.
 
-This specification does not prescribe the
-policy language or the methods used within providers to implement the
+This specification does not prescribe the policy language or the methods used within providers to implement the
 policy and role requirements described above.
 
