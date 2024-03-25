@@ -1131,29 +1131,3 @@ This specification does not prescribe the
 policy language or the methods used within providers to implement the
 policy and role requirements described above.
 
-[[a549]]
-=== Permission to Configure Policy
-
-The `getPolicyConfigurationFactory`, and `inService` methods of the 
-abstract factory class,
-`jakarta.security.jacc.PolicyConfigurationFactory`, must throw a
-`SecurityException` when called by an `AccessControlContext` that has not been 
-granted the “setPolicy” `SecurityPermission`.
-
-The `getPolicyConfiguration` method of all implementations of the 
-`PolicyConfigurationFactory` abstract class must throw a 
-`SecurityException` when called by an `AccessControlContext` that has not been 
-granted the “setPolicy” `SecurityPermission`.
-
-All of the public methods of all of the
-concrete implementations of the `PolicyConfiguration` interface must
-throw a `SecurityException` when called by an `AccessControlContext` that
-has not been granted the “setPolicy” `SecurityPermission`.
-
-In cases where a required permission is not
-held by a caller, the implementation must return without changing the
-state of the policy statement repository.
-
-The containers of an application server must
-be granted the “getPolicy” `SecurityPermission` and the “setPolicy”
-`SecurityPermission`.

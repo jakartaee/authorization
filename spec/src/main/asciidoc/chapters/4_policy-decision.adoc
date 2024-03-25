@@ -81,11 +81,6 @@ determined to be granted to the caller. Otherwise the request must be
 rejected with the appropriate HTTP error message as defined by the
 Jakarta Servlet Specification.
 
-Before it dispatches a call to a web
-resource, the container must associate with the call thread an
-`AccessControlContext` containing the principals of (only) the target
-component’s runAs identity (as defined in
-<<a703>>).
 
 [[a572]]
 ==== Application Embedded Privilege Test
@@ -117,25 +112,24 @@ functionality defined in the following subsections.
 [[a576]]
 ==== Servlet Policy Decision Semantics
 
-A Policy provider must use the combined
-policy statements of the default policy context (as defined in
-<<a747>>) and of the
-policy context identified by calling `PolicyContext.getContextID` to
-determine if they imply the permission being checked. If one or more
-excluded policy statements imply the checked permission, the evaluation
-may terminate and the checked permission must be determined not to be
-granted. Otherwise, if one or more unchecked policy statements imply the
-checked permission, the checked permission must be determined to be
-granted independent of `AccessControlContext`. If the status of the
-checked permission is not resolved by the excluded and unchecked
-evaluations, it must be determined if a permission that implies the
-checked permission has been granted to the `AccessControlContext` being
-tested for the permission. The checked permission may only be determined
-to be granted if a permission that implies the checked permission has
-been granted to the `AccessControlContext`. Otherwise the permission must
-be determined not to be granted. The policy decision semantics are
-dependent on permission specific rules for determining if the
-permissions in policy statements imply the permission being checked.
+A Policy provider must use the combined policy statements of the default policy context (as defined in
+<<a747>>) and of the policy context identified by calling `PolicyContext.getContextID` to determine if they 
+imply the permission being checked (called the "checked permission" hence forward).
+
+If one or more excluded policy statements imply the checked permission, the evaluation may terminate and the 
+checked permission must be determined not to be granted. 
+
+Otherwise, if one or more unchecked policy statements imply the checked permission, the checked permission must
+be determined to be granted. 
+
+If the status of the checked permission is not resolved by the excluded and unchecked evaluations, it must be determined
+if a permission that implies the checked permission has been granted to the caller principal in the `Subject` or set of 
+principals being tested for the permission. 
+The checked permission may only be determined to be granted if a permission that implies the checked permission has
+been granted to the to the caller principal in the `Subject` or set of principals. 
+
+Otherwise the permission must be determined not to be granted. The policy decision semantics are dependent on permission
+specific rules for determining if the permissions in policy statements imply the permission being checked.
 
 The `WebResourcePermission`,
 `WebUserDataPermission`, and `WebRoleRefPermission` specific rules used to
@@ -294,10 +288,6 @@ container may only dispatch the request to the Jakarta Enterprise Bean resource,
 the request must be rejected with the appropriate exception, as defined
 by the corresponding Jakarta Enterprise Beans specification.
 
-Before it dispatches a call to a Jakarta Enterprise Bean, the
-container must associate with the call thread an `AccessControlContext`
-containing the principals of only the target Jakarta Enterprise Bean's `runAs` identity (as
-defined in <<a703>>).
 
 [[a620]]
 ==== Jakarta Enterprise Beans Application Embedded Privilege Test
@@ -462,13 +452,6 @@ specification that the component run with an identity mapped to a role,
 those responsible for defining the principal-to-role mapping must ensure
 that the specified identity is mapped to the role.
 
-A container establishes a component’s `runAs`
-identity by associating an `AccessControlContext` with the component’s
-thread of execution. The container must ensure that the
-`AccessControlContext` includes a `SubjectDomainCombiner`; and the container
-must protect the `AccessControlContext` associated with a running
-component such that, by default, the component is not granted
-permissions sufficient to modify the `AccessControlContext`.
 
 [[a707]]
 === Setting the Policy Context
@@ -600,105 +583,52 @@ signature, the context handler must return an empty array of `Object`
 
 
 [[a727]]
-=== Checking AccessControlContext Independent Grants
+=== Checking Grants
 
 This section describes the techniques used by
 containers to check permissions for which policy is defined in terms of
-the operation defined by the permission and independent of properties of
-the invocation context represented in the `AccessControlContext`. The
+the operation defined by the permission. The
 `WebUserDataPermission` policy statements resulting from the translation
 of Jakarta Servlet `user-data-constraint` elements are an example of such
 permissions. A container must use one of the following techniques to
-check an instance of a permission for which policy is defined
-independent of `AccessControlContext`.
+check an instance of a permission for which policy is defined.
 
-* The container calls
-`AccessControlContext.checkPermission` with the permission being checked
-as argument. The call to `checkPermission` may be made on any
-`AccessControlContext`. If `checkPermission` throws an
-`AccessControlException`, the permission is not granted. Otherwise the
-permission is granted.
-* The container calls
-`AccessController.checkPermission` with the permission being checked.
-The value of the current thread’s `AccessControlContext` is irrelevant in
-the access determination. If `checkPermission` throws an
-`AccessControlException`, the checked permission is not granted. Otherwise
-the permission is granted.
-* The container calls
-`SecurityManager.checkPermission` with the permission being checked. If
-`checkPermission` throws an `AccessControlExceptio`n, the checked
-permission is not granted. Otherwise the permission is granted.
-* The container calls
-`Policy.implies` with two arguments; the permission being checked and a
-`ProtectionDomain` that need not be constructed with principals. The
-checked permission is granted if `Policy.implies` returns true. Otherwise,
-the permission is not granted.
-* The container calls
-`java.security.Policy.getPermissions` with a `ProtectionDomain` that need
-not be constructed with principals. The container must call the
-`implies` method on the returned `PermissionCollection` using the
-permission being checked as argument. The checked permission is granted
-if the `PermissionCollection` implies it. Otherwise, the permission is not
+
+* The container calls `Policy.implies` with two arguments; the permission being checked and a
+`Subject` that need not be constructed with principals. The checked permission is granted if 
+`Policy.implies` returns true. Otherwise, the permission is not granted.
+* The container calls one of the overloaded methods of `Policy.implies`, which are provided for convenience (see their
+javadoc for details). likewise, the checked permission is granted if the overloaded  `Policy.implies` returns true. 
+Otherwise, the permission is not granted.
+* The container calls `Policy.getPermissionCollection` with a `Subject` that need not be constructed with principals. 
+The container must call the`implies` method on the returned `PermissionCollection` using the permission being checked as 
+argument. The checked permission is granted if the `PermissionCollection` implies it. Otherwise, the permission is not
 granted. This technique is supported but not recommended.
 
-Prior to using any of the techniques
-described in this section, the container must have established a policy
+Prior to using any of the techniques described in this section, the container must have established a policy
 context identifier as defined in <<a707>>.
 
 [[a736]]
 === Checking the Caller for a Permission
 
-A container must determine if the caller has
-been granted a permission by evaluating the permission in the context of
-an `AccessControlContext`, `ProtectionDomain`, or `Subject` containing the
-principals of (only) the callerfootnote:[<<a753>> allows containers to reuse granted results
-obtained for unauthenticated callers (i.e. with no principals) to
-authorize, independent of caller identity, permissions implied by such
-results.]. If the caller’s
-identity has been asserted or vouched for by a trusted authority (other
-than the caller), the principals of the authority must not be included
-in the principals of the caller. A container must use one of the
-following techniques to determine if a permission has been granted to
-the caller.
+A container must determine if the caller has been granted a permission by evaluating the permission in the context of 
+a `Subject` containing the principals of (only) the callerfootnote:[<<a753>> allows containers to reuse granted results
+obtained for unauthenticated callers (i.e. with no principals) to authorize, independent of caller identity, permissions 
+implied by such results.]. If the caller’s identity has been asserted or vouched for by a trusted authority (other
+than the caller), the principals of the authority must not be included in the principals of the caller. A container must 
+use one of the following techniques to determine if a permission has been granted to the caller.
 
-* The container calls
-`AccessControlContext.checkPermission` with the permission as argument.
-The call to `checkPermission` must be made on an `AccessControlContext`
-that contains the principals of the caller. If `checkPermission` throws an
-`AccessControlException`, the permission is not granted to the caller.
-Otherwise the permission is granted.
-* The container calls
-`AccessController.checkPermission` with the permission as argument. The
-`AccessControlContext` associated with the thread on which the call to
-`checkPermission` is made must contain the principals of the caller. If
-`checkPermission` throws an `AccessControlException`, the permission is
-not granted to the caller. Otherwise the permission is granted.
-* The container calls
-`SecurityManager.checkPermission` with the permission as argument. The
-`AccessControlContext` associated with the thread on which the call to
-`checkPermission` is made must contain the principals of the caller. If
-`checkPermission` throws an `AccessControlException`, the permission is not
-granted to the caller. Otherwise the permission is granted.
-* container calls
-`Policy.implies` with two arguments; the permission being checked and a
-ProtectionDomain constructed with the principals of the caller. The
-boolean result returned by `Policy.implies` indicates whether or not the
-permission has been granted to the caller.
-* The container calls
-`java.security.Policy.getPermissions` with an argument `ProtectionDomain`
-that was constructed with the principals of the caller. The container
-must call the `implies` method on the returned `PermissionCollection`
-using the permission being checked as argument. If the
-PermissionCollection implies the permission being tested, the permission
-has been granted to the caller. Otherwise it has not. This technique is
-supported but not recommendedfootnote:[Not all policy
-systems support this query. Also, the Policy provider does not see the
-permission being checked, and therefore cannot use the permission to
-identify when to invoke a particular policy context handler.]
+* container calls `Policy.implies` with two arguments; the permission being checked and a `Subject` constructed with the principals
+of the caller. The boolean result returned by `Policy.implies` indicates whether or not the permission has been granted to the 
+caller.
+* The container calls `Policy.getPermissions` with an argument `Subject` that was constructed with the principals of the caller. The 
+container must call the `implies` method on the returned `PermissionCollection` using the permission being checked as argument. If 
+the `PermissionCollection` implies the permission being tested, the permission has been granted to the caller. Otherwise it has not. 
+This technique is supported but not recommendedfootnote:[Not all policy systems support this query. Also, the Policy provider does
+not see the permission being checked, and therefore cannot use the permission to identify when to invoke a particular policy context handler.]
 
-Prior to using any of the techniques
-described in this section, the container must have established a policy
-context identifier as defined in <<a707>>.
+Prior to using any of the techniques described in this section, the container must have established a policy context identifier as 
+defined in <<a707>>.
 
 [[a745]]
 === Missing Policy Contexts
@@ -737,11 +667,6 @@ decisions defined by this contract by interacting with the
 `java.security.Policy` instance available in the JRE via the
 `java.security.Policy.getPolicy` method.
 
-If an application server or JRE employs a
-custom `SecurityManager`, the necessary reliance on `Policy` object may be
-accomplished by ensuring that the custom `SecurityManager` relies on the
-appropriate (as defined above) `Policy` object for all of the policy
-decisions defined by this contract.
 
 [[a753]]
 === Optimization of Permission Evaluations
