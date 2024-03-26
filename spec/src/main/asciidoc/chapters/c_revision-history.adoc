@@ -407,7 +407,7 @@ clarified.
 the policy context life cycle and the commit method.
 . The inService method was added to the factory
 methods called out in the first paragraph of
-<<a549>>, and
+a549, and
 the SecurityPermission required by these methods was changed from
 “getPolicy” to “setPolicy” to correct an inconsistency with the Java
 implementation.
@@ -592,7 +592,7 @@ paragraph of <<a727>>.
 . In bullets 4 and 5 of
 <<a727>>, removed “that was constructed without static
 permissions and”.
-. Rewrote <<a747>> to indicate describe the properties of the
+. Rewrote a747 to indicate describe the properties of the
 default policy context, and to require that its policy statements be
 included in every access decision.
 

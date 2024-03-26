@@ -65,7 +65,7 @@ Use of the `PolicyContext` class is defined in <<a232>>.
 A `jakarta.security.jacc.PrincipalMapper` is an object that maps from a collection of generic Principals
 or a `Subject` to well known entities in Jakarta EE. A `Subject` is a "bag of principles", which can contain any number
 of principals, with each principal in that bag representing some attribute of the subject in question. A portable 
-`Policy` does not know which principle represents what entity, as historical no interfaces or annotations have been
+`Policy` does not know which principal represents what entity, as historically no interfaces or annotations have been
 standardised to mark them as such.
 
 Using the `PrincipalMapper` a given number of well known entities can be retrieved from the `Subject`.
@@ -126,30 +126,30 @@ For example:
 
 [source,java]
 ----
-String javaPolicyClassName = System.getProperty("jakarta.security.jacc.policy.provider");
+String policyClassName = System.getProperty("jakarta.security.jacc.policy.provider");
 
-if (javaPolicyClassName != null) {
+if (policyClassName != null) {
     try {
-         Policy policy = loadPolicy(javaPolicyClassName);
+         Policy policy = loadPolicy(policyClassName);
          PolicyFactory.getPolicyFactory().setPolicy(policy);
      } catch (Exception e) {
          // ...
      }
 }
 
-private Policy loadPolicy(String javaPolicyClassName) throws ReflectiveOperationException, SecurityException {
-        Object javaPolicyInstance =
+private Policy loadPolicy(String policyClassName) throws ReflectiveOperationException, SecurityException {
+        Object policyInstance =
                 Thread.currentThread()
                       .getContextClassLoader()
-                      .loadClass(javaPolicyClassName)
+                      .loadClass(policyClassName)
                       .getDeclaredConstructor()
                       .newInstance();
 
-        if (!(javaPolicyInstance instanceof Policy)) {
+        if (!(policyInstance instanceof Policy)) {
             throw new RuntimeException("..."));
         }
 
-        return (Policy) javaPolicyInstance;
+        return (Policy) policyInstance;
     }
 ----
 

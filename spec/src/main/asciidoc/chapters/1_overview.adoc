@@ -15,6 +15,37 @@ decisions. The three subcontracts are the <<a173>>, <<a232>>, and the <<a556>>.
 [[a76]]
 image::authz-1.svg[caption="Figure {doc-part}-{counter:figure} ", reftext="Figure {doc-part}-{figure}", title="Policy Configuration and Enforcement Subcontracts", align="center"]
 
+=== Relationship to other specifications
+
+==== Relationship to Jakarta Security
+
+Jakarta Security defines an end-developer focused API for securing applications in Jakarta EE using modern paradigms. It takes advantage
+of Jakarta CDI to provide an ease of use development experience. Jakarta Security uses this specification for its lower level authorization
+functionality. As such, this specification provides the SPI (Service Provider Interface) between a Jakarta EE Environment and an implementation of this specification, while Jakarta Security provides high level ease of use functionality on top of that.
+
+==== Relationship to Jakarta Authentication
+
+Jakarta Authentication defines a lower-level SPI for plugable authentication modules into a Jakarta EE environment. It's similar to this 
+specification in providing an SPI, with Jakarta Security providing high level ease of use functionality on top of that, with the obvious difference that Jakarta Authentication focuses on the authentication concerns of security, and this specification does so for the authorization concerns.
+ 
+==== Relationship to Jakarta Servlet
+ 
+Jakarta Servlet provides classes that respond to HTTP requests including a security model and the concept of a (web) application and deployable archives (wars). 
+ 
+This specification does exactly what a Jakarta Servlet implementation does as well; storing a representation of its security declarations (i.e. the constraints from its web.xml) internally, and using these to enforce the pre-dispatch security (access to a resource), and to support programmatic security (such as `HttpServletRequest.isUserInRole`). 
+
+Whereas in Jakarta Servlet this process is an internal implementation detail, this specification standardizes it. As a result, a Jakarta Servlet container not using Jakarta Authorization, and a Jakarta Servlet container delegating to Jakarta Authorization should have the exact same security behaviour when the defaults of Jakarta Authorization are used.
+
+Jakarta Authorization expands on the Servlet security model, by making the objects involved in the authorization enforcement replaceable. 
+ 
+
+==== Relationship to Jakarta Enterprise Beans
+
+Jakarta Enterprise Beans is an alternative component model in Jakarta EE. As of Jakarta EE 11 this model is strongly de-emphasised and may eventually be phased out entirely.
+
+Like Jakarta Servlet, Jakarta Enterprise Beans defines its own security model which this specification supports by standardizing how its constraints are stored and enforced.
+ 
+
 === Terminology
 
 [frame=none]
