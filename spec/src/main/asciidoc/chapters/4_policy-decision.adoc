@@ -1,45 +1,35 @@
 [[a556]]
 == Policy Decision and Enforcement Subcontract 
 
-The <<a556>> defines the interactions between
-container policy enforcement points and the providers that implement the
-policy decisions required by Jakarta EE containers.
+The <<a556>> defines the interactions between container policy enforcement points and the providers that 
+implement the policy decisions required by Jakarta EE containers.
 
 [[a558]]
 === Policy Enforcement by Servlet Containers
 
-Jakarta Servlet containers must employ the methods
-defined in the following subsections to enforce the authorization
+Jakarta Servlet containers must employ the methods defined in the following subsections to enforce the authorization
 policies established for web resources.
 
 [[a560]]
 ==== Permission Names for Transport and Pre-Dispatch Decisions
 
-The name of the permission checked in a
-transport or pre-dispatch decision must be the unqualified request URI
-minus the context path. All colon characters occurring within the name
-must be represented using escaped encodingfootnote:[The `HttpServletRequest` based constructors of `WebResourcePermission` and `WebUserDataPermission` must perform the escaped ecoding. For all other constructors, the encoding must be performed prior to invoking the constructor. See issue Section B.22, “Colons Within path-segment of Request URI.]
-For
-the special case where this transformation of the request URI yields the
-URLPattern "/", the empty string URLPattern, "", must be used as the
-permission name.
+The name of the permission checked in a transport or pre-dispatch decision must be the unqualified request URI
+minus the context path. All colon characters occurring within the name must be represented using escaped encodingfootnote:[The `HttpServletRequest` based constructors of `WebResourcePermission` and `WebUserDataPermission` must perform the escaped ecoding. For all other constructors, the encoding must be performed prior to invoking the constructor. See issue Section B.22, “Colons Within path-segment of Request URI.]
 
-For the special case where the empty string
-must be substituted for the "/" pattern in the permission evaluation,
-all target related processing (including servlet mapping, filter
-mapping, and form based login processing) must be performed using the
+For the special case where this transformation of the request URI yields the URLPattern "/", the empty string URLPattern, "", 
+must be used as the permission name.
+
+For the special case where the empty string must be substituted for the "/" pattern in the permission evaluation,
+all target related processing (including servlet mapping, filter mapping, and form based login processing) must be performed using the
 original pattern, "/".
 
 [[a563]]
 ==== Evaluation of Transport Guarantees
 
-The Jakarta Servlet container must obtain a
-`WebUserDataPermission` object with name obtained from the request URI as
-defined in <<a560>>. The actions of the obtained
-permission must be composed of the HTTP method of the request and a
-protection value describing the transport layer protection of the
-connection on which the request arrived. The protection value must be as
-follows:
+The Jakarta Servlet container must obtain a `WebUserDataPermission` object with name obtained from the request URI as
+defined in <<a560>>. The actions of the obtained permission must be composed of the HTTP method of the request and a
+protection value describing the transport layer protection of the connection on which the request arrived. The protection 
+value must be as follows:
 
 * If the request arrived on a connection
 deemed by the container to be protected for confidentiality, a
@@ -66,20 +56,13 @@ decision.
 [[a569]]
 ==== Pre-dispatch Decision
 
-The Jakarta Servlet container must obtain a
-`WebResourcePermission` object with name obtained from the request URI as
-defined in <<a560>>. The actions of the obtained
-permission must be the HTTP method of the request. The Jakarta Servlet container
-must use one of the methods described in
-<<a736>>
-to test if the `WebResourcePermission` has been granted to the caller. If
-a `SecurityException` is thrown in the permission determination, it must
-be caught, and the result of the determination must be that the
-permission is not granted to the caller. The Jakarta Servlet container may only
-dispatch the request to the web resource if the `WebResourcePermission` is
-determined to be granted to the caller. Otherwise the request must be
-rejected with the appropriate HTTP error message as defined by the
-Jakarta Servlet Specification.
+The Jakarta Servlet container must obtain a `WebResourcePermission` object with name obtained from the request URI as
+defined in <<a560>>. The actions of the obtained permission must be the HTTP method of the request. The Jakarta Servlet
+container must use one of the methods described in <<a736>> to test if the `WebResourcePermission` has been granted to the
+caller. If a `SecurityException` is thrown in the permission determination, it must be caught, and the result of the determination
+must be that the permission is not granted to the caller. The Jakarta Servlet container may only dispatch the request to the 
+web resource if the `WebResourcePermission` is determined to be granted to the caller. Otherwise the request must be
+rejected with the appropriate HTTP error message as defined by the Jakarta Servlet Specification.
 
 
 [[a572]]
@@ -105,36 +88,127 @@ must be false.
 [[a574]]
 === Provider Support for Servlet Policy Enforcement
 
-In support of the policy enforcement done by
-servlet containers, providers must implement the policy decision
+In support of the policy enforcement done by servlet containers, providers must implement the policy decision
 functionality defined in the following subsections.
 
 [[a576]]
 ==== Servlet Policy Decision Semantics
 
-A Policy provider must use the combined policy statements of the default policy context (as defined in
-<<a747>>) and of the policy context identified by calling `PolicyContext.getContextID` to determine if they 
-imply the permission being checked (called the "checked permission" hence forward).
+A Policy provider must use the policy statements of the policy context identified by calling `PolicyContext.getContextID` to 
+determine if they imply the permission being checked (called the "checked permission" hence forward).
+
+A Policy implementation can obtain all the policy statements (as `Permission` instances) by calling
+`PolicyConfigurationFactory.getPolicyConfiguration()`:
+
+[source,java]
+----
+PolicyConfiguration policyConfiguration = 
+    PolicyConfigurationFactory.get().getPolicyConfiguration();
+----
+
+`getPolicyConfiguration()` is a convenience method that internally uses the current policy context as obtained from 
+`PolicyContext.getContextID`. It is equivalent to:
+
+[source,java]
+----
+PolicyConfiguration policyConfiguration = 
+    PolicyConfigurationFactory.get().getPolicyConfiguration(PolicyContext.getContextID());
+----
 
 If one or more excluded policy statements imply the checked permission, the evaluation may terminate and the 
 checked permission must be determined not to be granted. 
 
+For example, in `jakarta.security.jacc.Policy.implies(Permission, Subject)`:
+
+[source,java]
+----
+boolean isExcluded =
+    PolicyConfigurationFactory.get()
+                            .getPolicyConfiguration()
+                            .getExcludedPermissions()
+                            .implies(permissionToBeChecked);
+                            
+if (isExcluded) {
+    return false;
+}                            
+----
+
 Otherwise, if one or more unchecked policy statements imply the checked permission, the checked permission must
 be determined to be granted. 
 
+For example, in `jakarta.security.jacc.Policy.implies(Permission, Subject)`:
+
+[source,java]
+----
+boolean isUnchecked =
+    PolicyConfigurationFactory.get()
+                            .getPolicyConfiguration()
+                            .getUncheckedPermissions()
+                            .implies(permissionToBeChecked);
+                            
+if (isUnchecked) {
+    return true;
+}                            
+----
+
 If the status of the checked permission is not resolved by the excluded and unchecked evaluations, it must be determined
 if a permission that implies the checked permission has been granted to the caller principal in the `Subject` or set of 
-principals being tested for the permission. 
-The checked permission may only be determined to be granted if a permission that implies the checked permission has
-been granted to the to the caller principal in the `Subject` or set of principals. 
+principals being tested for the permission. The checked permission may only be determined to be granted if a permission that 
+implies the checked permission has been granted to the caller principal in the `Subject` or set of principals.
+
+One way of determining this is to obtain the roles associated with the caller principal, and checking these against the
+`perRolePermissions`. Roles associated with the caller principal can be obtained from the `Subject` or set of principals
+using the `PrincipalMapper`.
+
+For example, in `jakarta.security.jacc.Policy.implies(Permission, Subject)`:
+
+[source,java]
+----
+
+PrincipalMapper principalMapper = PolicyContext.get(PRINCIPAL_MAPPER);
+Set<String> callerRoles = 
+    principalMapper.getMappedRoles(subject);
+
+Map<String, PermissionCollection> perRolePermissions = 
+    PolicyConfigurationFactory.get()
+                            .getPolicyConfiguration()
+                            .getPerRolePermissions();
+                            
+for (String role : callerRoles) {
+    if (perRolePermissions.containsKey(role) && 
+        perRolePermissions.get(role).implies(permissionToBeChecked)) {
+        return true;
+    }
+}
+
+return false;
+----
 
 Otherwise the permission must be determined not to be granted. The policy decision semantics are dependent on permission
 specific rules for determining if the permissions in policy statements imply the permission being checked.
 
-The `WebResourcePermission`,
-`WebUserDataPermission`, and `WebRoleRefPermission` specific rules used to
-determine if the permissions in policy statements imply a checked
-permission are defined in the next sections.
+The Jakarta Authorization `Policy` interface contains a default method that captures the above described rules:
+
+[source,java]
+----
+default boolean implies(Permission permissionToBeChecked, Subject subject) {
+    if (isExcluded(permissionToBeChecked)) {
+        return false;
+    }
+
+    if (isUnchecked(permissionToBeChecked)) {
+        return true;
+    }
+
+    return impliesByRole(permissionToBeChecked, subject);
+}
+----
+
+
+
+
+The `WebResourcePermission`, `WebUserDataPermission`, and `WebRoleRefPermission` specific rules used to determine if the 
+permissions in policy statements imply a checked permission are defined in the next sections.
 
 [[a579]]
 ===== Matching Qualified URL Pattern Names
@@ -466,10 +540,6 @@ that the thread’s policy context identifier identifies the policy
 context corresponding to the instance of the module or application for
 which the operation is being performed.
 
-Containers must be granted the “setPolicy”
-`SecurityPermission` independent of policy context identifier (or in all
-policy contexts) as they need this permission to set the policy context
-identifier.
 
 [[a710]]
 ==== Policy Context Handlers
@@ -512,21 +582,18 @@ initialization of the provider.
 [[a715]]
 ===== Container Subject Policy Context Handler
 
-All Jakarta Servlet and Jakarta Enterprise Beans containers must register
-a `PolicyContextHandler` whose `getContext` method returns a
-`javax.security.auth.Subject` object when invoked with the key
-“javax.security.auth.Subject.container”. When this handler is activated
-as the result of a policy decision performed by a container before
-dispatch into a component, this handler must return a `Subject` containing the principals
-and credentials of the “caller” of the component. 
-When activated from the scope of a dispatched call, this
-handler must return a `Subject` containing the principals and credentials
-corresponding to the identity established by the container prior to the
-activation of the handler. The identity established by the container
-will either be the component’s `runAs` identity or the caller’s identity
-(e.g. when a Jakarta Enterprise Beans component calls `isCallerInRole`). In all cases, if
-the identity of the corresponding `Subject` has not been established or
-authenticated, this handler must return the value null.
+All Jakarta Servlet and Jakarta Enterprise Beans containers must register a `PolicyContextHandler` whose `getContext` 
+method returns a `javax.security.auth.Subject` object when invoked with the key “javax.security.auth.Subject.container”. 
+
+When this handler is activated as the result of a policy decision performed by a container before dispatch into a component, 
+this handler must return a `Subject` containing the principals and credentials of the “caller” of the component. 
+
+When activated from the scope of a dispatched call, this handler must return a `Subject` containing the principals and credentials
+corresponding to the identity established by the container prior to the activation of the handler. 
+
+The identity established by the container will either be the component’s `runAs` identity or the caller’s identity
+(e.g. when a Jakarta Enterprise Beans component calls `isCallerInRole`). In all cases, if the identity of the corresponding
+ `Subject` has not been established or authenticated, this handler must return the value null.
 
 [[a719]]
 ===== SOAPMessage Policy Context Handler
@@ -543,11 +610,10 @@ null.
 [[a721]]
 ===== HttpServletRequest Policy Context Handler
 
-All Jakarta Servlet containers must register a
-`PolicyContextHandler` whose `getContext` method returns a
-`jakarta.servlet.http.HttpServletRequest` object when invoked with the key
-“jakarta.servlet.http.HttpServletRequest”. When this handler is activated,
-the container must return the `HttpServletRequest` object corresponding to
+All Jakarta Servlet containers must register a `PolicyContextHandler` whose `getContext` method returns a
+`jakarta.servlet.http.HttpServletRequest` object when invoked with the key “jakarta.servlet.http.HttpServletRequest”. 
+
+When this handler is activated, the container must return the `HttpServletRequest` object corresponding to
 the component request being processed by the container.
 
 [[a723]]
@@ -633,71 +699,30 @@ defined in <<a707>>.
 [[a745]]
 === Missing Policy Contexts
 
-A Policy provider must return that a tested
-permission has not been granted if it acquires a non-null policy context
-identifier by calling `getContextID` on the `PolicyContext` class and the
-`inService` method of the `PolicyConfigurationFactory` associated with
-the provider would return `false` if called with the policy context
-identifier.
-
-[[a747]]
-=== Default Policy Context
-
-The default policy context contains the
-policy statements that apply to the JRE independent of the policy
-contexts defined as the result of the deployment of modules or
-applications in containers. The policy context identifier of the default
-policy context is the null value. The default policy context is never
-linked to another `PolicyConfiguration`, and as such does not share the
-principal-to-role mapping of any other policy context.
-
-A Policy provider must include the policy
-statements of the default policy context in every access determination
-it performs. A Policy provider that either does not call
-`PolicyContext.getContexdID`, or does so and acquires the identifier of
-the default policy context, must use only the policy statements of the
-default policy context to perform its access determination.
-
-[[a750]]
-=== Policy Compatibility Requirements
-
-To be compatible with this contract, every
-JRE of an application server must perform all of the policy
-decisions defined by this contract by interacting with the
-`java.security.Policy` instance available in the JRE via the
-`java.security.Policy.getPolicy` method.
+A Policy provider must return that a tested permission has not been granted if it acquires a non-null policy context
+identifier by calling `getContextID` on the `PolicyContext` class and the `inService` method of the `PolicyConfigurationFactory` 
+associated with the provider would return `false` if called with the policy context identifier.
 
 
 [[a753]]
 === Optimization of Permission Evaluations
 
-Containers may employ the following
-optimizations (based on reuse) when the result obtained by repeating the
-evaluation will not differ from the previous result or when the time
-since the previous evaluation is less than the container’s threshold for
-being effected by policy changes:
+Jakarta Authorization implementations may employ the following optimizations (based on reuse) when the result obtained by 
+repeating the evaluation will not differ from the previous result or when the time since the previous evaluation is less than
+the Jakarta Authorization implementation's threshold for being effected by policy changes:
 
-* Containers may reuse an authorization
-result obtained from a previous equivalent permission evaluation.
-* Containers may reuse an authorization
-result obtained for an unauthenticated caller (i.e. a caller with no
-principals) performed as defined in <<a736>> to grant, independent of caller
-identity, any permission implied by the unauthenticated result.
+* Jakarta Authorization implementations may reuse an authorization result obtained from a previous equivalent permission evaluation.
+* Jakarta Authorization implementations may reuse an authorization result obtained for an unauthenticated caller (i.e. a caller with
+no principals) performed as defined in <<a736>> to grant, independent of caller identity, any permission implied by the unauthenticated result.
 
-This specification does not prescribe how a
-container determines when a repeated evaluation will return the same
-result. That said, one way that containers could make this determination
-is if they are, and can determine if they will be, notified of policy
-changes and if they can establish that their policy provider does not
-employ additional context (such as could be acquired by calling a
-`PolicyContextHandler`) in its policy evaluations.
+This specification does not prescribe how a Jakarta Authorization implementations determines when a repeated evaluation will return the
+same result. That said, one way that Jakarta Authorization implementations could make this determination is if they are, and can
+determine if they will be, notified of policy changes and if they can establish that their policy provider does not
+employ additional context (such as could be acquired by calling a `PolicyContextHandler`) in its policy evaluations.
 
-Common practice for containers to receive
-such notification could be for them to register to the
-`"java.security.Policy.supportsReuse"` key a `PolicyContextHandler` and
-for the container to determine if its provider will notify it of policy
-changes by making a test call to the provider’s `refresh` method. Only a
-provider that is compatible with the optimizations described above
-(including because it does not employ additional context in its policy
-evaluations) may deliver notice of policy changes by activating this
-handler when its `refresh` method is called.
+Common practice for Jakarta Authorization implementations to receive such notification could be for them to register to the
+`"java.security.Policy.supportsReuse"` key a `PolicyContextHandler` and for the Jakarta Authorization implementation to determine
+if its provider will notify it of policy changes by making a test call to the provider’s `refresh` method. 
+
+Only a provider that is compatible with the optimizations described above (including because it does not employ additional context
+in its policy evaluations) may deliver notice of policy changes by activating this handler when its `refresh` method is called.

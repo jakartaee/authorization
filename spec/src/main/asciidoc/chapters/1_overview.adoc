@@ -23,7 +23,7 @@ image::authz-1.svg[caption="Figure {doc-part}-{counter:figure} ", reftext="Figur
 |===
 2+| *Jakarta EE application*
 
-| | A collection of Jakarta EE modules that must share a common principal-to-role-mapping
+| | A collection of one ore more Jakarta EE modules that must share a common principal-to-role-mapping
 
 2+| *deploy (e.g. an application)*
 
@@ -48,6 +48,18 @@ mechanisms, combined with _undeploying_ a corresponding module or
 application, followed by _redistribution_ and _activation_ of the modified
 software and or configuration.
 
+2+| *Application Server*
+
+| | For the purpose of this specification; a Jakarta EE environment capable of running multiple Jakarta EE applications at the same time
+where each Jakarta EE applications can consist of one or more multiple modules (e.g. an EAR containing .war and .jar modules),
+and also supporting the deploy, undeploy and redeploy processes for each such application. For example, Eclipse GlassFish or Red Hat JBoss EAP.
+
+2+| *Jakarta Authorization implementation*
+
+| | The code that most directly implements this specification, and which can be integrated into an Application Server or other
+Jakarta EE environment or Jakarta EE-like environment (like a standalone Servlet Container, such as Tomcat). A Jakarta Authorization implementation can be a standalone (modular) .jar file, potentially from a separate project, or it can be highly integrated into the code of a 
+specific Jakarta EE environment.
+
 2+| *grant*
 
 | | The act of assigning to entities the right to
@@ -61,13 +73,13 @@ server, as may be used in the composition of a servlet policy context
 identifier.
 
 
-2+| [[a90]] *JAAS Policy interface*
+2+| [[a90]] *Policy interface*
 
-| | The `javax.security.auth.Policy` abstract class.
+| | The `jakarta.security.jacc.Policy` abstract class.
 
-2+| [[a92]] *JAAS Policy provider*
+2+| [[a92]] *Policy provider*
 
-| | An instance of a class that implements the JAAS Policy interface.
+| | An instance of a class that implements the Policy interface.
 
 2+| *permission*
 
