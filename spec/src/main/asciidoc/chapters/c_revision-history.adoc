@@ -1181,3 +1181,9 @@ translation of role-names in method-permission elements, to include
 support for the role named pass:["**"].
 . In <<a544>>, added requirement that the provider grant all
 permissions assigned to role pass:["**"] to any authenticated user.
+
+=== Change log for Version 3.0
+
+This is a major update of the specification, removing all references to the Java SE SecurityManager. 
+Part of that removal is the dependency on the Java SE Policy, which has been replaced in this version by a similar Policy
+defined by Jakarta Authorization.
