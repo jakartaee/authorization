@@ -51,7 +51,7 @@ software and or configuration.
 2+| *Application Server*
 
 | | For the purpose of this specification; a Jakarta EE environment capable of running multiple Jakarta EE applications at the same time
-where each Jakarta EE applications can consist of one or more multiple modules (e.g. an EAR containing .war and .jar modules),
+where each Jakarta EE applications can consist of one or more modules (e.g. an EAR containing .war and .jar modules),
 and also supporting the deploy, undeploy and redeploy processes for each such application. For example, Eclipse GlassFish or Red Hat JBoss EAP.
 
 2+| *Jakarta Authorization implementation*
@@ -175,23 +175,20 @@ EE application to the policy provider. Accordingly, the following mappings will 
 ** (Application embedded) role references to role names
 
 . It is assumed that there are providers that are unable to enumerate all the permissions that pertain to a
-subject before returning from `Policy.getPermissions()`.
+subject before returning from `Policy.getPermissionCollection()`.
 
 . Any interfaces that this contract defines to be used by containers and or container deployment tools to create policy
 statements within a policy provider must be compatible with a module-at-a-time application deployment mechanism.
 
-. Where the Jakarta Enterprise Beans or Jakarta Servlet specifications are incomplete or ambiguous in their
+. Where the Jakarta Servlet specifications is incomplete or ambiguous in its
 specification of authorization functionality, the contract defined in this document may require additional semantics. 
 Additional or clarifying semantics will only be adopted by this specification based on their acceptance by the 
 committers of the corresponding component specification.
 
-. The Jakarta Enterprise Beans policy decisions performed by providers may require access to the arguments of the 
-Enterprise Bean invocation and or (for entity beans) the container managed Enterprise Bean instance state.
-
 [[a136]]
 === Requirements
 
-. This contract must support providers that are unable to determine, before returning from `Policy.getPermissions()`, 
+. This contract must support providers that are unable to determine, before returning from `Policy.getPermissionCollection()`, 
 all the permissions that pertain to a subject.
 
 . Each Policy provider that satisfies this contract must perform or delegate to another provider just the permission

@@ -1,0 +1,414 @@
+[[a5560]]
+== Support for legacy technologies
+
+The <<a5560>> defines the support for technologies that are considered legacy or de-emphasized in Jakarta EE. The technologies and their 
+support documented here may become deprecated and ultimately pruned in the future. As of now they are fully supported.
+
+=== Policy Configuration Subcontract for Jakarta Enterprise Beans
+
+==== Assumptions
+
+. Where the Jakarta Enterprise Beans is incomplete or ambiguous in its
+specification of authorization functionality, the contract defined in this document may require additional semantics. 
+Additional or clarifying semantics will only be adopted by this specification based on their acceptance by the 
+committers of the corresponding component specification.
+
+. The Jakarta Enterprise Beans policy decisions performed by providers may require access to the arguments of the 
+Enterprise Bean invocation and or (for entity beans) the container managed Enterprise Bean instance state.
+
+
+==== What a Jakarta EE Platform’s Deployment Tools Must Do
+
+In addition to <<a235>> the rules for combining authorization policy annotations with declarative policy statements are described in
+the Jakarta Enterprise Beans, Jakarta Servlet, and Jakarta EE platform specifications. 
+
+[[a512]]
+==== Jakarta Enterprise Beans Policy Context Identifiers
+
+To satisfy this specification, an application
+server must establish Jakarta Enterprise Beans policy context identifiers sufficient to
+differentiate all instances of the deployment of an Jakarta Enterprise Beans jar on the
+application server, or on any other application server with which the
+server may share the same policy statement repository.
+
+When an application is composed of multiple
+Jakarta Enterprise Beans jars, no two jars that share at least one `ejb-name` value in common
+may share the same policy context identifiers.
+
+In cases where Jakarta Enterprise Beans may be packaged in war
+files, the application server must assign the Jakarta Enterprise Beans to a policy context
+distinct from that to which any web components are assigned.
+
+The policy contexts assigned
+to web applications and web modules must be distinct from those to which
+any Jakarta Enterprise Beans components are assigned.
+
+[[a516]]
+==== Translating Jakarta Enterprise Beans Deployment Descriptors
+
+A reference to a `PolicyConfiguration` object
+must be obtained by calling the `getPolicyConfiguration` method on the
+`PolicyConfigurationFactory` implementation class of the provider
+configured into the container. The policy context identifier used in the
+call to `getPolicyConfiguration` must be a `String` that satisfies the
+requirements described in <<a512>>. The `method-permission`, `exclude-list,` and
+`security-role-ref` elements appearing in the deployment descriptor must
+be translated into permissions and added to the `PolicyConfiguration`
+object to yield an equivalent translation as that defined in the
+following sections and such that every Jakarta Enterprise Beans method for which the
+container performs pre-dispatch access decisions is implied by at least
+one permission resulting from the translation. Before the translation is
+performed, all policy statements must have been
+removedfootnote:[This can be achieved by passing `true` as the second parameter in the call to `getPolicyConfiguration`, or by calling `delete` on the `PolicyConfiguration` before calling `getPolicyConfiguration` to transition it to the open state.] from the policy context associated with
+the returned `PolicyConfiguration`.
+
+[[a518]]
+===== Translating Jakarta Enterprise Beans method-permission Elements
+
+For each `method` element of each
+`method-permission` element, an `EJBMethodPermission` object translated from
+the `method` element must be added to the policy statements of the
+`PolicyConfiguration` object. The name of each such `EJBMethodPermission`
+object must be the `ejb-name` from the corresponding `method` element, and
+the actions must be established by translating the `method` element into
+a method specification according to the methodSpec syntax defined in the
+documentation of the `EJBMethodPermission` class. The actions translation
+must preserve the degree of specificity with respect to `method-name`,
+`method-intf`, and `method-params` inherent in the method element.
+
+If the `method-permission` element contains
+the `unchecked` element, then the deployment tools must call the
+`addToUncheckedPolicy` method to add the permissions resulting from the
+translation to the `PolicyConfiguration` object. Alternatively, if the
+`method-permission` element contains one or more `role-name` elements,
+then the deployment tools must call the `addToRole` method to add the
+permissions resulting from the translation to the corresponding roles of
+the `PolicyConfiguration` object. These `addToRole` calls must be made for
+any `role-name` used in the `method-permision` which may include the
+role-name pass:[“**”]; which, by default, is mapped to any authenticated user.
+
+[[a521]]
+===== Translating the Jakarta Enterprise Beans exclude-list
+
+An `EJBMethodPermission` object must be created
+for each `method` element occurring in the `exclude-list` element of the
+deployment descriptor. The name and actions of each `EJBMethodPermission`
+must be established as described in <<a518>>
+
+The deployment tools must use the
+`addToExcludedPolicy` method to add the `EJBMethodPermission` objects
+resulting from the translation of the `exclude-list` to the excluded
+policy statements of the `PolicyConfiguration` object.
+
+[[a524]]
+===== Translating Jakarta Enterprise Beans security-role-ref Elements
+
+For each `security-role-ref` element
+appearing in the deployment descriptor, a corresponding
+`EJBRoleRefPermission` must be created. The value of the `ejb-name` element
+within the element containing the `security-role-ref` element must be used
+as the name of the `EJBRoleRefPermission`. The actions used to construct
+the permission must be the value of the `role-name` (that is the
+reference), appearing in the `security-role-ref`. The deployment tools
+must call the `addToRole` method on the `PolicyConfiguration` object to
+add a policy statement corresponding to the `EJBRoleRefPermission` to the
+role identified in the `role-link` appearing in the `security-role-ref`.
+
+Additional `EJBRoleRefPermission` objects must
+be added to the `PolicyConfiguration` as follows. For each element in the
+deployment descriptor for which the Jakarta Enterprise Beans descriptor schema
+supportsfootnote:[Jakarta Enterprise Beans supports inclusion of `security-role-ref` elements in entity and session elements. Future versions could support inclusion in `message-driven`.] inclusion of `security-role-ref` elements,
+an EJBRoleRefPermission must be added to each `security-role` of the
+application whose name does not appear as the `role-name` in a
+`security-role-ref` within the element. If the “any authenticated user”
+`role-name` , pass:[“**”], does not appear in a `security-role-ref` within the
+element, a `EJBRoleRefPermission` must also be added for it. The name of
+each such `EJBRoleRefPermission` must be the value of the `ejb-name` element
+within the element in which the `security-role-ref` elements could
+otherwise occur. The actions (that is, reference) of each such
+`EJBRoleRefPermission` must be the corresponding (non-appearing)
+`role-name` . The resulting permissions must be
+addedfootnote:[For example, if an application declares roles {R1, R2, R3} and defines a session Jakarta Enterprise Bean
+named “shoppingCart” that contains one `security-role-ref` element with `role-name` R1, then an additional `EJBRoleRefPermission` must be added to each of the roles R2 and R3. The name of both permissions must be “shoppingCart”, and the actions value of the permission added to role R2 must be “R2”, and the actions value of the permission added to role R3 must be “R3”.]
+to the corresponding roles by calling the
+`addToRole` method on the `PolicyConfiguration` object.
+
+
+[[a614]]
+=== Policy Decision and Enforcement Subcontract for Jakarta Enterprise Beans
+
+Jakarta Enterprise Beans containers must employ the methods
+defined in the following subsections to enforce the authorization
+policies established for Jakarta Enterprise Beans resources.
+
+[[a616]]
+==== Jakarta Enterprise Beans Pre-dispatch Decision
+
+The Jakarta Enterprise Beans container must obtain an
+`EJBMethodPermission` object with name corresponding to the `ejb-name` of
+the target resource and with actions that completely specify the
+about-to-be-called method of the akarta Enterprise Bean by identifying the method
+interface, method name, and method signature as defined for a methodSpec
+in the documentation of the `EJBMethodPermission` class.
+
+The Jakarta Enterprise Beans container must use one of the methods
+described in <<a736>> to determine if the `EJBMethodPermission` has been granted to
+the caller. If a `SecurityException` is thrown in the permission
+determination, it must be caught, and the result of the determination
+must be that the permission is not granted to the caller. The Jakarta Enterprise Beans
+container may only dispatch the request to the Jakarta Enterprise Bean resource, if the
+`EJBMethodPermission` is determined to be granted to the caller. Otherwise
+the request must be rejected with the appropriate exception, as defined
+by the corresponding Jakarta Enterprise Beans specification.
+
+
+[[a620]]
+==== Jakarta Enterprise Beans Application Embedded Privilege Test
+
+When a Jakarta Enterprise Bean makes a call to
+`isCallerInRole(String roleName)` the implementation of this method must
+obtain an `EJBRoleRefPermission` object with name corresponding to the
+`ejb-name` of the Jakarta Enterprise Bean making the call and with actions equal to the
+`roleName` used in the call. The implementation of the `isCallerInRole`
+method must then use one of the methods described in
+<<a736>>
+to determine if the `EJBRoleRefPermission` has been granted to the caller.
+If a `SecurityException` is thrown in the permission determination, it
+must be caught, and the result of the determination must be that the
+permission is not granted to the caller. If it is determined that the
+`EJBRoleRefPermission` has been granted to the caller, then `isCallerInRole`
+must return `true`. Otherwise the return value must be `false`.
+
+[[a622]]
+=== Provider Support for Jakarta Enterprise Beans Policy Enforcement
+
+In support of the policy enforcement done by
+Jakarta Enterprise Beans containers, providers must implement the policy decision
+functionality defined in the following subsections.
+
+[[a624]]
+==== Jakarta Enterprise Beans Policy Decision Semantics
+
+A Policy provider must employ the policy
+decision semantics described in <<a576>> in the processing of Jakarta Enterprise Beans Policy decisions.
+
+The `EJBMethodPermission` and
+`EJBRoleRefPermission` specific rules used to determine if the permissions
+in policy statements imply a checked permission are defined in the
+following sections.
+
+[[a627]]
+===== EJBMethodPermission Matching Rules
+
+A reference EJBMethodPermission implies an
+argument permission, if all of the following are true.
+
+* The argument permission is an instanceof
+`EJBMethodPermission`.
+* The name of the argument permission is
+equivalent to the name of the reference permission.
+* The methods to which the argument
+permission applies (as defined in its actions) must be a subset of the
+methods to which the reference permission applies (as defined in its
+actions). This rule is satisfied if all of the following conditions are
+met.
+** The method name of the reference permission
+is null, the empty string, or equivalent to the method name of the
+argument permission.
+** The method interface of the reference
+permission is null, the empty string, or equivalent to the method
+interface of the argument permission.
+** The method parameter type list of the
+reference permission is null, the empty string, or equivalent to the
+method parameter type list of the argument permission.
+
+The comparisons described above are case
+sensitive.
+
+<<a639>> demonstrate the
+properties of `EJBMethodPermission` matching by example.
+
+[[a639]]
+[caption="Table {doc-part}-{counter:table-number} ", title="EJBMethodPermission [[a639]]methodSpec Matching Examples"]
+[.center, width=80%]
+[%header,cols="15%,25%,20%,25%,15%"] 
+|===
+^a| [.small]#+++<font size=".8em">type</font>+++# 
+^a| [.small]#+++<font size=".8em">methodInterface Spec</font>+++#
+^a| [.small]#+++<font size=".8em">methodName Spec</font>+++# 
+^a| [.small]#+++<font size=".8em">methodParams Spec</font>+++#
+^a| [.small]#+++<font size=".8em">implies checked permission</font>+++# 
+
+^a| [.small]#+++<font size=".8em">checked permission</font>+++# 
+^a| [.small]#+++<font size=".8em">Home</font>+++#
+^a| [.small]#+++<font size=".8em">doThis</font>+++# 
+^a| [.small]#+++<font size=".8em">java.lang.String</font>+++#
+^a| [.small]#+++<font size=".8em"></font>+++# 
+
+^a| [.small]#+++<font size=".8em">reference permission</font>+++# 
+^a| [.small]#+++<font size=".8em">empty string</font>+++#
+^a| [.small]#+++<font size=".8em">empty string</font>+++# 
+^a| [.small]#+++<font size=".8em">empty string</font>+++#
+^a| [.small]#+++<font size=".8em">yes</font>+++# 
+
+^a| [.small]#+++<font size=".8em">reference permission</font>+++# 
+^a| [.small]#+++<font size=".8em">Home</font>+++#
+^a| [.small]#+++<font size=".8em">empty string</font>+++# 
+^a| [.small]#+++<font size=".8em">empty string</font>+++#
+^a| [.small]#+++<font size=".8em">yes</font>+++# 
+
+^a| [.small]#+++<font size=".8em">reference permission</font>+++# 
+^a| [.small]#+++<font size=".8em">empty string</font>+++#
+^a| [.small]#+++<font size=".8em">doThis</font>+++# 
+^a| [.small]#+++<font size=".8em">empty string</font>+++#
+^a| [.small]#+++<font size=".8em">yes</font>+++# 
+
+^a| [.small]#+++<font size=".8em">reference permission</font>+++# 
+^a| [.small]#+++<font size=".8em">empty string</font>+++#
+^a| [.small]#+++<font size=".8em">empty string</font>+++# 
+^a| [.small]#+++<font size=".8em">java.lang.String</font>+++#
+^a| [.small]#+++<font size=".8em">yes</font>+++#
+
+^a| [.small]#+++<font size=".8em">reference permission</font>+++# 
+^a| [.small]#+++<font size=".8em">Remote</font>+++#
+^a| [.small]#+++<font size=".8em">doThis</font>+++# 
+^a| [.small]#+++<font size=".8em">java.lang.String</font>+++#
+^a| [.small]#+++<font size=".8em">no</font>+++#
+
+^a| [.small]#+++<font size=".8em">reference permission</font>+++# 
+^a| [.small]#+++<font size=".8em">Home</font>+++#
+^a| [.small]#+++<font size=".8em">doNotDoThis</font>+++# 
+^a| [.small]#+++<font size=".8em">java.lang.String</font>+++#
+^a| [.small]#+++<font size=".8em">no</font>+++#
+
+^a| [.small]#+++<font size=".8em">reference permission</font>+++# 
+^a| [.small]#+++<font size=".8em">Home</font>+++#
+^a| [.small]#+++<font size=".8em">doThis</font>+++# 
+^a| [.small]#+++<font size=".8em">java.lang.byte</font>+++#
+^a| [.small]#+++<font size=".8em">no</font>+++# 
+|=== 
+
+[[a697]]
+===== EJBRoleRefPermission Matching Rules
+
+A reference `EJBRoleRefPermission` implies an
+argument permission, if all of the following are true.
+
+* The argument permission is an instanceof
+`EJBRoleRefPermission`.
+* The name of the argument permission is
+equivalent to the name of the reference permission.
+* The actions (i.e role reference) of the
+argument permission is equivalent to the actions (i.e role reference) of
+the reference permission.
+
+The comparisons described above are case
+sensitive.
+
+[[a7030]]
+==== Component runAs Identity
+
+The identity used by Jakarta Enterprise Beans
+components in the operations they perform is configured by the Deployer.
+This identity is referred to as the component’s `runAs` identity. By
+default (and unless otherwise specified in the Jakarta Enterprise Beans
+specifications), components are configured such that they are assigned
+the identity of their caller (such as it is) as their `runAs` identity.
+Alternatively, a Deployer may choose to assign an environment specific
+identity as a component’s `runAs` identity. In this case, the container
+must establish the specified identity as the component’s `runAs` identity
+independent of the identity of the component’s caller.
+
+When a Deployer configures an environment
+specific component identity based on a deployment descriptor
+specification that the component run with an identity mapped to a role,
+those responsible for defining the principal-to-role mapping must ensure
+that the specified identity is mapped to the role.
+
+
+[[a7070]]
+==== Setting the Policy Context
+
+A policy context identifier is set on a
+thread by calling the `setContextID` method on the `PolicyContext` utility
+class. The value of a thread’s policy context identifier is `null` until
+the `setContextID` method is called. Before invoking `Policy` to evaluate a
+transport guarantee or to perform a pre-dispatch decision, and before
+dispatching into a Jakarta Enterprise Beans component, a container must ensure
+that the thread’s policy context identifier identifies the policy
+context corresponding to the instance of the module or application for
+which the operation is being performed.
+
+==== Policy Context Handlers
+
+Following the requirements of the top level section <<a710>>, Jakarta Enterprise Beans containers have the specific 
+requirements as detailed in the following sub-sections.
+
+[[a7150]]
+===== Container Subject Policy Context Handler
+
+All Jakarta Enterprise Beans containers must register a `PolicyContextHandler` whose `getContext` 
+method returns a `javax.security.auth.Subject` object when invoked with the key “javax.security.auth.Subject.container”. 
+
+When this handler is activated as the result of a policy decision performed by a container before dispatch into a component, 
+this handler must return a `Subject` containing the principals and credentials of the “caller” of the component. 
+
+When activated from the scope of a dispatched call, this handler must return a `Subject` containing the principals and credentials
+corresponding to the identity established by the container prior to the activation of the handler. 
+
+The identity established by the container will either be the component’s `runAs` identity or the caller’s identity
+(e.g. when a Jakarta Enterprise Beans component calls `isCallerInRole`). In all cases, if the identity of the corresponding
+ `Subject` has not been established or authenticated, this handler must return the value null.
+
+[[a719]]
+===== SOAPMessage Policy Context Handler
+
+All Jakarta Enterprise Beans containers must register a
+`PolicyContextHandler` whose `getContext` method returns a
+`jakarta.xml.soap.SOAPMessage` object when invoked with the key
+“jakarta.xml.soap.SOAPMessage”. If the request being processed by the
+container arrived as a SOAP request at the `ServiceEndpoint` method
+interface, the container must return the SOAP message object when this
+handler is activated. Otherwise, this handler must return the value
+null.
+
+[[a723]]
+===== EnterpriseBean Policy Context Handler
+
+All Jakarta Enterprise Beans containers must register a
+`PolicyContextHandler` whose `getContext` method returns a
+`jakarta.ejb.EnterpriseBean` object when invoked with the key
+“jakarta.ejb.EnterpriseBean”. When this handler is activated, the
+container must return the `EnterpriseBean` object corresponding to the Jakarta Enterprise Beans
+component request (as restricted below) being processed by the
+container. The `EnterpriseBean` object must only be returned when this
+handler is activated within the scope of a container's processing of a
+business method of the Jakarta Enterprise Beans `Remote`, `Local`, or `ServiceEndpoint` interfaces
+of the `EnterpriseBean` object. The value null must be returned if the
+bean implementation class does not implement the
+`jakarta.ejb.EnterpriseBean` interface.
+
+[[a725]]
+===== Jakarta Enterprise Beans Arguments Policy Context Handler
+
+All Jakarta Enterprise Beans containers must register a
+`PolicyContextHandler` whose `getContext` method returns an array of objects
+(`Object[]`) containing the arguments of the Jakarta Enterprise Beans method invocation (in the
+same order as they appear in the method signature) when invoked with the
+key “jakarta.ejb.arguments”. The context handler must return the value
+null when called in the context of a SOAP request that arrived at the
+`ServiceEndpoint` method interface. Otherwise, the context handler must
+return the array of objects corresponding to the parameters of the Jakarta Enterprise Beans
+component invocation. If there are no parameters in the method
+signature, the context handler must return an empty array of `Object`
+(i.e. `Object[0]`).
+
+==== Checking Grants
+
+As described in <<a727>>.
+
+==== Checking the Caller for a Permission
+
+As described in <<a736>>
+
+

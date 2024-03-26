@@ -73,7 +73,7 @@ descriptors to yield complete representations of authorization policy suitable f
 applications on the platform. 
 
 The rules for combining authorization policy annotations with declarative policy statements are described in
-the Jakarta Enterprise Beans, Jakarta Servlet, and Jakarta EE platform specifications. 
+the Jakarta Servlet and Jakarta EE platform specifications. 
 
 Independent of whether annotations factor in the translation, the resulting policy statements may differ in form from
 the policy statements appearing in the deployment descriptors. The policy translation defined by this
@@ -83,8 +83,8 @@ translation that would occur if policy was completely specified in the deploymen
 had proceeded directly from the deployment descriptors to the Jakarta Authorization forms defined by this subcontract. 
 
 Two translations are equivalent if they produce corresponding collections of unchecked, excluded, and role permissions, 
-and if all of the permissions of each such collection are impliedfootnote:[For some permission types, such as 
-the `EJBMethodPermission`, it will generally not be possible to use the implies method of the `PermissionCollection` to 
+and if all of the permissions of each such collection are impliedfootnote:[For some permission types it will generally not be 
+possible to use the implies method of the `PermissionCollection` to 
 compute collection equivalence (because the implies method is unable to determine when a collection contains all the 
 permissions implied by a wild carded form of the permission).] by the permissions of the corresponding or excluded collection
 of the other translation.
@@ -194,11 +194,6 @@ web modules, a separate policy context must be defined per module. This
 is necessary to ensure that url-pattern based and servlet name based
 policy statements configured for one module do not interfere with those
 configured for another.
-
-The policy contexts assigned
-to web applications and web modules must be distinct from those to which
-any Jakarta Enterprise Beansfootnote:[See <<a512>> for further clarification.] 
-components are assigned.
 
 [[a276]]
 ==== Translating Servlet Deployment Descriptors
@@ -828,112 +823,6 @@ permission constructions.
 
 Regarding the `null` in the third column of <<a416>>; the canonical form for the set of all HTTP Methods (including all extension methods) is null.
 
-[[a512]]
-==== Jakarta Enterprise Beans Policy Context Identifiers
-
-To satisfy this specification, an application
-server must establish Jakarta Enterprise Beans policy context identifiers sufficient to
-differentiate all instances of the deployment of an Jakarta Enterprise Beans jar on the
-application server, or on any other application server with which the
-server may share the same policy statement repository.
-
-When an application is composed of multiple
-Jakarta Enterprise Beans jars, no two jars that share at least one `ejb-name` value in common
-may share the same policy context identifiers.
-
-In cases where Jakarta Enterprise Beans may be packaged in war
-files, the application server must assign the Jakarta Enterprise Beans to a policy context
-distinct from that to which any web components are assigned.
-
-[[a516]]
-==== Translating Jakarta Enterprise Beans Deployment Descriptors
-
-A reference to a `PolicyConfiguration` object
-must be obtained by calling the `getPolicyConfiguration` method on the
-`PolicyConfigurationFactory` implementation class of the provider
-configured into the container. The policy context identifier used in the
-call to `getPolicyConfiguration` must be a `String` that satisfies the
-requirements described in <<a512>>. The `method-permission`, `exclude-list,` and
-`security-role-ref` elements appearing in the deployment descriptor must
-be translated into permissions and added to the `PolicyConfiguration`
-object to yield an equivalent translation as that defined in the
-following sections and such that every Jakarta Enterprise Beans method for which the
-container performs pre-dispatch access decisions is implied by at least
-one permission resulting from the translation. Before the translation is
-performed, all policy statements must have been
-removedfootnote:[This can be achieved by passing `true` as the second parameter in the call to `getPolicyConfiguration`, or by calling `delete` on the `PolicyConfiguration` before calling `getPolicyConfiguration` to transition it to the open state.] from the policy context associated with
-the returned `PolicyConfiguration`.
-
-[[a518]]
-===== Translating Jakarta Enterprise Beans method-permission Elements
-
-For each `method` element of each
-`method-permission` element, an `EJBMethodPermission` object translated from
-the `method` element must be added to the policy statements of the
-`PolicyConfiguration` object. The name of each such `EJBMethodPermission`
-object must be the `ejb-name` from the corresponding `method` element, and
-the actions must be established by translating the `method` element into
-a method specification according to the methodSpec syntax defined in the
-documentation of the `EJBMethodPermission` class. The actions translation
-must preserve the degree of specificity with respect to `method-name`,
-`method-intf`, and `method-params` inherent in the method element.
-
-If the `method-permission` element contains
-the `unchecked` element, then the deployment tools must call the
-`addToUncheckedPolicy` method to add the permissions resulting from the
-translation to the `PolicyConfiguration` object. Alternatively, if the
-`method-permission` element contains one or more `role-name` elements,
-then the deployment tools must call the `addToRole` method to add the
-permissions resulting from the translation to the corresponding roles of
-the `PolicyConfiguration` object. These `addToRole` calls must be made for
-any `role-name` used in the `method-permision` which may include the
-role-name pass:[“**”]; which, by default, is mapped to any authenticated user.
-
-[[a521]]
-===== Translating the Jakarta Enterprise Beans exclude-list
-
-An `EJBMethodPermission` object must be created
-for each `method` element occurring in the `exclude-list` element of the
-deployment descriptor. The name and actions of each `EJBMethodPermission`
-must be established as described in <<a518>>
-
-The deployment tools must use the
-`addToExcludedPolicy` method to add the `EJBMethodPermission` objects
-resulting from the translation of the `exclude-list` to the excluded
-policy statements of the `PolicyConfiguration` object.
-
-[[a524]]
-===== Translating Jakarta Enterprise Beans security-role-ref Elements
-
-For each `security-role-ref` element
-appearing in the deployment descriptor, a corresponding
-`EJBRoleRefPermission` must be created. The value of the `ejb-name` element
-within the element containing the `security-role-ref` element must be used
-as the name of the `EJBRoleRefPermission`. The actions used to construct
-the permission must be the value of the `role-name` (that is the
-reference), appearing in the `security-role-ref`. The deployment tools
-must call the `addToRole` method on the `PolicyConfiguration` object to
-add a policy statement corresponding to the `EJBRoleRefPermission` to the
-role identified in the `role-link` appearing in the `security-role-ref`.
-
-Additional `EJBRoleRefPermission` objects must
-be added to the `PolicyConfiguration` as follows. For each element in the
-deployment descriptor for which the Jakarta Enterprise Beans descriptor schema
-supportsfootnote:[Jakarta Enterprise Beans supports inclusion of `security-role-ref` elements in entity and session elements. Future versions could support inclusion in `message-driven`.] inclusion of `security-role-ref` elements,
-an EJBRoleRefPermission must be added to each `security-role` of the
-application whose name does not appear as the `role-name` in a
-`security-role-ref` within the element. If the “any authenticated user”
-`role-name` , pass:[“**”], does not appear in a `security-role-ref` within the
-element, a `EJBRoleRefPermission` must also be added for it. The name of
-each such `EJBRoleRefPermission` must be the value of the `ejb-name` element
-within the element in which the `security-role-ref` elements could
-otherwise occur. The actions (that is, reference) of each such
-`EJBRoleRefPermission` must be the corresponding (non-appearing)
-`role-name` . The resulting permissions must be
-addedfootnote:[For example, if an application declares roles {R1, R2, R3} and defines a session Jakarta Enterprise Bean
-named “shoppingCart” that contains one `security-role-ref` element with `role-name` R1, then an additional `EJBRoleRefPermission` must be added to each of the roles R2 and R3. The name of both permissions must be “shoppingCart”, and the actions value of the permission added to role R2 must be “R2”, and the actions value of the permission added to role R3 must be “R3”.]
-to the corresponding roles by calling the
-`addToRole` method on the `PolicyConfiguration` object.
 
 [[a527]]
 ==== Deploying an Application or Module
@@ -973,7 +862,7 @@ before the containers will accept requests for the deployed resources.
 If a module corresponding to a policy context may have inter-module,
 initialization-time, dependencies that must be satisfied before the
 translation of the policy context of the dependent module can be
-completedfootnote:[Such as having a Jakarta Servlet `ServletContextListener` configured that could programmatically register a servlet and configure its security constraints and that could also perform a local invocation of a Jakarta Enterprise Bean in another module of the application.], 
+completedfootnote:[Such as having a Jakarta Servlet `ServletContextListener` configured that could programmatically register a servlet and configure its security constraints.], 
 the `commit` of the depended upon
 modules must occur before the initialization of the dependent module,
 and the calls to `Policy.refresh` described above must additionally
