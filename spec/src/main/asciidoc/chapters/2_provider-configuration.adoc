@@ -60,6 +60,25 @@ handlers to obtain additional policy relevant context to apply in their access d
 
 Use of the `PolicyContext` class is defined in <<a232>>.
 
+=== PrincipalMapper Interface
+
+A `jakarta.security.jacc.PrincipalMapper` is an object that maps from a collection of generic Principals
+or a `Subject` to well known entities in Jakarta EE. A `Subject` is a "bag of principles", which can contain any number
+of principals, with each principal in that bag representing some attribute of the subject in question. A portable 
+`Policy` does not know which principle represents what entity, as historical no interfaces or annotations have been
+standardised to mark them as such.
+
+Using the `PrincipalMapper` a given number of well known entities can be retrieved from the `Subject`.
+
+The following well known entities are supported:
+
+- The caller principal -  a `java.security.Principal` containing the name of the current authenticated user (if any).
+- The role - a `java.lang.String` representing the logical application role associated with the caller principal.
+
+A `PrincipalMapper` is intended to be used by a `Policy`, but should work outside a `Policy` (for instance, during 
+request processing in a Servlet container).
+
+
 === What a Provider Must Do
 
 A Jakarta Authorization implementation can be provided with custom classes that implement the 
