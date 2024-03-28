@@ -39,6 +39,9 @@ include::chapters/3_policy-configuration.adoc[]
 :doc-part: 4
 include::chapters/4_policy-decision.adoc[]
 
+:doc-part: 5
+include::chapters/5_legacy_support.adoc[]
+
 :doc-part: A
 include::chapters/a_related-documents.adoc[]
 

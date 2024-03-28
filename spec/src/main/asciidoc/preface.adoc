@@ -4,17 +4,16 @@
 
 === Status of Document
 
-This document is the Final Release of the
-Java _TM_ Authorization Contract for Containers Version 2.0
+This document is the Final Release of the Jakarta Authorization 3.0
 specification and represents the definition of this technology as
-implemented by the reference implementation (RI) and verified by the
+implemented by a compatible implementation (CI) and verified by the
 technology compatibility kit (TCK) . This specification was developed
-under the Java Community Process (JCP2.7).
+under the EFSP (https://www.eclipse.org/projects/efsp/).
 
 === Audience
 
 This document is intended for developers of
-the RI and TCK and for those who will be delivering implementations of
+the CI and TCK and for those who will be delivering implementations of
 this technology in their products.
 
 === Abstract
@@ -166,4 +165,16 @@ Neil Smithline BEA Systems
 Sirish Vepa Sybase, Incorporated
 
 Kai Xu Sun Microsystems
+
+
+
+After transfer to the Eclipse Foundation, the following people have enhanced the specification further:
+
+Arjan Tijms
+
+Guillermo González de Agüero
+
+Jean-Louis Monteiro
+
+Darran Lofthouse
 

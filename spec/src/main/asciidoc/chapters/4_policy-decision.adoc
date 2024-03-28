@@ -1,45 +1,35 @@
 [[a556]]
 == Policy Decision and Enforcement Subcontract 
 
-The <<a556>> defines the interactions between
-container policy enforcement points and the providers that implement the
-policy decisions required by Jakarta EE containers.
+The <<a556>> defines the interactions between container policy enforcement points and the providers that 
+implement the policy decisions required by Jakarta EE containers.
 
 [[a558]]
 === Policy Enforcement by Servlet Containers
 
-Jakarta Servlet containers must employ the methods
-defined in the following subsections to enforce the authorization
+Jakarta Servlet containers must employ the methods defined in the following subsections to enforce the authorization
 policies established for web resources.
 
 [[a560]]
 ==== Permission Names for Transport and Pre-Dispatch Decisions
 
-The name of the permission checked in a
-transport or pre-dispatch decision must be the unqualified request URI
-minus the context path. All colon characters occurring within the name
-must be represented using escaped encodingfootnote:[The `HttpServletRequest` based constructors of `WebResourcePermission` and `WebUserDataPermission` must perform the escaped ecoding. For all other constructors, the encoding must be performed prior to invoking the constructor. See issue Section B.22, “Colons Within path-segment of Request URI.]
-For
-the special case where this transformation of the request URI yields the
-URLPattern "/", the empty string URLPattern, "", must be used as the
-permission name.
+The name of the permission checked in a transport or pre-dispatch decision must be the unqualified request URI
+minus the context path. All colon characters occurring within the name must be represented using escaped encodingfootnote:[The `HttpServletRequest` based constructors of `WebResourcePermission` and `WebUserDataPermission` must perform the escaped ecoding. For all other constructors, the encoding must be performed prior to invoking the constructor. See issue Section B.22, “Colons Within path-segment of Request URI.]
 
-For the special case where the empty string
-must be substituted for the "/" pattern in the permission evaluation,
-all target related processing (including servlet mapping, filter
-mapping, and form based login processing) must be performed using the
+For the special case where this transformation of the request URI yields the URLPattern "/", the empty string URLPattern, "", 
+must be used as the permission name.
+
+For the special case where the empty string must be substituted for the "/" pattern in the permission evaluation,
+all target related processing (including servlet mapping, filter mapping, and form based login processing) must be performed using the
 original pattern, "/".
 
 [[a563]]
 ==== Evaluation of Transport Guarantees
 
-The Jakarta Servlet container must obtain a
-`WebUserDataPermission` object with name obtained from the request URI as
-defined in <<a560>>. The actions of the obtained
-permission must be composed of the HTTP method of the request and a
-protection value describing the transport layer protection of the
-connection on which the request arrived. The protection value must be as
-follows:
+The Jakarta Servlet container must obtain a `WebUserDataPermission` object with name obtained from the request URI as
+defined in <<a560>>. The actions of the obtained permission must be composed of the HTTP method of the request and a
+protection value describing the transport layer protection of the connection on which the request arrived. The protection 
+value must be as follows:
 
 * If the request arrived on a connection
 deemed by the container to be protected for confidentiality, a
@@ -66,26 +56,14 @@ decision.
 [[a569]]
 ==== Pre-dispatch Decision
 
-The Jakarta Servlet container must obtain a
-`WebResourcePermission` object with name obtained from the request URI as
-defined in <<a560>>. The actions of the obtained
-permission must be the HTTP method of the request. The Jakarta Servlet container
-must use one of the methods described in
-<<a736>>
-to test if the `WebResourcePermission` has been granted to the caller. If
-a `SecurityException` is thrown in the permission determination, it must
-be caught, and the result of the determination must be that the
-permission is not granted to the caller. The Jakarta Servlet container may only
-dispatch the request to the web resource if the `WebResourcePermission` is
-determined to be granted to the caller. Otherwise the request must be
-rejected with the appropriate HTTP error message as defined by the
-Jakarta Servlet Specification.
+The Jakarta Servlet container must obtain a `WebResourcePermission` object with name obtained from the request URI as
+defined in <<a560>>. The actions of the obtained permission must be the HTTP method of the request. The Jakarta Servlet
+container must use one of the methods described in <<a736>> to test if the `WebResourcePermission` has been granted to the
+caller. If a `SecurityException` is thrown in the permission determination, it must be caught, and the result of the determination
+must be that the permission is not granted to the caller. The Jakarta Servlet container may only dispatch the request to the 
+web resource if the `WebResourcePermission` is determined to be granted to the caller. Otherwise the request must be
+rejected with the appropriate HTTP error message as defined by the Jakarta Servlet Specification.
 
-Before it dispatches a call to a web
-resource, the container must associate with the call thread an
-`AccessControlContext` containing the principals of (only) the target
-component’s runAs identity (as defined in
-<<a703>>).
 
 [[a572]]
 ==== Application Embedded Privilege Test
@@ -110,37 +88,127 @@ must be false.
 [[a574]]
 === Provider Support for Servlet Policy Enforcement
 
-In support of the policy enforcement done by
-servlet containers, providers must implement the policy decision
+In support of the policy enforcement done by servlet containers, providers must implement the policy decision
 functionality defined in the following subsections.
 
 [[a576]]
 ==== Servlet Policy Decision Semantics
 
-A Policy provider must use the combined
-policy statements of the default policy context (as defined in
-<<a747>>) and of the
-policy context identified by calling `PolicyContext.getContextID` to
-determine if they imply the permission being checked. If one or more
-excluded policy statements imply the checked permission, the evaluation
-may terminate and the checked permission must be determined not to be
-granted. Otherwise, if one or more unchecked policy statements imply the
-checked permission, the checked permission must be determined to be
-granted independent of `AccessControlContext`. If the status of the
-checked permission is not resolved by the excluded and unchecked
-evaluations, it must be determined if a permission that implies the
-checked permission has been granted to the `AccessControlContext` being
-tested for the permission. The checked permission may only be determined
-to be granted if a permission that implies the checked permission has
-been granted to the `AccessControlContext`. Otherwise the permission must
-be determined not to be granted. The policy decision semantics are
-dependent on permission specific rules for determining if the
-permissions in policy statements imply the permission being checked.
+A Policy provider must use the policy statements of the policy context identified by calling `PolicyContext.getContextID` to 
+determine if they imply the permission being checked (called the "checked permission" hence forward).
 
-The `WebResourcePermission`,
-`WebUserDataPermission`, and `WebRoleRefPermission` specific rules used to
-determine if the permissions in policy statements imply a checked
-permission are defined in the next sections.
+A Policy implementation can obtain all the policy statements (as `Permission` instances) by calling
+`PolicyConfigurationFactory.getPolicyConfiguration()`:
+
+[source,java]
+----
+PolicyConfiguration policyConfiguration = 
+    PolicyConfigurationFactory.get().getPolicyConfiguration();
+----
+
+`getPolicyConfiguration()` is a convenience method that internally uses the current policy context as obtained from 
+`PolicyContext.getContextID`. It is equivalent to:
+
+[source,java]
+----
+PolicyConfiguration policyConfiguration = 
+    PolicyConfigurationFactory.get().getPolicyConfiguration(PolicyContext.getContextID());
+----
+
+If one or more excluded policy statements imply the checked permission, the evaluation may terminate and the 
+checked permission must be determined not to be granted. 
+
+For example, in `jakarta.security.jacc.Policy.implies(Permission, Subject)`:
+
+[source,java]
+----
+boolean isExcluded =
+    PolicyConfigurationFactory.get()
+                            .getPolicyConfiguration()
+                            .getExcludedPermissions()
+                            .implies(permissionToBeChecked);
+                            
+if (isExcluded) {
+    return false;
+}                            
+----
+
+Otherwise, if one or more unchecked policy statements imply the checked permission, the checked permission must
+be determined to be granted. 
+
+For example, in `jakarta.security.jacc.Policy.implies(Permission, Subject)`:
+
+[source,java]
+----
+boolean isUnchecked =
+    PolicyConfigurationFactory.get()
+                            .getPolicyConfiguration()
+                            .getUncheckedPermissions()
+                            .implies(permissionToBeChecked);
+                            
+if (isUnchecked) {
+    return true;
+}                            
+----
+
+If the status of the checked permission is not resolved by the excluded and unchecked evaluations, it must be determined
+if a permission that implies the checked permission has been granted to the caller principal in the `Subject` or set of 
+principals being tested for the permission. The checked permission may only be determined to be granted if a permission that 
+implies the checked permission has been granted to the caller principal in the `Subject` or set of principals.
+
+One way of determining this is to obtain the roles associated with the caller principal, and checking these against the
+`perRolePermissions`. Roles associated with the caller principal can be obtained from the `Subject` or set of principals
+using the `PrincipalMapper`.
+
+For example, in `jakarta.security.jacc.Policy.implies(Permission, Subject)`:
+
+[source,java]
+----
+
+PrincipalMapper principalMapper = PolicyContext.get(PRINCIPAL_MAPPER);
+Set<String> callerRoles = 
+    principalMapper.getMappedRoles(subject);
+
+Map<String, PermissionCollection> perRolePermissions = 
+    PolicyConfigurationFactory.get()
+                            .getPolicyConfiguration()
+                            .getPerRolePermissions();
+                            
+for (String role : callerRoles) {
+    if (perRolePermissions.containsKey(role) && 
+        perRolePermissions.get(role).implies(permissionToBeChecked)) {
+        return true;
+    }
+}
+
+return false;
+----
+
+Otherwise the permission must be determined not to be granted. The policy decision semantics are dependent on permission
+specific rules for determining if the permissions in policy statements imply the permission being checked.
+
+The Jakarta Authorization `Policy` interface contains a default method that captures the above described rules:
+
+[source,java]
+----
+default boolean implies(Permission permissionToBeChecked, Subject subject) {
+    if (isExcluded(permissionToBeChecked)) {
+        return false;
+    }
+
+    if (isUnchecked(permissionToBeChecked)) {
+        return true;
+    }
+
+    return impliesByRole(permissionToBeChecked, subject);
+}
+----
+
+
+
+
+The `WebResourcePermission`, `WebUserDataPermission`, and `WebRoleRefPermission` specific rules used to determine if the 
+permissions in policy statements imply a checked permission are defined in the next sections.
 
 [[a579]]
 ===== Matching Qualified URL Pattern Names
@@ -267,188 +335,15 @@ the `transportType` in the actions of the argument permission.
 The comparisons described above are case
 sensitive.
 
-[[a614]]
-=== Policy Enforcement by Jakarta Enterprise Beans Containers
 
-Jakarta Enterprise Beans containers must employ the methods
-defined in the following subsections to enforce the authorization
-policies established for Jakarta Enterprise Beans resources.
-
-[[a616]]
-==== Jakarta Enterprise Beans Pre-dispatch Decision
-
-The Jakarta Enterprise Beans container must obtain an
-`EJBMethodPermission` object with name corresponding to the `ejb-name` of
-the target resource and with actions that completely specify the
-about-to-be-called method of the akarta Enterprise Bean by identifying the method
-interface, method name, and method signature as defined for a methodSpec
-in the documentation of the `EJBMethodPermission` class.
-
-The Jakarta Enterprise Beans container must use one of the methods
-described in <<a736>> to determine if the `EJBMethodPermission` has been granted to
-the caller. If a `SecurityException` is thrown in the permission
-determination, it must be caught, and the result of the determination
-must be that the permission is not granted to the caller. The Jakarta Enterprise Beans
-container may only dispatch the request to the Jakarta Enterprise Bean resource, if the
-`EJBMethodPermission` is determined to be granted to the caller. Otherwise
-the request must be rejected with the appropriate exception, as defined
-by the corresponding Jakarta Enterprise Beans specification.
-
-Before it dispatches a call to a Jakarta Enterprise Bean, the
-container must associate with the call thread an `AccessControlContext`
-containing the principals of only the target Jakarta Enterprise Bean's `runAs` identity (as
-defined in <<a703>>).
-
-[[a620]]
-==== Jakarta Enterprise Beans Application Embedded Privilege Test
-
-When a Jakarta Enterprise Bean makes a call to
-`isCallerInRole(String roleName)` the implementation of this method must
-obtain an `EJBRoleRefPermission` object with name corresponding to the
-`ejb-name` of the Jakarta Enterprise Bean making the call and with actions equal to the
-`roleName` used in the call. The implementation of the `isCallerInRole`
-method must then use one of the methods described in
-<<a736>>
-to determine if the `EJBRoleRefPermission` has been granted to the caller.
-If a `SecurityException` is thrown in the permission determination, it
-must be caught, and the result of the determination must be that the
-permission is not granted to the caller. If it is determined that the
-`EJBRoleRefPermission` has been granted to the caller, then `isCallerInRole`
-must return `true`. Otherwise the return value must be `false`.
-
-[[a622]]
-=== Provider Support for Jakarta Enterprise Beans Policy Enforcement
-
-In support of the policy enforcement done by
-Jakarta Enterprise Beans containers, providers must implement the policy decision
-functionality defined in the following subsections.
-
-[[a624]]
-==== Jakarta Enterprise Beans Policy Decision Semantics
-
-A Policy provider must employ the policy
-decision semantics described in <<a576>> in the processing of Jakarta Enterprise Beans Policy decisions.
-
-The `EJBMethodPermission` and
-`EJBRoleRefPermission` specific rules used to determine if the permissions
-in policy statements imply a checked permission are defined in the
-following sections.
-
-[[a627]]
-===== EJBMethodPermission Matching Rules
-
-A reference EJBMethodPermission implies an
-argument permission, if all of the following are true.
-
-* The argument permission is an instanceof
-`EJBMethodPermission`.
-* The name of the argument permission is
-equivalent to the name of the reference permission.
-* The methods to which the argument
-permission applies (as defined in its actions) must be a subset of the
-methods to which the reference permission applies (as defined in its
-actions). This rule is satisfied if all of the following conditions are
-met.
-** The method name of the reference permission
-is null, the empty string, or equivalent to the method name of the
-argument permission.
-** The method interface of the reference
-permission is null, the empty string, or equivalent to the method
-interface of the argument permission.
-** The method parameter type list of the
-reference permission is null, the empty string, or equivalent to the
-method parameter type list of the argument permission.
-
-The comparisons described above are case
-sensitive.
-
-<<a639>> demonstrate the
-properties of `EJBMethodPermission` matching by example.
-
-[[a639]]
-[caption="Table {doc-part}-{counter:table-number} ", title="EJBMethodPermission [[a639]]methodSpec Matching Examples"]
-[.center, width=80%]
-[%header,cols="15%,25%,20%,25%,15%"] 
-|===
-^a| [.small]#+++<font size=".8em">type</font>+++# 
-^a| [.small]#+++<font size=".8em">methodInterface Spec</font>+++#
-^a| [.small]#+++<font size=".8em">methodName Spec</font>+++# 
-^a| [.small]#+++<font size=".8em">methodParams Spec</font>+++#
-^a| [.small]#+++<font size=".8em">implies checked permission</font>+++# 
-
-^a| [.small]#+++<font size=".8em">checked permission</font>+++# 
-^a| [.small]#+++<font size=".8em">Home</font>+++#
-^a| [.small]#+++<font size=".8em">doThis</font>+++# 
-^a| [.small]#+++<font size=".8em">java.lang.String</font>+++#
-^a| [.small]#+++<font size=".8em"></font>+++# 
-
-^a| [.small]#+++<font size=".8em">reference permission</font>+++# 
-^a| [.small]#+++<font size=".8em">empty string</font>+++#
-^a| [.small]#+++<font size=".8em">empty string</font>+++# 
-^a| [.small]#+++<font size=".8em">empty string</font>+++#
-^a| [.small]#+++<font size=".8em">yes</font>+++# 
-
-^a| [.small]#+++<font size=".8em">reference permission</font>+++# 
-^a| [.small]#+++<font size=".8em">Home</font>+++#
-^a| [.small]#+++<font size=".8em">empty string</font>+++# 
-^a| [.small]#+++<font size=".8em">empty string</font>+++#
-^a| [.small]#+++<font size=".8em">yes</font>+++# 
-
-^a| [.small]#+++<font size=".8em">reference permission</font>+++# 
-^a| [.small]#+++<font size=".8em">empty string</font>+++#
-^a| [.small]#+++<font size=".8em">doThis</font>+++# 
-^a| [.small]#+++<font size=".8em">empty string</font>+++#
-^a| [.small]#+++<font size=".8em">yes</font>+++# 
-
-^a| [.small]#+++<font size=".8em">reference permission</font>+++# 
-^a| [.small]#+++<font size=".8em">empty string</font>+++#
-^a| [.small]#+++<font size=".8em">empty string</font>+++# 
-^a| [.small]#+++<font size=".8em">java.lang.String</font>+++#
-^a| [.small]#+++<font size=".8em">yes</font>+++#
-
-^a| [.small]#+++<font size=".8em">reference permission</font>+++# 
-^a| [.small]#+++<font size=".8em">Remote</font>+++#
-^a| [.small]#+++<font size=".8em">doThis</font>+++# 
-^a| [.small]#+++<font size=".8em">java.lang.String</font>+++#
-^a| [.small]#+++<font size=".8em">no</font>+++#
-
-^a| [.small]#+++<font size=".8em">reference permission</font>+++# 
-^a| [.small]#+++<font size=".8em">Home</font>+++#
-^a| [.small]#+++<font size=".8em">doNotDoThis</font>+++# 
-^a| [.small]#+++<font size=".8em">java.lang.String</font>+++#
-^a| [.small]#+++<font size=".8em">no</font>+++#
-
-^a| [.small]#+++<font size=".8em">reference permission</font>+++# 
-^a| [.small]#+++<font size=".8em">Home</font>+++#
-^a| [.small]#+++<font size=".8em">doThis</font>+++# 
-^a| [.small]#+++<font size=".8em">java.lang.byte</font>+++#
-^a| [.small]#+++<font size=".8em">no</font>+++# 
-|=== 
-
-[[a697]]
-===== EJBRoleRefPermission Matching Rules
-
-A reference `EJBRoleRefPermission` implies an
-argument permission, if all of the following are true.
-
-* The argument permission is an instanceof
-`EJBRoleRefPermission`.
-* The name of the argument permission is
-equivalent to the name of the reference permission.
-* The actions (i.e role reference) of the
-argument permission is equivalent to the actions (i.e role reference) of
-the reference permission.
-
-The comparisons described above are case
-sensitive.
 
 [[a703]]
 === Component runAs Identity
 
-The identity used by Jakarta Servlet or Jakarta Enterprise Beans
+The identity used by Jakarta Servlet 
 components in the operations they perform is configured by the Deployer.
 This identity is referred to as the component’s `runAs` identity. By
-default (and unless otherwise specified in the Jakarta Servlet or Jakarta Enterprise Beans
+default (and unless otherwise specified in the Jakarta Servlet
 specifications), components are configured such that they are assigned
 the identity of their caller (such as it is) as their `runAs` identity.
 Alternatively, a Deployer may choose to assign an environment specific
@@ -462,13 +357,6 @@ specification that the component run with an identity mapped to a role,
 those responsible for defining the principal-to-role mapping must ensure
 that the specified identity is mapped to the role.
 
-A container establishes a component’s `runAs`
-identity by associating an `AccessControlContext` with the component’s
-thread of execution. The container must ensure that the
-`AccessControlContext` includes a `SubjectDomainCombiner`; and the container
-must protect the `AccessControlContext` associated with a running
-component such that, by default, the component is not granted
-permissions sufficient to modify the `AccessControlContext`.
 
 [[a707]]
 === Setting the Policy Context
@@ -478,15 +366,11 @@ thread by calling the `setContextID` method on the `PolicyContext` utility
 class. The value of a thread’s policy context identifier is `null` until
 the `setContextID` method is called. Before invoking `Policy` to evaluate a
 transport guarantee or to perform a pre-dispatch decision, and before
-dispatching into a Jakarta Servlet or Jakarta Enterprise Beans component, a container must ensure
+dispatching into a Jakarta Servlet component, a container must ensure
 that the thread’s policy context identifier identifies the policy
 context corresponding to the instance of the module or application for
 which the operation is being performed.
 
-Containers must be granted the “setPolicy”
-`SecurityPermission` independent of policy context identifier (or in all
-policy contexts) as they need this permission to set the policy context
-identifier.
 
 [[a710]]
 ==== Policy Context Handlers
@@ -529,250 +413,101 @@ initialization of the provider.
 [[a715]]
 ===== Container Subject Policy Context Handler
 
-All Jakarta Servlet and Jakarta Enterprise Beans containers must register
-a `PolicyContextHandler` whose `getContext` method returns a
-`javax.security.auth.Subject` object when invoked with the key
-“javax.security.auth.Subject.container”. When this handler is activated
-as the result of a policy decision performed by a container before
-dispatch into a component, this handler must return a `Subject` containing the principals
-and credentials of the “caller” of the component. 
-When activated from the scope of a dispatched call, this
-handler must return a `Subject` containing the principals and credentials
-corresponding to the identity established by the container prior to the
-activation of the handler. The identity established by the container
-will either be the component’s `runAs` identity or the caller’s identity
-(e.g. when a Jakarta Enterprise Beans component calls `isCallerInRole`). In all cases, if
-the identity of the corresponding `Subject` has not been established or
-authenticated, this handler must return the value null.
+All Jakarta Servlet containers must register a `PolicyContextHandler` whose `getContext` 
+method returns a `javax.security.auth.Subject` object when invoked with the key “javax.security.auth.Subject.container”. 
 
-[[a719]]
-===== SOAPMessage Policy Context Handler
+When this handler is activated as the result of a policy decision performed by a container before dispatch into a component, 
+this handler must return a `Subject` containing the principals and credentials of the “caller” of the component. 
 
-All Jakarta Enterprise Beans containers must register a
-`PolicyContextHandler` whose `getContext` method returns a
-`jakarta.xml.soap.SOAPMessage` object when invoked with the key
-“jakarta.xml.soap.SOAPMessage”. If the request being processed by the
-container arrived as a SOAP request at the `ServiceEndpoint` method
-interface, the container must return the SOAP message object when this
-handler is activated. Otherwise, this handler must return the value
-null.
+When activated from the scope of a dispatched call, this handler must return a `Subject` containing the principals and credentials
+corresponding to the identity established by the container prior to the activation of the handler. 
+
+The identity established by the container will either be the component’s `runAs` identity or the caller’s identity
+(e.g. when a Jakarta Servlet component calls `isUserInRole`). In all cases, if the identity of the corresponding
+ `Subject` has not been established or authenticated, this handler must return the value null.
+
 
 [[a721]]
 ===== HttpServletRequest Policy Context Handler
 
-All Jakarta Servlet containers must register a
-`PolicyContextHandler` whose `getContext` method returns a
-`jakarta.servlet.http.HttpServletRequest` object when invoked with the key
-“jakarta.servlet.http.HttpServletRequest”. When this handler is activated,
-the container must return the `HttpServletRequest` object corresponding to
+All Jakarta Servlet containers must register a `PolicyContextHandler` whose `getContext` method returns a
+`jakarta.servlet.http.HttpServletRequest` object when invoked with the key “jakarta.servlet.http.HttpServletRequest”. 
+
+When this handler is activated, the container must return the `HttpServletRequest` object corresponding to
 the component request being processed by the container.
-
-[[a723]]
-===== EnterpriseBean Policy Context Handler
-
-All Jakarta Enterprise Beans containers must register a
-`PolicyContextHandler` whose `getContext` method returns a
-`jakarta.ejb.EnterpriseBean` object when invoked with the key
-“jakarta.ejb.EnterpriseBean”. When this handler is activated, the
-container must return the `EnterpriseBean` object corresponding to the Jakarta Enterprise Beans
-component request (as restricted below) being processed by the
-container. The `EnterpriseBean` object must only be returned when this
-handler is activated within the scope of a container's processing of a
-business method of the Jakarta Enterprise Beans `Remote`, `Local`, or `ServiceEndpoint` interfaces
-of the `EnterpriseBean` object. The value null must be returned if the
-bean implementation class does not implement the
-`jakarta.ejb.EnterpriseBean` interface.
-
-[[a725]]
-===== Jakarta Enterprise Beans Arguments Policy Context Handler
-
-All Jakarta Enterprise Beans containers must register a
-`PolicyContextHandler` whose `getContext` method returns an array of objects
-(`Object[]`) containing the arguments of the Jakarta Enterprise Beans method invocation (in the
-same order as they appear in the method signature) when invoked with the
-key “jakarta.ejb.arguments”. The context handler must return the value
-null when called in the context of a SOAP request that arrived at the
-`ServiceEndpoint` method interface. Otherwise, the context handler must
-return the array of objects corresponding to the parameters of the Jakarta Enterprise Beans
-component invocation. If there are no parameters in the method
-signature, the context handler must return an empty array of `Object`
-(i.e. `Object[0]`).
 
 
 [[a727]]
-=== Checking AccessControlContext Independent Grants
+=== Checking Grants
 
-This section describes the techniques used by
-containers to check permissions for which policy is defined in terms of
-the operation defined by the permission and independent of properties of
-the invocation context represented in the `AccessControlContext`. The
-`WebUserDataPermission` policy statements resulting from the translation
-of Jakarta Servlet `user-data-constraint` elements are an example of such
-permissions. A container must use one of the following techniques to
-check an instance of a permission for which policy is defined
-independent of `AccessControlContext`.
+This section describes the techniques used by containers to check permissions for which policy is defined in terms of
+the operation defined by the permission. The `WebUserDataPermission` policy statements resulting from the translation
+of Jakarta Servlet `user-data-constraint` elements are an example of such permissions. A container must use one of the following techniques to
+check an instance of a permission for which policy is defined.
 
-* The container calls
-`AccessControlContext.checkPermission` with the permission being checked
-as argument. The call to `checkPermission` may be made on any
-`AccessControlContext`. If `checkPermission` throws an
-`AccessControlException`, the permission is not granted. Otherwise the
-permission is granted.
-* The container calls
-`AccessController.checkPermission` with the permission being checked.
-The value of the current thread’s `AccessControlContext` is irrelevant in
-the access determination. If `checkPermission` throws an
-`AccessControlException`, the checked permission is not granted. Otherwise
-the permission is granted.
-* The container calls
-`SecurityManager.checkPermission` with the permission being checked. If
-`checkPermission` throws an `AccessControlExceptio`n, the checked
-permission is not granted. Otherwise the permission is granted.
-* The container calls
-`Policy.implies` with two arguments; the permission being checked and a
-`ProtectionDomain` that need not be constructed with principals. The
-checked permission is granted if `Policy.implies` returns true. Otherwise,
-the permission is not granted.
-* The container calls
-`java.security.Policy.getPermissions` with a `ProtectionDomain` that need
-not be constructed with principals. The container must call the
-`implies` method on the returned `PermissionCollection` using the
-permission being checked as argument. The checked permission is granted
-if the `PermissionCollection` implies it. Otherwise, the permission is not
+* The container calls `Policy.implies` with two arguments; the permission being checked and a
+`Subject` that need not be constructed with principals. The checked permission is granted if 
+`Policy.implies` returns true. Otherwise, the permission is not granted.
+* The container calls one of the overloaded methods of `Policy.implies`, which are provided for convenience (see their
+javadoc for details). likewise, the checked permission is granted if the overloaded  `Policy.implies` returns true. 
+Otherwise, the permission is not granted.
+* The container calls `Policy.getPermissionCollection` with a `Subject` that need not be constructed with principals. 
+The container must call the`implies` method on the returned `PermissionCollection` using the permission being checked as 
+argument. The checked permission is granted if the `PermissionCollection` implies it. Otherwise, the permission is not
 granted. This technique is supported but not recommended.
 
-Prior to using any of the techniques
-described in this section, the container must have established a policy
+Prior to using any of the techniques described in this section, the container must have established a policy
 context identifier as defined in <<a707>>.
 
 [[a736]]
 === Checking the Caller for a Permission
 
-A container must determine if the caller has
-been granted a permission by evaluating the permission in the context of
-an `AccessControlContext`, `ProtectionDomain`, or `Subject` containing the
-principals of (only) the callerfootnote:[<<a753>> allows containers to reuse granted results
-obtained for unauthenticated callers (i.e. with no principals) to
-authorize, independent of caller identity, permissions implied by such
-results.]. If the caller’s
-identity has been asserted or vouched for by a trusted authority (other
-than the caller), the principals of the authority must not be included
-in the principals of the caller. A container must use one of the
-following techniques to determine if a permission has been granted to
-the caller.
+A container must determine if the caller has been granted a permission by evaluating the permission in the context of 
+a `Subject` containing the principals of (only) the callerfootnote:[<<a753>> allows containers to reuse granted results
+obtained for unauthenticated callers (i.e. with no principals) to authorize, independent of caller identity, permissions 
+implied by such results.]. If the caller’s identity has been asserted or vouched for by a trusted authority (other
+than the caller), the principals of the authority must not be included in the principals of the caller. A container must 
+use one of the following techniques to determine if a permission has been granted to the caller.
 
-* The container calls
-`AccessControlContext.checkPermission` with the permission as argument.
-The call to `checkPermission` must be made on an `AccessControlContext`
-that contains the principals of the caller. If `checkPermission` throws an
-`AccessControlException`, the permission is not granted to the caller.
-Otherwise the permission is granted.
-* The container calls
-`AccessController.checkPermission` with the permission as argument. The
-`AccessControlContext` associated with the thread on which the call to
-`checkPermission` is made must contain the principals of the caller. If
-`checkPermission` throws an `AccessControlException`, the permission is
-not granted to the caller. Otherwise the permission is granted.
-* The container calls
-`SecurityManager.checkPermission` with the permission as argument. The
-`AccessControlContext` associated with the thread on which the call to
-`checkPermission` is made must contain the principals of the caller. If
-`checkPermission` throws an `AccessControlException`, the permission is not
-granted to the caller. Otherwise the permission is granted.
-* container calls
-`Policy.implies` with two arguments; the permission being checked and a
-ProtectionDomain constructed with the principals of the caller. The
-boolean result returned by `Policy.implies` indicates whether or not the
-permission has been granted to the caller.
-* The container calls
-`java.security.Policy.getPermissions` with an argument `ProtectionDomain`
-that was constructed with the principals of the caller. The container
-must call the `implies` method on the returned `PermissionCollection`
-using the permission being checked as argument. If the
-PermissionCollection implies the permission being tested, the permission
-has been granted to the caller. Otherwise it has not. This technique is
-supported but not recommendedfootnote:[Not all policy
-systems support this query. Also, the Policy provider does not see the
-permission being checked, and therefore cannot use the permission to
-identify when to invoke a particular policy context handler.]
+* container calls `Policy.implies` with two arguments; the permission being checked and a `Subject` constructed with the principals
+of the caller. The boolean result returned by `Policy.implies` indicates whether or not the permission has been granted to the 
+caller.
+* The container calls `Policy.getPermissions` with an argument `Subject` that was constructed with the principals of the caller. The 
+container must call the `implies` method on the returned `PermissionCollection` using the permission being checked as argument. If 
+the `PermissionCollection` implies the permission being tested, the permission has been granted to the caller. Otherwise it has not. 
+This technique is supported but not recommendedfootnote:[Not all policy systems support this query. Also, the Policy provider does
+not see the permission being checked, and therefore cannot use the permission to identify when to invoke a particular policy context handler.]
 
-Prior to using any of the techniques
-described in this section, the container must have established a policy
-context identifier as defined in <<a707>>.
+Prior to using any of the techniques described in this section, the container must have established a policy context identifier as 
+defined in <<a707>>.
 
 [[a745]]
 === Missing Policy Contexts
 
-A Policy provider must return that a tested
-permission has not been granted if it acquires a non-null policy context
-identifier by calling `getContextID` on the `PolicyContext` class and the
-`inService` method of the `PolicyConfigurationFactory` associated with
-the provider would return `false` if called with the policy context
-identifier.
+A Policy provider must return that a tested permission has not been granted if it acquires a non-null policy context
+identifier by calling `getContextID` on the `PolicyContext` class and the `inService` method of the `PolicyConfigurationFactory` 
+associated with the provider would return `false` if called with the policy context identifier.
 
-[[a747]]
-=== Default Policy Context
-
-The default policy context contains the
-policy statements that apply to the JRE independent of the policy
-contexts defined as the result of the deployment of modules or
-applications in containers. The policy context identifier of the default
-policy context is the null value. The default policy context is never
-linked to another `PolicyConfiguration`, and as such does not share the
-principal-to-role mapping of any other policy context.
-
-A Policy provider must include the policy
-statements of the default policy context in every access determination
-it performs. A Policy provider that either does not call
-`PolicyContext.getContexdID`, or does so and acquires the identifier of
-the default policy context, must use only the policy statements of the
-default policy context to perform its access determination.
-
-[[a750]]
-=== Policy Compatibility Requirements
-
-To be compatible with this contract, every
-JRE of an application server must perform all of the policy
-decisions defined by this contract by interacting with the
-`java.security.Policy` instance available in the JRE via the
-`java.security.Policy.getPolicy` method.
-
-If an application server or JRE employs a
-custom `SecurityManager`, the necessary reliance on `Policy` object may be
-accomplished by ensuring that the custom `SecurityManager` relies on the
-appropriate (as defined above) `Policy` object for all of the policy
-decisions defined by this contract.
 
 [[a753]]
 === Optimization of Permission Evaluations
 
-Containers may employ the following
-optimizations (based on reuse) when the result obtained by repeating the
-evaluation will not differ from the previous result or when the time
-since the previous evaluation is less than the container’s threshold for
-being effected by policy changes:
+Jakarta Authorization implementations may employ the following optimizations (based on reuse) when the result obtained by 
+repeating the evaluation will not differ from the previous result or when the time since the previous evaluation is less than
+the Jakarta Authorization implementation's threshold for being effected by policy changes:
 
-* Containers may reuse an authorization
-result obtained from a previous equivalent permission evaluation.
-* Containers may reuse an authorization
-result obtained for an unauthenticated caller (i.e. a caller with no
-principals) performed as defined in <<a736>> to grant, independent of caller
-identity, any permission implied by the unauthenticated result.
+* Jakarta Authorization implementations may reuse an authorization result obtained from a previous equivalent permission evaluation.
+* Jakarta Authorization implementations may reuse an authorization result obtained for an unauthenticated caller (i.e. a caller with
+no principals) performed as defined in <<a736>> to grant, independent of caller identity, any permission implied by the unauthenticated result.
 
-This specification does not prescribe how a
-container determines when a repeated evaluation will return the same
-result. That said, one way that containers could make this determination
-is if they are, and can determine if they will be, notified of policy
-changes and if they can establish that their policy provider does not
-employ additional context (such as could be acquired by calling a
-`PolicyContextHandler`) in its policy evaluations.
+This specification does not prescribe how a Jakarta Authorization implementations determines when a repeated evaluation will return the
+same result. That said, one way that Jakarta Authorization implementations could make this determination is if they are, and can
+determine if they will be, notified of policy changes and if they can establish that their policy provider does not
+employ additional context (such as could be acquired by calling a `PolicyContextHandler`) in its policy evaluations.
 
-Common practice for containers to receive
-such notification could be for them to register to the
-`"java.security.Policy.supportsReuse"` key a `PolicyContextHandler` and
-for the container to determine if its provider will notify it of policy
-changes by making a test call to the provider’s `refresh` method. Only a
-provider that is compatible with the optimizations described above
-(including because it does not employ additional context in its policy
-evaluations) may deliver notice of policy changes by activating this
-handler when its `refresh` method is called.
+Common practice for Jakarta Authorization implementations to receive such notification could be for them to register to the
+`"java.security.Policy.supportsReuse"` key a `PolicyContextHandler` and for the Jakarta Authorization implementation to determine
+if its provider will notify it of policy changes by making a test call to the provider’s `refresh` method. 
+
+Only a provider that is compatible with the optimizations described above (including because it does not employ additional context
+in its policy evaluations) may deliver notice of policy changes by activating this handler when its `refresh` method is called.

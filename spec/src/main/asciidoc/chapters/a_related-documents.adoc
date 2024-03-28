@@ -6,12 +6,10 @@ specification are included in brackets.
 
 _S. Bradner, “Key words for use in RFCs to Indicate Requirement Levels,” RFC 2119, Harvard University, March 1997, [Keywords]_
 
-_Jakarta EE 9 Specification [Jakarta EE 9 Specification], available at: https://github.com/eclipse-ee4j/jakartaee-platform_
+_Jakarta EE 11 Specification [Jakarta EE 11 Specification], available at: https://jakarta.ee/specifications/platform/11/_
 
-_Jakarta Servlet Specification, Version 5.0 [Jakarta Servlet Specification], available at: https://github.com/eclipse-ee4j/servlet-api_
+_Jakarta Servlet Specification, Version 6.1 [Jakarta Servlet Specification], available at: https://jakarta.ee/specifications/servlet/6.1/_
 
-_Jakarta Enterprise Beans, Version 4.0 [Jakarta Enterprise Beans Specification], available at: _https://github.com/eclipse-ee4j/ejb-api_
+_Jakarta Enterprise Beans, Version 4.0 [Jakarta Enterprise Beans Specification], available at: _https://jakarta.ee/specifications/enterprise-beans/4.0/_
 
-_Java™, Standard Edition, Version 8.0 API Specification [Java SE 8 Specification], available at: https://docs.oracle.com/javase/8/docs/api_
 
-_Java™ Authentication and Authorization Service_ (JAAS) [JAAS Specification], available at: https://docs.oracle.com/javase/8/docs/technotes/guides/security/jaas/JAASRefGuide.html_

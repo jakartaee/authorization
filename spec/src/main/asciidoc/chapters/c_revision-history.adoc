@@ -63,7 +63,7 @@ include principals of any trusted (other than the caller).
 <<a745>>, to make
 explicit the behavior of a provider when asked to check a permission in
 an unknown policy context.
-. Rewrote the <<a750>> to indicate that a J2EE 1.4
+. Rewrote the a section to indicate that a J2EE 1.4
 container that uses a JAAS policy interface to perform container access
 decisions would not be compatible with this specification.
 
@@ -167,7 +167,7 @@ permission names.
 . <<a518>>, <<a521>>, and <<a524>> were all changed to reflect
 the removal of the policy context identifier from permission names.
 . <<a533>> was modified to reflect the use of the PolicyContext class to define the policy context.
-. <<a549>> was changed to require that “the state of the policy
+. a549 was changed to require that “the state of the policy
 statement repository” not be changed when the caller does not have the
 “setPolicy” permission. Also a new requirement was added that policy be
 configured to grant containers the “getPolicy” and “setPolicy”
@@ -214,7 +214,7 @@ change item were applied to <<a736>>.
 . <<a745>> was renamed from “Unconfigured Policy Contexts” and the
 semantics were modified to reflect the use of the PolicyContext utility
 class and the designation of the null policy context id as the default.
-. A new <<a747>> was introduced to describe requirements for chaining
+. A new section was introduced to describe requirements for chaining
 policy evaluation through to the provider of the default policy context.
 
 ==== Changes to API
@@ -407,7 +407,7 @@ clarified.
 the policy context life cycle and the commit method.
 . The inService method was added to the factory
 methods called out in the first paragraph of
-<<a549>>, and
+a549, and
 the SecurityPermission required by these methods was changed from
 “getPolicy” to “setPolicy” to correct an inconsistency with the Java
 implementation.
@@ -592,7 +592,7 @@ paragraph of <<a727>>.
 . In bullets 4 and 5 of
 <<a727>>, removed “that was constructed without static
 permissions and”.
-. Rewrote <<a747>> to indicate describe the properties of the
+. Rewrote a747 to indicate describe the properties of the
 default policy context, and to require that its policy statements be
 included in every access decision.
 
@@ -841,7 +841,7 @@ integrated.
 . Page 7: modified requirement 9 to allow for and
 describe the circumstances under which a container may run without a
 SecurityManager.
-. Page 8: added <<a154>> to describe the changes to this
+. Page 8: added a154 to describe the changes to this
 contract that apply to containers running without a J2SE
 SecurityManager.
 
@@ -987,10 +987,10 @@ character to distinguish qualifying patterns.
 provider in a Servlet or EJB only container need only satisfy the
 requirements corresponding to the supported container.
 . Corrected bullet 3 of
-<<a154>>, by
+a154, by
 removing prohibition on AccessControlContext.checkPermission.
 . Added new bullet 4 to
-<<a154>>, to
+a154, to
 ensure that container sets AccessControlContext if it uses the
 AccessController.checkPermission technique.
 . Added new section,
@@ -1051,7 +1051,7 @@ request, an attempt is made to invoke a required but not yet registered
 handler.
 . In <<a727>> corrected return result of
 AccessController.checkPermission when exception is not thrown.
-. In <<a750>>. corrected the reference to the
+. Corrected the reference to the
 _javax.security.auth.Policy.getPolicy_ method.
 
 ==== Changes to API
@@ -1181,3 +1181,9 @@ translation of role-names in method-permission elements, to include
 support for the role named pass:["**"].
 . In <<a544>>, added requirement that the provider grant all
 permissions assigned to role pass:["**"] to any authenticated user.
+
+=== Change log for Version 3.0
+
+This is a major update of the specification, removing all references to the Java SE SecurityManager. 
+Part of that removal is the dependency on the Java SE Policy, which has been replaced in this version by a similar Policy
+defined by Jakarta Authorization.

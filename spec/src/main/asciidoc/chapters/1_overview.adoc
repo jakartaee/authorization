@@ -15,6 +15,37 @@ decisions. The three subcontracts are the <<a173>>, <<a232>>, and the <<a556>>.
 [[a76]]
 image::authz-1.svg[caption="Figure {doc-part}-{counter:figure} ", reftext="Figure {doc-part}-{figure}", title="Policy Configuration and Enforcement Subcontracts", align="center"]
 
+=== Relationship to other specifications
+
+==== Relationship to Jakarta Security
+
+Jakarta Security defines an end-developer focused API for securing applications in Jakarta EE using modern paradigms. It takes advantage
+of Jakarta CDI to provide an ease of use development experience. Jakarta Security uses this specification for its lower level authorization
+functionality. As such, this specification provides the SPI (Service Provider Interface) between a Jakarta EE Environment and an implementation of this specification, while Jakarta Security provides high level ease of use functionality on top of that.
+
+==== Relationship to Jakarta Authentication
+
+Jakarta Authentication defines a lower-level SPI for plugable authentication modules into a Jakarta EE environment. It's similar to this 
+specification in providing an SPI, with Jakarta Security providing high level ease of use functionality on top of that, with the obvious difference that Jakarta Authentication focuses on the authentication concerns of security, and this specification does so for the authorization concerns.
+ 
+==== Relationship to Jakarta Servlet
+ 
+Jakarta Servlet provides classes that respond to HTTP requests including a security model and the concept of a (web) application and deployable archives (wars). 
+ 
+This specification does exactly what a Jakarta Servlet implementation does as well; storing a representation of its security declarations (i.e. the constraints from its web.xml) internally, and using these to enforce the pre-dispatch security (access to a resource), and to support programmatic security (such as `HttpServletRequest.isUserInRole`). 
+
+Whereas in Jakarta Servlet this process is an internal implementation detail, this specification standardizes it. As a result, a Jakarta Servlet container not using Jakarta Authorization, and a Jakarta Servlet container delegating to Jakarta Authorization should have the exact same security behaviour when the defaults of Jakarta Authorization are used.
+
+Jakarta Authorization expands on the Servlet security model, by making the objects involved in the authorization enforcement replaceable. 
+ 
+
+==== Relationship to Jakarta Enterprise Beans
+
+Jakarta Enterprise Beans is an alternative component model in Jakarta EE. As of Jakarta EE 11 this model is strongly de-emphasised and may eventually be phased out entirely.
+
+Like Jakarta Servlet, Jakarta Enterprise Beans defines its own security model which this specification supports by standardizing how its constraints are stored and enforced.
+ 
+
 === Terminology
 
 [frame=none]
@@ -23,7 +54,7 @@ image::authz-1.svg[caption="Figure {doc-part}-{counter:figure} ", reftext="Figur
 |===
 2+| *Jakarta EE application*
 
-| | A collection of Jakarta EE modules that must share a common principal-to-role-mapping
+| | A collection of one ore more Jakarta EE modules that must share a common principal-to-role-mapping
 
 2+| *deploy (e.g. an application)*
 
@@ -48,6 +79,18 @@ mechanisms, combined with _undeploying_ a corresponding module or
 application, followed by _redistribution_ and _activation_ of the modified
 software and or configuration.
 
+2+| *Application Server*
+
+| | For the purpose of this specification; a Jakarta EE environment capable of running multiple Jakarta EE applications at the same time
+where each Jakarta EE applications can consist of one or more modules (e.g. an EAR containing .war and .jar modules),
+and also supporting the deploy, undeploy and redeploy processes for each such application. For example, Eclipse GlassFish or Red Hat JBoss EAP.
+
+2+| *Jakarta Authorization implementation*
+
+| | The code that most directly implements this specification, and which can be integrated into an Application Server or other
+Jakarta EE environment or Jakarta EE-like environment (like a standalone Servlet Container, such as Tomcat). A Jakarta Authorization implementation can be a standalone (modular) .jar file, potentially from a separate project, or it can be highly integrated into the code of a 
+specific Jakarta EE environment.
+
 2+| *grant*
 
 | | The act of assigning to entities the right to
@@ -61,13 +104,13 @@ server, as may be used in the composition of a servlet policy context
 identifier.
 
 
-2+| [[a90]] *JAAS Policy interface*
+2+| [[a90]] *Policy interface*
 
-| | The `javax.security.auth.Policy` abstract class.
+| | The `jakarta.security.jacc.Policy` abstract class.
 
-2+| [[a92]] *JAAS Policy provider*
+2+| [[a92]] *Policy provider*
 
-| | An instance of a class that implements the JAAS Policy interface.
+| | An instance of a class that implements the Policy interface.
 
 2+| *permission*
 
@@ -143,16 +186,14 @@ by policy management.
 [[a120]]
 === Assumptions
 
-. The contract defined in this specifiction must be applicable to Jakarta EE 9 and future versions of the Jakarta EE platform.
+. The contract defined in this specification must be applicable to Jakarta EE 11 and future versions of the Jakarta EE platform.
 
-. We are defining a contract to be satisfied by “standard” Java SE Policy providers. 
+. We are defining a contract to be satisfied by Jakarta Authorization's own Policy providers. 
 
-. Jakarta EE 9 platforms will be required to implement the contract defined by this specification. This contract will be a
+. Jakarta EE 11 platforms will be required to implement the contract defined by this specification. This contract will be a
 required element of subsequent versions of the Jakarta EE platform.
 
-. We do not expect to add new decision interfaces to Policy (JAAS or Java SE) to accomplish the work of this specification.
-
-. Jakarta EE application roles will be modeled as collections of permissions that are granted to principals.
+. Jakarta EE application roles will be modelled as collections of permissions that are granted to principals.
 
 . A principal that is in a role is granted all the permissions of the collection. However, the converse is not true.
 That is, a principal that has been granted all the permissions of a role is not necessarily in the role (as determined by
@@ -165,28 +206,24 @@ EE application to the policy provider. Accordingly, the following mappings will 
 ** (Application embedded) role references to role names
 
 . It is assumed that there are providers that are unable to enumerate all the permissions that pertain to a
-subject/protection domain before returning from `Policy.getPermissions()`.
+subject before returning from `Policy.getPermissionCollection()`.
 
 . Any interfaces that this contract defines to be used by containers and or container deployment tools to create policy
 statements within a policy provider must be compatible with a module-at-a-time application deployment mechanism.
 
-. Where the Jakarta Enterprise Beans or Jakarta Servlet specifications are incomplete or ambiguous in their
+. Where the Jakarta Servlet specifications is incomplete or ambiguous in its
 specification of authorization functionality, the contract defined in this document may require additional semantics. 
 Additional or clarifying semantics will only be adopted by this specification based on their acceptance by the 
 committers of the corresponding component specification.
 
-. The Jakarta Enterprise Beans policy decisions performed by providers may require access to the arguments of the 
-Enterprise Bean invocation and or (for entity beans) the container managed Enterprise Bean instance state.
-
 [[a136]]
 === Requirements
 
-. This contract must support providers that are unable to determine, before returning from `Policy.getPermissions()`, 
-all the permissions that pertain to a subject/protection domain.
+. This contract must support providers that are unable to determine, before returning from `Policy.getPermissionCollection()`, 
+all the permissions that pertain to a subject.
 
-. Each Policy provider that satisfies this contract must perform or delegate to another provider all the permission
-evaluations requested via its interface in the JRE; not just those made by the container to implement 
-Jakarta EE security functionality.
+. Each Policy provider that satisfies this contract must perform or delegate to another provider just the permission
+evaluations requested via its interface to implement Jakarta EE security functionality.
 
 . Each provider must export interfaces (defined by this contract) for use by containers and or container deployment
 tools to create policy statements within the policy store of the provider. These interfaces must be used when an 
@@ -209,19 +246,14 @@ the constraint matching and servlet mapping rules defined by the Jakarta Servlet
 . To support this contract in a Jakarta Servlet environment, a container or its deployment tools must create policy
 statements as necessary to support Servlet’s “default role-ref semantic”.
 
-. For a container to support this contract, it must execute in an environment controlled by a Java SE `SecurityManager`.
-Containers may also execute in environments that are not controlled by a Java SE SecurityManager. 
-<<a154>> defines changes to this contract that apply to containers running without a Java SE `SecurityManager`.
-
 . Policy providers must perform the permission evaluations corresponding to container pre-dispatch decisions and
-application embedded privilege tests (i.e `isUserInRole` and `isCallerInRole`) without requiring that containers 
-establish particular values for any of the non-principal attributes of the one or more
-`java.security.ProtectionDomain` objects that are the subject of the evaluation.
+application embedded privilege tests (i.e `isUserInRole` and `isCallerInRole`).
 
 === Non Requirements
 
 . This specification does not require that containers
-support server-side authentication module plug-ins for the purpose of
+support server-side authentication module plug-ins 
+(for example, those from Jakarta Authentication) for the purpose of
 populating subjects with authorization provider specific principals.
 
 . This specification does not require that subjects be
@@ -245,26 +277,6 @@ permissions or policy.
 . It is not the intent of this specification to extend or
 modify the Jakarta EE authorization model to be equivalent to standard RBAC
 models for access control.
-
-[[a154]] 
-=== Running Without a SecurityManager
-
-The following list defines changes to this contract that apply to containers running without a Java SE
-`SecurityManager`.
-
-. The restrictions defined in <<a549>> need not be enforced. 
-Also, the containers of the application server must not be denied permission to perform any operation that would have been
-permitted in the presence of a `SecurityManager`.
-
-. Such containers are not required (before dispatching a call) to associate an `AccessControlContext` with the call
-thread (as otherwise required by <<a569>> and <<a616>>).
-
-. When performing the operations defined in <<a727>> and in <<a736>>, such containers must not employ the
-`SecurityManager.checkPermission` techniques defined in these sections.
-
-. When using the `AccessController.checkPermission` technique of <<a736>>, the calling container must ensure that 
-the principals of the caller are contained in the `AccessControlContext` associated with the thread on
-which the call to `checkPermission` is made.
 
 [[a160]]
 === Jakarta Servlet or Jakarta Enterprise Beans only containers
