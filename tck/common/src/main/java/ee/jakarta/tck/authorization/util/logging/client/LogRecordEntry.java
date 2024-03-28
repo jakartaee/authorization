@@ -17,7 +17,6 @@
 package ee.jakarta.tck.authorization.util.logging.client;
 
 import java.io.Serializable;
-
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
