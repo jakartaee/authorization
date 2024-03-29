@@ -26,8 +26,8 @@ import java.security.Permission;
  * Provider.
  *
  * <p>
- * Implementation classes must have a public no argument constructor that may be used to create an operational instance
- * of the factory implementation class.
+ * Usage: extend this class and push the implementation being wrapped to the constructor and use {@link #getWrapped} to
+ * access the instance being wrapped.
  *
  * @see Permission
  * @see PolicyConfiguration
@@ -42,6 +42,8 @@ public abstract class PolicyConfigurationFactory {
     public static final String FACTORY_NAME = "jakarta.security.jacc.PolicyConfigurationFactory.provider";
 
     private static volatile PolicyConfigurationFactory policyConfigurationFactory;
+
+    private PolicyConfigurationFactory wrapped;
 
     /**
      * This static method uses a system property to find and instantiate (via a public constructor) a provider specific
@@ -146,6 +148,30 @@ public abstract class PolicyConfigurationFactory {
         } catch (ClassNotFoundException | PolicyContextException e) {
             throw new IllegalStateException(e);
         }
+    }
+
+    /**
+     * Default constructor for if no wrapping is needed
+     */
+    public PolicyConfigurationFactory() {
+    }
+
+    /**
+     * If this factory has been decorated, the implementation doing the decorating should push the implementation being
+     * wrapped to this constructor. The {@link #getWrapped()} will then return the implementation being wrapped.
+     *
+     * @param wrapped The implementation being wrapped.
+     */
+    public PolicyConfigurationFactory(PolicyConfigurationFactory wrapped) {
+        this.wrapped = wrapped;
+    }
+
+    /**
+     * If this factory has been decorated, the implementation doing the decorating may override this method to provide
+     * access to the implementation being wrapped.
+     */
+    public PolicyConfigurationFactory getWrapped() {
+        return wrapped;
     }
 
     /**

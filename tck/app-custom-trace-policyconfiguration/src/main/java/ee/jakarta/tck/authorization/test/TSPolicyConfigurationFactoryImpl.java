@@ -26,7 +26,6 @@ package ee.jakarta.tck.authorization.test;
 
 import static java.util.logging.Level.FINER;
 import static java.util.logging.Level.INFO;
-import static java.util.logging.Level.SEVERE;
 
 import ee.jakarta.tck.authorization.util.logging.server.TSLogger;
 import jakarta.security.jacc.PolicyConfiguration;
@@ -45,17 +44,12 @@ public class TSPolicyConfigurationFactoryImpl extends PolicyConfigurationFactory
 
     private static String FACTORY_NAME = "vendor.jakarta.security.jacc.PolicyConfigurationFactory.provider";
 
-    private static PolicyConfigurationFactory policyConfigurationFactory;
 
-    public TSPolicyConfigurationFactoryImpl() throws PolicyContextException {
-        try {
-            policyConfigurationFactory = TSPolicyConfigurationFactoryImpl.getPolicyConfigurationFactory();
-        } catch (PolicyContextException pce) {
-            if (logger != null) {
-                logger.severe("Failed to get PolicyConfigurationFactory");
-            }
-
-            throw new PolicyContextException(pce);
+    public TSPolicyConfigurationFactoryImpl(PolicyConfigurationFactory policyConfigurationFactory) {
+        super(policyConfigurationFactory);
+        logger.log(INFO, "PolicyConfigurationFactory instantiated");
+        if (policyConfigurationFactory.getClass().getName().equals(FACTORY_NAME)) {
+            logger.log(INFO, "policyConfigurationFactory equals expected vendor PolicyConfigurationFactory");
         }
     }
 
@@ -110,55 +104,6 @@ public class TSPolicyConfigurationFactoryImpl extends PolicyConfigurationFactory
     }
 
     /**
-     * This static method uses a system property to find and instantiate (via a public constructor) a provider specific
-     * factory implementation class. The name of the provider specific factory implementation class is obtained from the
-     * value of the system property,
-     * <P>
-     * <code><Pre>
-     *     vendor.jakarta.security.jacc.PolicyConfigurationFactory.provider
-     * </Pre></code>
-     * <P>
-     *
-     * @return the singleton instance of the provider specific PolicyConfigurationFactory implementation class.
-     *
-     * @throws SecurityException when called by an AccessControlContext that has not been granted the "getPolicy"
-     * SecurityPermission.
-     *
-     * @throws PolicyContextException when the class named by the system property could not be found including because the
-     * value of the system property has not been set.
-     */
-
-    public static PolicyConfigurationFactory getPolicyConfigurationFactory() throws PolicyContextException {
-        if (policyConfigurationFactory != null) {
-            return policyConfigurationFactory;
-        }
-
-        String classname = System.getProperty(FACTORY_NAME);
-        if (classname == null) {
-            logger.severe("factory.name.notset");
-            throw new PolicyContextException("PolicyConfigurationFactory name not set!");
-        }
-
-        try {
-            policyConfigurationFactory = (PolicyConfigurationFactory)
-                TSPolicyConfigurationFactoryImpl.class
-                                                .getClassLoader()
-                                                .loadClass(classname)
-                                                .getDeclaredConstructor()
-                                                .newInstance();
-
-            if (policyConfigurationFactory != null) {
-                logger.log(INFO, "PolicyConfigurationFactory instantiated");
-            }
-        } catch (Exception e) {
-            logger.log(SEVERE, "factory.instantiation.error", e);
-            throw new PolicyContextException(e);
-        }
-
-        return policyConfigurationFactory;
-    }
-
-    /**
      * This method determines if the identified policy context exists with state "inService" in the Policy provider
      * associated with the factory.
      * <P>
@@ -182,7 +127,7 @@ public class TSPolicyConfigurationFactoryImpl extends PolicyConfigurationFactory
         logger.log(INFO, "PolicyConfigurationFactory.inService() invoked");
         logger.log(FINER, "PolicyConfiguration.inService() invoked for context id = " + contextId);
 
-        return policyConfigurationFactory.inService(contextId);
+        return getWrapped().inService(contextId);
     }
 
     public PolicyConfiguration getPolicyConfiguration(String contextID) {
@@ -190,7 +135,7 @@ public class TSPolicyConfigurationFactoryImpl extends PolicyConfigurationFactory
             logger.entering("PolicyConfigurationFactoryImpl", "getPolicyConfiguration(String)");
         }
 
-        PolicyConfiguration policyConfiguration = policyConfigurationFactory.getPolicyConfiguration(contextID);
+        PolicyConfiguration policyConfiguration = getWrapped().getPolicyConfiguration(contextID);
         logger.log(INFO, "PolicyConfigurationFactory.getPolicyConfiguration(String) invoked");
 
         return policyConfiguration;
@@ -202,7 +147,7 @@ public class TSPolicyConfigurationFactoryImpl extends PolicyConfigurationFactory
         }
 
         String contextId = PolicyContext.getContextID();
-        PolicyConfiguration policyConfiguration = policyConfigurationFactory.getPolicyConfiguration(contextId);
+        PolicyConfiguration policyConfiguration = getWrapped().getPolicyConfiguration(contextId);
         logger.log(INFO, "PolicyConfigurationFactory.getPolicyConfiguration(String) invoked");
         logger.log(FINER, "Getting PolicyConfiguration object with id = " + contextId);
 

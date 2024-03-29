@@ -32,6 +32,8 @@ public abstract class PolicyFactory {
 
     private static volatile PolicyFactory policyFactory;
 
+    private PolicyFactory wrapped;
+
     /**
      * Get the system-wide PolicyFactory implementation.
      *
@@ -85,6 +87,30 @@ public abstract class PolicyFactory {
      */
     public static synchronized void setPolicyFactory(PolicyFactory policyFactory) {
         PolicyFactory.policyFactory = policyFactory;
+    }
+
+    /**
+     * Default constructor for if no wrapping is needed
+     */
+    public PolicyFactory() {
+    }
+
+    /**
+     * If this factory has been decorated, the implementation doing the decorating should push the implementation being
+     * wrapped to this constructor. The {@link #getWrapped()} will then return the implementation being wrapped.
+     *
+     * @param wrapped The implementation being wrapped.
+     */
+    public PolicyFactory(PolicyFactory wrapped) {
+        this.wrapped = wrapped;
+    }
+
+    /**
+     * If this factory has been decorated, the implementation doing the decorating may override this method to provide
+     * access to the implementation being wrapped.
+     */
+    public PolicyFactory getWrapped() {
+        return wrapped;
     }
 
     /**

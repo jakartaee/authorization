@@ -50,8 +50,8 @@ import java.util.logging.Level;
 public class TSPolicyConfigurationImpl implements PolicyConfiguration {
     private static TSLogger logger;
 
-    private PolicyConfigurationFactory policyConfigurationFactory;
-    private PolicyConfiguration policyConfiguration;
+    private PolicyConfigurationFactory vendorPolicyConfigurationFactory;
+    private PolicyConfiguration vendorPolicyConfiguration;
 
     private String applicationContext;
     private String appTime;
@@ -71,11 +71,11 @@ public class TSPolicyConfigurationImpl implements PolicyConfiguration {
         }
 
         // set vendor's PolicyConfigurationFactory
-        policyConfigurationFactory = TSPolicyConfigurationFactoryImpl.getPolicyConfigurationFactory();
+        vendorPolicyConfigurationFactory = PolicyConfigurationFactory.get().getWrapped();
 
         // **** This covers two assertions JACC:SPEC:33 and JACC:SPEC:56 ****
         // set vendor's PolicyConfiguration
-        policyConfiguration = policyConfigurationFactory.getPolicyConfiguration(contextId, remove);
+        vendorPolicyConfiguration = vendorPolicyConfigurationFactory.getPolicyConfiguration(contextId, remove);
 
         // This(appId record) will be used as an identifier
         // for isolating the logs associated with each test run.
@@ -101,9 +101,9 @@ public class TSPolicyConfigurationImpl implements PolicyConfiguration {
      * encapsulated (during construction) in the thrown PolicyContextException.
      */
     public String getContextID() throws PolicyContextException {
-        boolean wasInService = policyConfiguration.inService();
+        boolean wasInService = vendorPolicyConfiguration.inService();
 
-        String contextId = policyConfiguration.getContextID();
+        String contextId = vendorPolicyConfiguration.getContextID();
 
         // If the state was inService for our getContextID call, then it must remain
         // in that state as its next transitional state (per javadoc table)
@@ -111,7 +111,7 @@ public class TSPolicyConfigurationImpl implements PolicyConfiguration {
             assertIsInserviceState("getContextID");
         } else {
             // state was not inService so make sure it is still NOT in the
-            // inService state after calling policyConfiguration.getContextID()
+            // inService state after calling vendorPolicyConfiguration.getContextID()
             assertStateNotInservice("getContextID");
         }
 
@@ -152,8 +152,8 @@ public class TSPolicyConfigurationImpl implements PolicyConfiguration {
             return;
         }
 
-        policyConfiguration = policyConfigurationFactory.getPolicyConfiguration(applicationContext, false);
-        policyConfiguration.addToRole(roleName, permissions);
+        vendorPolicyConfiguration = vendorPolicyConfigurationFactory.getPolicyConfiguration(applicationContext, false);
+        vendorPolicyConfiguration.addToRole(roleName, permissions);
         assertStateNotInservice("addToRole");
 
         if (logger.isLoggable(INFO)) {
@@ -226,9 +226,9 @@ public class TSPolicyConfigurationImpl implements PolicyConfiguration {
         if (roleName == null || permission == null)
             return;
 
-        policyConfiguration = policyConfigurationFactory.getPolicyConfiguration(applicationContext, false);
+        vendorPolicyConfiguration = vendorPolicyConfigurationFactory.getPolicyConfiguration(applicationContext, false);
 
-        policyConfiguration.addToRole(roleName, permission);
+        vendorPolicyConfiguration.addToRole(roleName, permission);
         assertStateNotInservice("addToRole");
 
         // Get the permission type,
@@ -282,8 +282,8 @@ public class TSPolicyConfigurationImpl implements PolicyConfiguration {
             return;
         }
 
-        policyConfiguration = policyConfigurationFactory.getPolicyConfiguration(applicationContext, false);
-        policyConfiguration.addToUncheckedPolicy(permissions);
+        vendorPolicyConfiguration = vendorPolicyConfigurationFactory.getPolicyConfiguration(applicationContext, false);
+        vendorPolicyConfiguration.addToUncheckedPolicy(permissions);
         assertStateNotInservice("addToUncheckedPolicy");
 
         if (logger.isLoggable(INFO)) {
@@ -346,8 +346,8 @@ public class TSPolicyConfigurationImpl implements PolicyConfiguration {
             return;
         }
 
-        policyConfiguration = policyConfigurationFactory.getPolicyConfiguration(applicationContext, false);
-        policyConfiguration.addToUncheckedPolicy(permission);
+        vendorPolicyConfiguration = vendorPolicyConfigurationFactory.getPolicyConfiguration(applicationContext, false);
+        vendorPolicyConfiguration.addToUncheckedPolicy(permission);
         assertStateNotInservice("addToUncheckedPolicy");
 
         // Get the permission type,
@@ -391,8 +391,8 @@ public class TSPolicyConfigurationImpl implements PolicyConfiguration {
         if (permissions == null)
             return;
 
-        policyConfiguration = policyConfigurationFactory.getPolicyConfiguration(applicationContext, false);
-        policyConfiguration.addToExcludedPolicy(permissions);
+        vendorPolicyConfiguration = vendorPolicyConfigurationFactory.getPolicyConfiguration(applicationContext, false);
+        vendorPolicyConfiguration.addToExcludedPolicy(permissions);
         assertStateNotInservice("addToExcludedPolicy");
 
         if (logger.isLoggable(INFO)) {
@@ -451,8 +451,8 @@ public class TSPolicyConfigurationImpl implements PolicyConfiguration {
             return;
         }
 
-        policyConfiguration = policyConfigurationFactory.getPolicyConfiguration(applicationContext, false);
-        policyConfiguration.addToExcludedPolicy(permission);
+        vendorPolicyConfiguration = vendorPolicyConfigurationFactory.getPolicyConfiguration(applicationContext, false);
+        vendorPolicyConfiguration.addToExcludedPolicy(permission);
         assertStateNotInservice("addToExcludedPolicy");
 
         // Get the permission type,
@@ -496,8 +496,8 @@ public class TSPolicyConfigurationImpl implements PolicyConfiguration {
             return;
         }
 
-        policyConfiguration = policyConfigurationFactory.getPolicyConfiguration(applicationContext, false);
-        policyConfiguration.removeRole(roleName);
+        vendorPolicyConfiguration = vendorPolicyConfigurationFactory.getPolicyConfiguration(applicationContext, false);
+        vendorPolicyConfiguration.removeRole(roleName);
         assertStateNotInservice("removeRole");
 
         if (logger.isLoggable(INFO)) {
@@ -526,8 +526,8 @@ public class TSPolicyConfigurationImpl implements PolicyConfiguration {
             logger.entering("TSPolicyConfigurationImpl", "removeUncheckedPolicy");
         }
 
-        policyConfiguration = policyConfigurationFactory.getPolicyConfiguration(applicationContext, false);
-        policyConfiguration.removeUncheckedPolicy();
+        vendorPolicyConfiguration = vendorPolicyConfigurationFactory.getPolicyConfiguration(applicationContext, false);
+        vendorPolicyConfiguration.removeUncheckedPolicy();
         assertStateNotInservice("removeUncheckedPolicy");
 
         if (logger.isLoggable(INFO)) {
@@ -556,8 +556,8 @@ public class TSPolicyConfigurationImpl implements PolicyConfiguration {
             logger.entering("TSPolicyConfigurationImpl", "removeExcludedPolicy");
         }
 
-        policyConfiguration = policyConfigurationFactory.getPolicyConfiguration(applicationContext, false);
-        policyConfiguration.removeExcludedPolicy();
+        vendorPolicyConfiguration = vendorPolicyConfigurationFactory.getPolicyConfiguration(applicationContext, false);
+        vendorPolicyConfiguration.removeExcludedPolicy();
         assertStateNotInservice("removeExcludedPolicy");
 
         if (logger.isLoggable(INFO)) {
@@ -593,8 +593,8 @@ public class TSPolicyConfigurationImpl implements PolicyConfiguration {
             logger.entering("TSPolicyConfigurationImpl", "commit");
         }
 
-        policyConfiguration.inService();
-        policyConfiguration.commit();
+        vendorPolicyConfiguration.inService();
+        vendorPolicyConfiguration.commit();
 
         assertIsInserviceState("commit");
 
@@ -673,7 +673,7 @@ public class TSPolicyConfigurationImpl implements PolicyConfiguration {
             }
         }
 
-        // policyConfiguration.linkConfiguration(link);
+        // vendorPolicyConfiguration.linkConfiguration(link);
         //
         // Note:
         // The Passed varibale "link" may be an instance of
@@ -686,12 +686,12 @@ public class TSPolicyConfigurationImpl implements PolicyConfiguration {
 
         // get vendor's Policy configuration from "link"
         // Note: pcf is vendor's PolicyConfigurationFactory
-        PolicyConfiguration vendorPC = policyConfigurationFactory.getPolicyConfiguration(vendorContextId, false);
+        PolicyConfiguration vendorPC = vendorPolicyConfigurationFactory.getPolicyConfiguration(vendorContextId, false);
 
         // Now link the vendor's PolicyConfiguration
 
-        policyConfiguration.inService();
-        policyConfiguration.linkConfiguration(vendorPC);
+        vendorPolicyConfiguration.inService();
+        vendorPolicyConfiguration.linkConfiguration(vendorPC);
 
         assertStateNotInservice("linkConfiguration");
 
@@ -720,7 +720,7 @@ public class TSPolicyConfigurationImpl implements PolicyConfiguration {
             logger.entering("TSPolicyConfigurationImpl", "delete");
         }
 
-        policyConfiguration.delete();
+        vendorPolicyConfiguration.delete();
         assertStateNotInservice("delete");
 
         if (logger.isLoggable(INFO)) {
@@ -749,11 +749,11 @@ public class TSPolicyConfigurationImpl implements PolicyConfiguration {
             logger.entering("TSPolicyConfigurationImpl", "inService");
         }
 
-        boolean wasInservice = policyConfiguration.inService();
+        boolean wasInservice = vendorPolicyConfiguration.inService();
 
-        boolean ret = policyConfiguration.inService();
+        boolean ret = vendorPolicyConfiguration.inService();
 
-        // If the state was inService befor our policyConfiguration.inService()
+        // If the state was inService befor our vendorPolicyConfiguration.inService()
         // call, then it must remain in that state as its next transitional
         // state (per javadoc table)
         if (wasInservice) {
@@ -814,20 +814,20 @@ public class TSPolicyConfigurationImpl implements PolicyConfiguration {
     }
 
     public PermissionCollection getExcludedPermissions() {
-        return policyConfiguration.getExcludedPermissions();
+        return vendorPolicyConfiguration.getExcludedPermissions();
     }
 
     public PermissionCollection getUncheckedPermissions() {
-        return policyConfiguration.getUncheckedPermissions();
+        return vendorPolicyConfiguration.getUncheckedPermissions();
     }
 
     public Map<String, PermissionCollection> getPerRolePermissions() {
-        return policyConfiguration.getPerRolePermissions();
+        return vendorPolicyConfiguration.getPerRolePermissions();
     }
 
     private void assertIsInserviceState(String callingMethod) {
         try {
-            if (!policyConfiguration.inService()) {
+            if (!vendorPolicyConfiguration.inService()) {
                 String msg1 = "ERROR - our policy config should be in the INSERVICE state.";
                 String msg2 = "In the wrong state after having called:  " + callingMethod;
                 debugOut(msg1);
@@ -835,19 +835,19 @@ public class TSPolicyConfigurationImpl implements PolicyConfiguration {
                 logger.log(Level.SEVERE, msg1);
             }
         } catch (SecurityException ex) {
-            String err = "ERROR - got securityException calling policyConfiguration.inService().";
+            String err = "ERROR - got securityException calling vendorPolicyConfiguration.inService().";
             err += "  You likely need to have 'setPolicy' grant set";
             debugOut(err);
             debugOut(ex.toString());
         } catch (Exception ex) {
-            debugOut("ERROR - Exception calling policyConfiguration.inService():  " + ex.toString());
+            debugOut("ERROR - Exception calling vendorPolicyConfiguration.inService():  " + ex.toString());
             ex.printStackTrace();
         }
     }
 
     private void assertStateNotInservice(String callingMethod) {
         try {
-            if (policyConfiguration.inService()) {
+            if (vendorPolicyConfiguration.inService()) {
                 String msg1 = "ERROR - our policy config should not be in the INSERVICE state.";
                 String msg2 = "In the wrong state after having called:  " + callingMethod;
                 debugOut(msg1);
@@ -855,12 +855,12 @@ public class TSPolicyConfigurationImpl implements PolicyConfiguration {
                 logger.log(Level.SEVERE, msg1);
             }
         } catch (SecurityException ex) {
-            String err = "ERROR - got securityException calling policyConfiguration.inService().";
+            String err = "ERROR - got securityException calling vendorPolicyConfiguration.inService().";
             err += "  You likely need to have 'setPolicy' grant set";
             debugOut(err);
             debugOut(ex.toString());
         } catch (Exception ex) {
-            debugOut("ERROR - Exception calling policyConfiguration.inService():  " + ex.toString());
+            debugOut("ERROR - Exception calling vendorPolicyConfiguration.inService():  " + ex.toString());
             ex.printStackTrace();
         }
     }
