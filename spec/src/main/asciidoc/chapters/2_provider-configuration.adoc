@@ -28,10 +28,14 @@ although for most common uses this should not be needed.
 Replacement is done via the `jakarta.security.jacc.PolicyConfigurationFactory` abstract factory class. A 
 default static method, `getPolicyConfigurationFactory` is provided that uses the system property 
 `jakarta.security.jacc.PolicyConfigurationFactory.provider` to locate a concrete implementation. The 
-application server can alternatively set a custom `PolicyConfigurationFactory` using the 
+container can alternatively set a custom `PolicyConfigurationFactory` using the 
 `setPolicyConfigurationFactory` method. In that case the `PolicyConfigurationFactory` implementation
-can come from an application server specific configuration, or in case of the Servlet Container
-from the context property `jakarta.security.jacc.PolicyConfigurationFactory.provider`.
+can come from a container specific configuration, or in case of the Servlet Container
+from the context property `jakarta.security.jacc.PolicyConfigurationFactory.provider`. If the 
+`PolicyConfigurationFactory` has a public constructor with one argument of type `PolicyConfigurationFactory`,
+then the container should call this constructor with as argument the `PolicyConfigurationFactory` instance
+that is being replaced. This allows a replacement `PolicyConfigurationFactory` to wrap the existing one
+and selectively provide extra functionality.
 
 From this factory class a concrete implementation of the Policy Configuration of type 
 `jakarta.security.jacc.PolicyConfiguration` can be obtained using the method `getPolicyConfiguration`.

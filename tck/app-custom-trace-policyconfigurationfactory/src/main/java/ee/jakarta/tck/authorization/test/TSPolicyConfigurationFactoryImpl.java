@@ -65,6 +65,12 @@ public class TSPolicyConfigurationFactoryImpl extends PolicyConfigurationFactory
         }
     }
 
+    public TSPolicyConfigurationFactoryImpl(PolicyConfigurationFactory policyConfigurationFactory) {
+        super(policyConfigurationFactory);
+        TSPolicyConfigurationFactoryImpl.policyConfigurationFactory = policyConfigurationFactory;
+        logger.log(INFO, "PolicyConfigurationFactory instantiated");
+    }
+
     /**
      * This method is used to obtain an instance of the provider specific class that implements the PolicyConfiguration
      * interface that corresponds to the identified policy context within the provider. The methods of the
