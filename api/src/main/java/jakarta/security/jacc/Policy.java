@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Contributors to Eclipse Foundation. All rights reserved.
+ * Copyright (c) 2023, 2024 Contributors to Eclipse Foundation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -36,9 +36,6 @@ import javax.security.auth.Subject;
  * Policies typically, but not necessarily, make use of the Permission instances hold by the {@link PolicyConfiguration} instance for
  * a given policy context. In a Jakarta EE Servlet environment these contain the transformed security constraints as expressed by XML
  * in web.xml, via annotations, or which are programmatically set using the Jakarta Servlet APIs.
- *
- * <p>
- * <b>NOTE: DRAFT API. SUBJECT TO CHANGE</b>
  *
  * @author Arjan Tijms
  */
