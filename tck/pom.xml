@@ -58,10 +58,16 @@
         <module>app-custom-policy</module>
         <module>app-custom-policy2</module>
         
+        <!-- Setting a custom Jakarta Authorization policy factory -->
+        <module>app-custom-policyfactory</module>
+        
+        <!-- 
+            Setting a custom Jakarta Authorization policy and policy configuration (factory) that traces
+            (logs) the operations on it.
+        -->
         <module>app-custom-trace-policy</module>
         <module>app-custom-trace-policyconfiguration</module>
         <module>app-custom-trace-policyconfigurationfactory</module>
-        
         
         <!-- Using the default Jakarta Authorization policy from within a Servlet -->
         <module>app-policy-within-servlet</module>
@@ -71,6 +77,7 @@
         
         <!-- Testing plain Servlet behaviour without anything Jakarta Authorization specific -->
         <module>app-servlet-constraints</module>
+        
         <!-- Testing plain EJB behaviour without anything Jakarta Authorization specific -->
         <module>app-ejb-constraints</module>
     </modules>

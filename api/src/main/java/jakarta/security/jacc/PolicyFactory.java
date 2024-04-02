@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Contributors to Eclipse Foundation. All rights reserved.
+ * Copyright (c) 2023, 2024 Contributors to Eclipse Foundation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -18,9 +18,6 @@ package jakarta.security.jacc;
 /**
  * Abstract factory and finder class for obtaining the instance of the class that implements the
  * PolicyFactory of a provider. The factory will be used to instantiate Policy objects.
- *
- * <p>
- * <b>NOTE: DRAFT API. SUBJECT TO CHANGE</b>
  *
  * @see Policy
  *

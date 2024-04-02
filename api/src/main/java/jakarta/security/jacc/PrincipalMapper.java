@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Contributors to Eclipse Foundation. All rights reserved.
+ * Copyright (c) 2023, 2024 Contributors to Eclipse Foundation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -36,9 +36,6 @@ import javax.security.auth.Subject;
  * <p>
  * A PrincipalMapper is intended to be used by a {@link Policy}, but should work
  * outside a {@link Policy} (for instance, during request processing in a Servlet container).
- *
- * <p>
- * <b>NOTE: DRAFT API. SUBJECT TO CHANGE</b>
  *
  * @author Arjan Tijms
  */

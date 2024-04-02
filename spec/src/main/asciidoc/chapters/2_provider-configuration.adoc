@@ -14,6 +14,26 @@ An application server that supports this contract must allow replacement of the 
 `jakarta.security.jacc.Policy` object used by the application server for all applications running on it,
 in addition to supporting a `jakarta.security.jacc.Policy` object for individual applications.
 
+Replacement is done via the `jakarta.security.jacc.PolicyFactory` abstract factory class. A 
+default static method, `getPolicyFactory` is provided that uses the system property 
+`jakarta.security.jacc.PolicyFactory.provider` to locate a concrete implementation. The 
+container or an application can alternatively set a custom `PolicyFactory` using the 
+`setPolicyFactory` method. In that case the `PolicyFactory` implementation
+can come from a container specific configuration, or in case of the Servlet Container
+from the web application's servlet context initialization parameter (context-param in web.xml) `jakarta.security.jacc.PolicyFactory.provider`. 
+
+If the  `PolicyFactory` has a public constructor with one  argument of type `PolicyFactory`, 
+then the container should call this constructor with as argument the
+ `PolicyFactory` instance that is being replaced. This allows a replacement `PolicyFactory` to wrap 
+ the existing one and selectively provide extra functionality.
+
+From this factory class a concrete implementation of the Policy of type `jakarta.security.jacc.Policy` can be 
+obtained using the method `getPolicy`.
+
+In addition to replacing the `PolicyFactory`, the default `PolicyFactory` must also allow replacing just the
+`Policy` instance. This is detailed below in <<a196>>.
+
+
 === Permission Implementation Classes
 
 This contract defines the package, `jakarta.security.jacc`, that contains (among other things) `Permission`
@@ -31,8 +51,9 @@ default static method, `getPolicyConfigurationFactory` is provided that uses the
 container can alternatively set a custom `PolicyConfigurationFactory` using the 
 `setPolicyConfigurationFactory` method. In that case the `PolicyConfigurationFactory` implementation
 can come from a container specific configuration, or in case of the Servlet Container
-from the context property `jakarta.security.jacc.PolicyConfigurationFactory.provider`. If the 
-`PolicyConfigurationFactory` has a public constructor with one argument of type `PolicyConfigurationFactory`,
+from the web application's servlet context initialization parameter (context-param in web.xml) `jakarta.security.jacc.PolicyConfigurationFactory.provider`. 
+
+If the `PolicyConfigurationFactory` has a public constructor with one argument of type `PolicyConfigurationFactory`,
 then the container should call this constructor with as argument the `PolicyConfigurationFactory` instance
 that is being replaced. This allows a replacement `PolicyConfigurationFactory` to wrap the existing one
 and selectively provide extra functionality.
