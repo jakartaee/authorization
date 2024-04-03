@@ -77,10 +77,10 @@
    <mailingLists>
         <mailingList>
             <name>Jakarta Security mailing list</name>
-            <post>es-dev@eclipse.org</post>
-            <subscribe>https://dev.eclipse.org/mailman/listinfo/es-dev</subscribe>
-            <unsubscribe>https://dev.eclipse.org/mailman/listinfo/es-dev</unsubscribe>
-            <archive>https://dev.eclipse.org/mhonarc/lists/es-dev</archive>
+            <post>jakarta-security-dev@eclipse.org</post>
+            <subscribe>https://dev.eclipse.org/mailman/listinfo/jakarta-security-dev</subscribe>
+            <unsubscribe>https://dev.eclipse.org/mailman/listinfo/jakarta-security-dev</unsubscribe>
+            <archive>https://dev.eclipse.org/mhonarc/lists/jakarta-security-dev</archive>
        </mailingList>
     </mailingLists>
 
@@ -103,7 +103,7 @@
         <dependency>
             <groupId>jakarta.servlet</groupId>
             <artifactId>jakarta.servlet-api</artifactId>
-            <version>6.1.0-M2</version>
+            <version>6.1.0</version>
         </dependency>
     </dependencies>
 
@@ -164,7 +164,7 @@
             <!-- Restricts the Java version -->
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.12.1</version>
+                <version>3.13.0</version>
                 <configuration>
                     <release>17</release>
                     <compilerArgument>-Xlint:unchecked</compilerArgument>
@@ -225,7 +225,7 @@
                         <Implementation-Vendor-Id>org.glassfish</Implementation-Vendor-Id>
                         <Export-Package>jakarta.security.jacc</Export-Package>
                         <_noimportjava>true</_noimportjava>
-                        <_runee>JavaSE-21</_runee>
+                        <_runee>JavaSE-17</_runee>
                     </instructions>
                 </configuration>
             </plugin>
@@ -280,7 +280,7 @@
                             <windowtitle>Jakarta Authorization API documentation</windowtitle>
                             <header><![CDATA[<br>Jakarta Authorization API v${project.version}]]></header>
                             <bottom><![CDATA[
-Comments to: <a href="mailto:es-dev@eclipse.org">es-dev@eclipse.org</a>.<br>
+Comments to: <a href="mailto:jakarta-security-dev@eclipse.org">jakarta-security-dev@eclipse.org</a>.<br>
 Copyright &#169; 2018, 2024 Eclipse Foundation. All rights reserved.<br>
 Use is subject to <a href="{@docRoot}/doc-files/speclicense.html" target="_top">license terms</a>.]]>
                             </bottom>
