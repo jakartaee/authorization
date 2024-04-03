@@ -30,7 +30,7 @@
     
     <groupId>org.eclipse.ee4j.authorization.tck</groupId>
     <artifactId>jakarta-authorization-tck</artifactId>
-    <version>4.0.0-SNAPSHOT</version>
+    <version>3.0.0-SNAPSHOT</version>
 
     <packaging>pom</packaging>
 
@@ -53,6 +53,9 @@
     -->
     <modules>
         <module>common</module>
+        
+        <!-- Signature test for the API -->
+        <module>authorization-signaturetest</module>
         
         <!-- Setting a custom Jakarta Authorization policy -->
         <module>app-custom-policy</module>
@@ -89,10 +92,33 @@
         <licenseFile>${project.basedir}/LICENSE_EFTL.md</licenseFile>
         
         <buildDirectory>${project.basedir}/target</buildDirectory>
+        
+        <jakarta.authorization.version>3.0.0-M4</jakarta.authorization.version>
+        <jakarta.servlet.version>6.1.0</jakarta.servlet.version>
+        <jakarta.annotation.version>3.0.0</jakarta.annotation.version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>jakarta.authorization</groupId>
+                <artifactId>jakarta.authorization-api</artifactId>
+                <version>${jakarta.authorization.version}</version>
+                <scope>provided</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>jakarta.servlet</groupId>
+                <artifactId>jakarta.servlet-api</artifactId>
+                <version>${jakarta.servlet.version}</version>
+                <scope>provided</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>jakarta.annotation</groupId>
+                <artifactId>jakarta.annotation-api</artifactId>
+                <version>${jakarta.annotation.version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.jboss.arquillian</groupId>
                 <artifactId>arquillian-bom</artifactId>
@@ -117,21 +143,18 @@
         <dependency>
             <groupId>jakarta.authorization</groupId>
             <artifactId>jakarta.authorization-api</artifactId>
-            <version>3.0.0-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         
         <dependency>
             <groupId>jakarta.servlet</groupId>
             <artifactId>jakarta.servlet-api</artifactId>
-            <version>6.1.0-M2</version>
             <scope>provided</scope>
         </dependency>
         
         <dependency>
             <groupId>jakarta.annotation</groupId>
             <artifactId>jakarta.annotation-api</artifactId>
-            <version>3.0.0</version>
         </dependency>
         
         
@@ -165,7 +188,7 @@
         <dependency>
             <groupId>org.jsoup</groupId>
             <artifactId>jsoup</artifactId>
-            <version>1.17.2</version><!--$NO-MVN-MAN-VER$-->
+            <version>1.17.2</version>
         </dependency>
     </dependencies>
 
@@ -283,6 +306,19 @@
                 <glassfish.port>8080</glassfish.port>
                 <glassfish.suspend>false</glassfish.suspend>
                 <glassfish.root>${maven.multiModuleProjectDirectory}/target</glassfish.root>
+                
+                <authorization-api.noupdate>true</authorization-api.noupdate>
+                <exousia.noupdate>true</exousia.noupdate>
+                <exousia.version>3.0.0-SNAPSHOT</exousia.version>
+                
+                <!--
+                    Exact artefact used by GlassFish that holds the API classes. The actual API
+                    jar in the GlassFish root folder is installed to these coordinates below.
+                    This is used by the signature test in module /authorization-signaturetest 
+                -->
+                <sigtest.api.groupId>jakarta.authorization</sigtest.api.groupId>
+                <sigtest.api.artifactId>jakarta.authorization-vendor-api</sigtest.api.artifactId>
+                <sigtest.api.version>${glassfish.version}</sigtest.api.version>
             </properties>
 
             <dependencies>
@@ -300,6 +336,8 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-dependency-plugin</artifactId>
+                        
+                        <!-- Download and unpack GlassFish -->
                         <executions>
                             <execution>
                                 <id>unpack</id>
@@ -319,6 +357,52 @@
                                             <type>zip</type>
                                             <overWrite>false</overWrite>
                                             <outputDirectory>${glassfish.root}</outputDirectory>
+                                        </artifactItem>
+                                    </artifactItems>
+                                </configuration>
+                            </execution>
+                            
+                            <!-- Optionally update Authorization API jar in GlassFish -->
+                            <execution>
+                                <id>update-authorization-api</id>
+                                <phase>process-test-classes</phase>
+                                <goals>
+                                    <goal>copy</goal>
+                                </goals>
+                                <configuration>
+                                    <skip>${authorization-api.noupdate}</skip>
+                                    <artifactItems>
+                                        <artifactItem>
+                                            <groupId>jakarta.authorization</groupId>
+                                            <artifactId>jakarta.authorization-api</artifactId>
+                                            <version>${jakarta.authorization.version}</version>
+                                            <type>jar</type>
+                                            <overWrite>true</overWrite>
+                                            <outputDirectory>${glassfish.root}/glassfish8/glassfish/modules</outputDirectory>
+                                            <destFileName>jakarta.authorization-api.jar</destFileName>
+                                        </artifactItem>
+                                    </artifactItems>
+                                </configuration>
+                            </execution>
+                            
+                            <!-- Optionally update Authorization IMPL (Exousia) jar in GlassFish -->
+                            <execution>
+                                <id>update-authorization-impl</id>
+                                <phase>process-test-classes</phase>
+                                <goals>
+                                    <goal>copy</goal>
+                                </goals>
+                                <configuration>
+                                    <skip>${exousia.noupdate}</skip>
+                                    <artifactItems>
+                                        <artifactItem>
+                                            <groupId>org.glassfish.exousia</groupId>
+                                            <artifactId>exousia</artifactId>
+                                            <version>${exousia.version}</version>
+                                            <type>jar</type>
+                                            <overWrite>true</overWrite>
+                                            <outputDirectory>${glassfish.root}/glassfish8/glassfish/modules</outputDirectory>
+                                            <destFileName>exousia.jar</destFileName>
                                         </artifactItem>
                                     </artifactItems>
                                 </configuration>
@@ -351,6 +435,32 @@
                             </execution>
                         </executions>
                     </plugin>
+
+                    <!--
+                        Installs the jakarta.authorization-api.jar from GF on the filesystem to the
+                        coordinates expected by the signature test. 
+                    -->
+                    <plugin>
+                        <artifactId>maven-install-plugin</artifactId>
+                        <version>3.1.1</version>
+                        <executions>
+                            <execution>
+                                <id>unpack</id>
+                                <phase>pre-integration-test</phase>
+                                <goals>
+                                    <goal>install-file</goal>
+                                </goals>
+                                <configuration>
+                                    <file>${glassfish.root}/glassfish8/glassfish/modules/jakarta.authorization-api.jar</file>
+                                    <groupId>${sigtest.api.groupId}</groupId>
+                                    <artifactId>${sigtest.api.artifactId}</artifactId>
+                                    <version>${sigtest.api.version}</version>
+                                    <packaging>jar</packaging>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-failsafe-plugin</artifactId>
