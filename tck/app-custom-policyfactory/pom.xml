@@ -24,7 +24,7 @@
 	<parent>
         <groupId>org.eclipse.ee4j.authorization.tck</groupId>
         <artifactId>jakarta-authorization-tck</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
+        <version>3.0.0-SNAPSHOT</version>
     </parent>
 
 	<artifactId>app-custom-policyfactory</artifactId>
