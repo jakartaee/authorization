@@ -4,7 +4,7 @@
 
 = Jakarta Authorization
 :authors: Jakarta Authorization Team, https://projects.eclipse.org/projects/ee4j.authorization
-:email: https://dev.eclipse.org/mailman/listinfo/jacc-dev
+:email:  https://accounts.eclipse.org/mailing-list/jakarta-security-dev
 :version-label!:
 :doctype: book
 :license: Eclipse Foundation Specification License v1.1
