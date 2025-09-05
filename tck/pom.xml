@@ -30,7 +30,7 @@
     
     <groupId>org.eclipse.ee4j.authorization.tck</groupId>
     <artifactId>jakarta-authorization-tck</artifactId>
-    <version>3.0.0-SNAPSHOT</version>
+    <version>3.0.1-SNAPSHOT</version>
 
     <packaging>pom</packaging>
 
@@ -308,7 +308,7 @@
                 
                 <authorization-api.noupdate>true</authorization-api.noupdate>
                 <exousia.noupdate>true</exousia.noupdate>
-                <exousia.version>3.0.0-SNAPSHOT</exousia.version>
+                <exousia.version>3.0.1-SNAPSHOT</exousia.version>
                 
                 <!--
                     Exact artefact used by GlassFish that holds the API classes. The actual API
