@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to Eclipse Foundation. All rights reserved.
  * Copyright (c) 1997, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -28,7 +29,7 @@ import java.security.Permission;
  * 
  * <p>
  * The name of an EJBRoleRefPermission contains the value of the ejb-name element in the application's deployment
- * descriptor that identifies the Jakarta Enterprise Bean in whose context the permission is being evalutated.
+ * descriptor that identifies the Jakarta Enterprise Bean in whose context the permission is being evaluated.
  * 
  * <p>
  * The actions of an EJBRoleRefPermission identifies the role reference to which the permission applies. An
@@ -141,7 +142,7 @@ public final class EJBRoleRefPermission extends Permission {
      * <ul>
      * <li>The argument must be an <code>instanceof</code> <code>EJBRoleRefPermission</code>
      * <li>with name equivalent to that of this <code>EJBRoleRefPermission</code>, and
-     * <li>with the role reference equivalent to that of this <code>EJBRoleRefPermission</code> applies.
+     * <li>with the role reference equivalent to that of this <code>EJBRoleRefPermission</code>.
      * </ul>
      * <p>
      * The name and actions comparisons described above are case sensitive.
