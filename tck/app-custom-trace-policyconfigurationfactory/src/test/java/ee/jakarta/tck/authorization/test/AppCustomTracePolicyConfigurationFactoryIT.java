@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Contributors to Eclipse Foundation.
+ * Copyright (c) 2024, 2026 Contributors to Eclipse Foundation.
  * Copyright (c) 2015, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -59,7 +59,7 @@ public class AppCustomTracePolicyConfigurationFactoryIT extends ArquillianBase {
      */
     @Test
     public void PolicyConfigurationFactory() {
-      LogFileProcessor logProcessor = new LogFileProcessor("appId", "toolsContracts");
+      LogFileProcessor logProcessor = new LogFileProcessor("appId", "app-custom-trace-policyconfigurationfactory");
 
       // Verify whether the log contains required messages.
       assertTrue(
@@ -87,7 +87,7 @@ public class AppCustomTracePolicyConfigurationFactoryIT extends ArquillianBase {
      */
     @Test
     public void GetPolicyConfiguration() {
-      LogFileProcessor logProcessor = new LogFileProcessor("appId", "toolsContracts");
+      LogFileProcessor logProcessor = new LogFileProcessor("appId", "app-custom-trace-policyconfigurationfactory");
 
       // Verify whether the log contains required messages.
       assertTrue(

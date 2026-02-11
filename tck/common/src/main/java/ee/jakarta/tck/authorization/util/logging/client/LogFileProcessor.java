@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Contributors to the Eclipse Foundation.
+ * Copyright (c) 2024, 2026 Contributors to the Eclipse Foundation.
  * Copyright (c) 2007, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -51,7 +51,7 @@ import org.w3c.dom.NodeList;
 /**
  * LogFileProcessor does the following operations
  *
- * 1) Fetches log records from authorization-trace-log.xml
+ * 1) Fetches log records from appName-log.xml
  *
  * 2) Checks for the existence of search string in the log for example to verify whether server log contains a string
  * "Java EE rocks" use the following code
@@ -141,7 +141,7 @@ public class LogFileProcessor {
                 throw new IllegalStateException("System property log.file.location not defined");
             }
 
-            logFileLocation += "/authorization-trace-log.xml";
+            logFileLocation += "/" + appName + "-log.xml";
 
             logfile = new File(logFileLocation);
 

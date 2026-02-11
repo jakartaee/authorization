@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Contributors to Eclipse Foundation.
+ * Copyright (c) 2024, 2026 Contributors to Eclipse Foundation.
  * Copyright (c) 2015, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -68,7 +68,7 @@ public class AppCustomTracePolicyConfigurationIT extends ArquillianBase {
      */
     @Test
     public void WebUserDataPermission() {
-        LogFileProcessor logProcessor = new LogFileProcessor("getAppSpecificRecordCollection|appId", "toolsContracts");
+        LogFileProcessor logProcessor = new LogFileProcessor("getAppSpecificRecordCollection|appId", "app-custom-trace-policyconfiguration");
 
 
         // ----------UNCHECKED----------//
@@ -146,7 +146,7 @@ public class AppCustomTracePolicyConfigurationIT extends ArquillianBase {
      */
     @Test
     public void WebResourcePermission() {
-        LogFileProcessor logProcessor = new LogFileProcessor("getAppSpecificRecordCollection|appId", "toolsContracts");
+        LogFileProcessor logProcessor = new LogFileProcessor("getAppSpecificRecordCollection|appId", "app-custom-trace-policyconfiguration");
 
         // ----------UNCHECKED----------//
         // 1) retrieve server generated unchecked policy statements
@@ -264,7 +264,7 @@ public class AppCustomTracePolicyConfigurationIT extends ArquillianBase {
       // 2) construct expected excluded policy statements
       // 3) verify expected policy statements with generated policy statements
 
-      LogFileProcessor logProcessor = new LogFileProcessor("getAppSpecificRecordCollection|appId", "toolsContracts");
+      LogFileProcessor logProcessor = new LogFileProcessor("getAppSpecificRecordCollection|appId", "app-custom-trace-policyconfiguration");
 
       // Get "excluded" WebResourcePermissions
       Permissions excludedWebResourcePermissions =
@@ -308,7 +308,7 @@ public class AppCustomTracePolicyConfigurationIT extends ArquillianBase {
      */
     @Test
     public void WebResourcePermissionUnCheckedPolicy() {
-      LogFileProcessor logProcessor = new LogFileProcessor("getAppSpecificRecordCollection|appId", "toolsContracts");
+      LogFileProcessor logProcessor = new LogFileProcessor("getAppSpecificRecordCollection|appId", "app-custom-trace-policyconfiguration");
 
 
       // Get "unchecked" WebResourcePermissions
@@ -361,7 +361,7 @@ public class AppCustomTracePolicyConfigurationIT extends ArquillianBase {
         // 2) construct expected addToRole policy statements
         // 3) verify expected policy statements with generated policy statements
 
-        LogFileProcessor logProcessor = new LogFileProcessor("getAppSpecificRecordCollection|appId", "toolsContracts");
+        LogFileProcessor logProcessor = new LogFileProcessor("getAppSpecificRecordCollection|appId", "app-custom-trace-policyconfiguration");
 
         // Get actual "addToRole" WebRoleRefPermissions
         Permissions addToRoleWebRoleRefPermissions =
@@ -431,7 +431,7 @@ public class AppCustomTracePolicyConfigurationIT extends ArquillianBase {
      */
     @Test
     public void AnyAuthUserWebRoleRef() {
-      LogFileProcessor logProcessor = new LogFileProcessor("getAppSpecificRecordCollection|appId", "toolsContracts");
+      LogFileProcessor logProcessor = new LogFileProcessor("getAppSpecificRecordCollection|appId", "app-custom-trace-policyconfiguration");
 
       // Retrieve server generated addToRole policy statements
       Permissions addToRoleWebRoleRefPermissions =
@@ -501,7 +501,7 @@ public class AppCustomTracePolicyConfigurationIT extends ArquillianBase {
      */
     @Test
     public void validateNoInvalidStates() {
-      LogFileProcessor logProcessor = new LogFileProcessor("getAppSpecificRecordCollection|appId", "toolsContracts");
+      LogFileProcessor logProcessor = new LogFileProcessor("getAppSpecificRecordCollection|appId", "app-custom-trace-policyconfiguration");
 
       String errorMessage1 = "ERROR - our policy config should not be in the INSERVICE state.";
 

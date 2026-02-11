@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Contributors to Eclipse Foundation.
+ * Copyright (c) 2024, 2026 Contributors to Eclipse Foundation.
  * Copyright (c) 2015, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -61,7 +61,7 @@ public class AppCustomTracePolicyIT extends ArquillianBase {
      */
     @Test
     public void GetPolicyConfiguration() {
-      LogFileProcessor logProcessor = new LogFileProcessor("appId", "toolsContracts");
+      LogFileProcessor logProcessor = new LogFileProcessor("appId", "app-custom-trace-policy");
 
       // Verify whether the log contains required messages.
       assertTrue(
@@ -92,7 +92,7 @@ public class AppCustomTracePolicyIT extends ArquillianBase {
      */
     @Test
     public void PolicyRefresh() {
-      LogFileProcessor logProcessor = new LogFileProcessor("appId", "toolsContracts");
+      LogFileProcessor logProcessor = new LogFileProcessor("appId", "app-custom-trace-policy");
 
       // verify the log contains TSPolicy.refresh().
       assertTrue(
@@ -117,7 +117,7 @@ public class AppCustomTracePolicyIT extends ArquillianBase {
      */
     @Test
     public void Policy() {
-        LogFileProcessor logProcessor = new LogFileProcessor("appId", "toolsContracts");
+        LogFileProcessor logProcessor = new LogFileProcessor("appId", "app-custom-trace-policy");
 
         // verify the log contains TSPolicy.refresh().
         assertTrue(
@@ -141,7 +141,7 @@ public class AppCustomTracePolicyIT extends ArquillianBase {
         assertTrue(
             readFromServerWithCredentials("/secured.jsp", "javajoe", "javajoe").contains("javajoe"));
 
-        LogFileProcessor logProcessor = new LogFileProcessor("appId", "toolsContracts");
+        LogFileProcessor logProcessor = new LogFileProcessor("appId", "app-custom-trace-policy");
 
         assertTrue(
             "TestName: Policy failed : " + "HttpServletRequest not available",
@@ -165,7 +165,7 @@ public class AppCustomTracePolicyIT extends ArquillianBase {
         assertTrue(
             readFromServerWithCredentials("/secured.jsp", "javajoe", "javajoe").contains("javajoe"));
 
-        LogFileProcessor logProcessor = new LogFileProcessor("appId", "toolsContracts");
+        LogFileProcessor logProcessor = new LogFileProcessor("appId", "app-custom-trace-policy");
 
         assertTrue(
             "TestName: Policy failed : " + "Subject not available",
