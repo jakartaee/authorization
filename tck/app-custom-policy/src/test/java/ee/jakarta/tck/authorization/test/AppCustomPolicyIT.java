@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Contributors to Eclipse Foundation.
+ * Copyright (c) 2024, 2026 Contributors to Eclipse Foundation.
  * Copyright (c) 2015, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -28,6 +28,7 @@ import ee.jakarta.tck.authorization.util.ArquillianBase;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -86,6 +87,9 @@ public class AppCustomPolicyIT extends ArquillianBase {
      *
      * But, the caller should not be in any roles (specially, should not be in role foo)
      */
+    // Test excluded since unauthenticated requests return 401 if roles defined
+    // on a Servlet per section 13.8.3 of the Servlet 6.1 specification.
+    @Ignore
     @Test
     public void testNotAuthenticatedSpecial() {
         String response = readFromServer("/protectedServlet/foo/test");
