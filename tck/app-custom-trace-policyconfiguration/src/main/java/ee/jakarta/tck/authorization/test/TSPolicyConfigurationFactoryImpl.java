@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Contributors to the Eclipse Foundation.
+ * Copyright (c) 2024, 2026 Contributors to the Eclipse Foundation.
  * Copyright (c) 2007, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -40,7 +40,7 @@ import jakarta.security.jacc.PolicyContextException;
  */
 public class TSPolicyConfigurationFactoryImpl extends PolicyConfigurationFactory {
 
-    private static TSLogger logger = TSLogger.getTSLogger();
+    private static TSLogger logger = TSLogger.getTSLogger("app-custom-trace-policyconfiguration");
 
     private static String FACTORY_NAME = "vendor.jakarta.security.jacc.PolicyConfigurationFactory.provider";
 

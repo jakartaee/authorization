@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Contributors to the Eclipse Foundation.
+ * Copyright (c) 2024, 2026 Contributors to the Eclipse Foundation.
  * Copyright (c) 2007, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -68,12 +68,12 @@ public class TSLogger extends Logger {
         levelValue = Level.INFO.intValue();
     }
 
-    public static TSLogger getTSLogger() {
-        initializeTSLogger();
+    public static TSLogger getTSLogger(String appName) {
+        initializeTSLogger(appName);
         return logger;
     }
 
-    public static void initializeTSLogger() {
+    public static void initializeTSLogger(String appName) {
         if (logger != null) {
             return;
         }
@@ -81,31 +81,31 @@ public class TSLogger extends Logger {
         try {
             String logFileLocation = System.getProperty("log.file.location");
             if (logFileLocation != null) {
-                logger = TSLogger.getTSLogger("jacc");
+                logger = TSLogger.getTSLogger();
                 boolean appendMode = true;
 
-                // Clean the content of authorization-trace-log.xml if it exists
-                File file = new File(logFileLocation + "/authorization-trace-log.xml");
+                // Clean the content of appName-log.xml if it exists
+                File file = new File(logFileLocation + "/" + appName + "-log.xml");
                 if (file.exists()) {
                     // Delete the file, if it exists
                     file.delete();
                 }
 
-                File fileLock = new File(logFileLocation + "/authorization-trace-log.xml.lck");
+                File fileLock = new File(logFileLocation + "/" + appName + "-log.xml.lck");
                 if (fileLock.exists()) {
                     // Delete the file, if it exists
                     fileLock.delete();
                 }
 
                 // Create a new file
-                System.out.println("XXXX:  in initializeTSLogger() - about to create authorization-trace-log.xml");
-                fileHandler = new FileHandler(logFileLocation + "/authorization-trace-log.xml", appendMode);
+                System.out.println("XXXX:  in initializeTSLogger() - about to create " + appName + "-log.xml");
+                fileHandler = new FileHandler(logFileLocation + "/" + appName + "-log.xml", appendMode);
                 fileHandler.setFormatter(new TSXMLFormatter());
                 logger.addHandler(fileHandler);
                 setTSLogger(logger);
             } else {
                 // use default logging mechanism
-                logger = TSLogger.getTSLogger("jacc");
+                logger = TSLogger.getTSLogger();
                 setTSLogger(logger);
                 logger.log(SEVERE, "log.file.location not set: Using default logger");
             }
@@ -119,7 +119,15 @@ public class TSLogger extends Logger {
     }
 
     public static void close() {
-        fileHandler.close();
+        if (fileHandler != null) {
+            if (logger != null) {
+                logger.removeHandler(fileHandler);
+            }
+            fileHandler.close();
+            fileHandler = null;
+        }
+
+        logger = null;
     }
 
 
@@ -135,7 +143,8 @@ public class TSLogger extends Logger {
      * name or class name of the subsystem, such as java.net or javax.swing
      * @return a suitable Logger
      */
-    public static synchronized TSLogger getTSLogger(String name) {
+    private static synchronized TSLogger getTSLogger() {
+        String name = "jacc";
         TSLogger result = null;
 
         LogManager manager = LogManager.getLogManager();

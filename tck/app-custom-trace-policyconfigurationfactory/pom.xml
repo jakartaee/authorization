@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2024 Contributors to Eclipse Foundation.
+    Copyright (c) 2024, 2026 Contributors to Eclipse Foundation.
     Copyright (c) 2015, 2020 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
@@ -32,7 +32,7 @@
 	
 	<description>
         This module installs a tracing PolicyConfigurationFactory that writes to a seperate log file
-        called "authorization-trace-log.xml". The location where this file will be written can be 
+        called "app-custom-trace-policyconfigurationfactory-log.xml". The location where this file will be written can be
         set using the "log.file.location" system property for both the server and the client test.
         
         The test uses the log file to check for certain calls being made to PolicyConfigurationFactory.
