@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, 2023 Contributors to Eclipse Foundation. All rights reserved.
+ * Copyright (c) 2021, 2026 Contributors to Eclipse Foundation. All rights reserved.
  * Copyright (c) 1997, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -53,7 +53,7 @@ import java.util.Map;
  * A policy context in the "deleted" state is neither available for configuration, nor is it available for assimilation
  * into the Provider. A policy context whose state is "deleted" may be reclaimed for subsequent processing by calling
  * the getPolicyConfiguration method of the associated PolicyConfigurationFactory. A "deleted" policy context is
- * transitioned to the "open" state when it it returned as a result of a call to getPolicyConfiguration.
+ * transitioned to the "open" state when it is returned as a result of a call to getPolicyConfiguration.
  *
  * <p>
  * The following table captures the correspondence between the policy context life cycle and the methods of the
@@ -383,7 +383,7 @@ public interface PolicyConfiguration {
      * cause an UnsupportedOperationException to be thrown.
      *
      * <p>
-     * This operation has no affect on any linked PolicyConfigurations other than removing any links involving the deleted
+     * This operation has no effect on any linked PolicyConfigurations other than removing any links involving the deleted
      * PolicyConfiguration.
      *
      * @throws PolicyContextException if the implementation throws a checked exception that has not been
