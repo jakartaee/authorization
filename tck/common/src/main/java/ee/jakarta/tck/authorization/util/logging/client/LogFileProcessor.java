@@ -939,9 +939,12 @@ public class LogFileProcessor {
 
         // Get first token and the remaining string
         strtoken = new StringTokenizer(str, delimeter);
-        if (str.indexOf(delimeter) > 0) {
-            array[0] = strtoken.nextToken();
-            array[1] = str.substring(array[0].length() + 3, str.length());
+        int delimiterIndex = str.indexOf(delimeter);
+        if (delimiterIndex > 0) {
+            // Split on the delimiter as a whole: StringTokenizer splits on each of its characters, also on the spaces
+            // within a context ID such as "localhost /app"
+            array[0] = str.substring(0, delimiterIndex);
+            array[1] = str.substring(delimiterIndex + delimeter.length());
         } else {
             // With JSR115 Maintenance review change the permission name
             // for WebRoleRefPermission can be an empty string.

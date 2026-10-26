@@ -24,10 +24,9 @@
 
 package ee.jakarta.tck.authorization.util.logging.server;
 
-import static java.util.logging.Level.SEVERE;
 
 import java.io.File;
-import java.util.logging.FileHandler;
+import java.io.IOException;
 import java.util.logging.Filter;
 import java.util.logging.Handler;
 import java.util.logging.Level;
@@ -61,7 +60,11 @@ public class TSLogger extends Logger {
     private static TSLogger tsLogger = null;
     public static TSLogger logger;
 
-    private static FileHandler fileHandler;
+    private static TSFileHandler fileHandler;
+
+    // The application the log file is for, and whether its file handler was set up
+    private static String logAppName;
+    private static boolean fileHandlerResolved;
 
     protected TSLogger(String name) {
         super(name, null);
@@ -73,43 +76,43 @@ public class TSLogger extends Logger {
         return logger;
     }
 
-    public static void initializeTSLogger(String appName) {
+    /**
+     * Creates the logger. The log file is opened when the logger logs first, not here: loggers may be created
+     * while a native image (e.g. Quarkus) is built, where no file may be opened yet, and where the system
+     * property with the log file location is not the one the application runs with.
+     */
+    public static synchronized void initializeTSLogger(String appName) {
         if (logger != null) {
             return;
         }
 
+        logAppName = appName;
+        fileHandlerResolved = false;
+        logger = TSLogger.getTSLogger();
+        setTSLogger(logger);
+    }
+
+    /**
+     * Opens the log file &lt;log.file.location&gt;/&lt;appName&gt;-log.xml, once.
+     */
+    private static synchronized void resolveFileHandler() {
+        if (fileHandlerResolved || logger == null) {
+            return;
+        }
+        fileHandlerResolved = true;
+
+        String logFileLocation = System.getProperty("log.file.location");
+        if (logFileLocation == null) {
+            // use default logging mechanism
+            System.err.println("TSLogger: log.file.location not set: not logging to a file");
+            return;
+        }
+
         try {
-            String logFileLocation = System.getProperty("log.file.location");
-            if (logFileLocation != null) {
-                logger = TSLogger.getTSLogger();
-                boolean appendMode = true;
-
-                // Clean the content of appName-log.xml if it exists
-                File file = new File(logFileLocation + "/" + appName + "-log.xml");
-                if (file.exists()) {
-                    // Delete the file, if it exists
-                    file.delete();
-                }
-
-                File fileLock = new File(logFileLocation + "/" + appName + "-log.xml.lck");
-                if (fileLock.exists()) {
-                    // Delete the file, if it exists
-                    fileLock.delete();
-                }
-
-                // Create a new file
-                System.out.println("XXXX:  in initializeTSLogger() - about to create " + appName + "-log.xml");
-                fileHandler = new FileHandler(logFileLocation + "/" + appName + "-log.xml", appendMode);
-                fileHandler.setFormatter(new TSXMLFormatter());
-                logger.addHandler(fileHandler);
-                setTSLogger(logger);
-            } else {
-                // use default logging mechanism
-                logger = TSLogger.getTSLogger();
-                setTSLogger(logger);
-                logger.log(SEVERE, "log.file.location not set: Using default logger");
-            }
-        } catch (Exception e) {
+            System.out.println("TSLogger: creating " + logAppName + "-log.xml in " + logFileLocation);
+            fileHandler = new TSFileHandler(new File(logFileLocation, logAppName + "-log.xml"));
+            logger.addHandler(fileHandler);
+        } catch (IOException e) {
             throw new RuntimeException("TSLogger Initialization failed", e);
         }
     }
@@ -118,7 +121,7 @@ public class TSLogger extends Logger {
         logger = lgr;
     }
 
-    public static void close() {
+    public static synchronized void close() {
         if (fileHandler != null) {
             if (logger != null) {
                 logger.removeHandler(fileHandler);
@@ -128,6 +131,7 @@ public class TSLogger extends Logger {
         }
 
         logger = null;
+        fileHandlerResolved = false;
     }
 
 
@@ -218,6 +222,8 @@ public class TSLogger extends Logger {
      * @param record the TSLogRecord to be published
      */
     public void log(TSLogRecord record) {
+        resolveFileHandler();
+
         if (record.getLevel().intValue() < levelValue || levelValue == offValue) {
             return;
         }
@@ -245,7 +251,7 @@ public class TSLogger extends Logger {
                     // Parent handler may not be able to
                     // Format the TSLogRecord, because
                     // TSLogRecord is the custom record.
-                    if (targets[i] instanceof FileHandler) {
+                    if (targets[i] instanceof TSFileHandler) {
                         targets[i].publish(record);
                     }
                 }
