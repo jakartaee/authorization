@@ -157,6 +157,12 @@
             <artifactId>jakarta.annotation-api</artifactId>
         </dependency>
         
+        <dependency>
+            <groupId>jakarta.authentication</groupId>
+            <artifactId>jakarta.authentication-api</artifactId>
+            <version>3.1.0</version>
+        </dependency>
+        
         
         <!-- Test dependencies which can be used in sub-modules -->
     
@@ -305,10 +311,11 @@
                 <glassfish.port>8080</glassfish.port>
                 <glassfish.suspend>false</glassfish.suspend>
                 <glassfish.root>${maven.multiModuleProjectDirectory}/target</glassfish.root>
+                <glassfish.home>${glassfish.root}/glassfish8</glassfish.home>
                 
                 <authorization-api.noupdate>true</authorization-api.noupdate>
                 <exousia.noupdate>true</exousia.noupdate>
-                <exousia.version>3.0.1-SNAPSHOT</exousia.version>
+                <exousia.version>3.0.2</exousia.version>
                 
                 <!--
                     Exact artefact used by GlassFish that holds the API classes. The actual API
@@ -377,7 +384,7 @@
                                             <version>${jakarta.authorization.version}</version>
                                             <type>jar</type>
                                             <overWrite>true</overWrite>
-                                            <outputDirectory>${glassfish.root}/glassfish8/glassfish/modules</outputDirectory>
+                                            <outputDirectory>${glassfish.home}/glassfish/modules</outputDirectory>
                                             <destFileName>jakarta.authorization-api.jar</destFileName>
                                         </artifactItem>
                                     </artifactItems>
@@ -400,7 +407,7 @@
                                             <version>${exousia.version}</version>
                                             <type>jar</type>
                                             <overWrite>true</overWrite>
-                                            <outputDirectory>${glassfish.root}/glassfish8/glassfish/modules</outputDirectory>
+                                            <outputDirectory>${glassfish.home}/glassfish/modules</outputDirectory>
                                             <destFileName>exousia.jar</destFileName>
                                         </artifactItem>
                                     </artifactItems>
@@ -425,7 +432,7 @@
                                         <echo level="info">Replacing in ${glassfish.root}</echo>
                                         <replace token="8080"
                                             value="${glassfish.port}"
-                                            dir="${glassfish.root}/glassfish8/glassfish/domains/domain1/config/"
+                                            dir="${glassfish.home}/glassfish/domains/domain1/config/"
                                             summary="yes">
                                             <include name="domain.xml" />
                                         </replace>
@@ -450,7 +457,7 @@
                                     <goal>install-file</goal>
                                 </goals>
                                 <configuration>
-                                    <file>${glassfish.root}/glassfish8/glassfish/modules/jakarta.authorization-api.jar</file>
+                                    <file>${glassfish.home}/glassfish/modules/jakarta.authorization-api.jar</file>
                                     <groupId>${sigtest.api.groupId}</groupId>
                                     <artifactId>${sigtest.api.artifactId}</artifactId>
                                     <version>${sigtest.api.version}</version>
@@ -465,12 +472,12 @@
                         <artifactId>maven-failsafe-plugin</artifactId>
                         <configuration>
                             <systemProperties>
-                                <glassfish.home>${glassfish.root}/glassfish8</glassfish.home>
+                                <glassfish.home>${glassfish.home}</glassfish.home>
                                 
-                                <log.file.location>${glassfish.root}/glassfish8/glassfish/domains/domain1/logs</log.file.location>
+                                <log.file.location>${glassfish.home}/glassfish/domains/domain1/logs</log.file.location>
                                 
                                 <glassfish.systemProperties>
-                                    log.file.location=${glassfish.root}/glassfish8/glassfish/domains/domain1/logs
+                                    log.file.location=${glassfish.home}/glassfish/domains/domain1/logs
                                     vendor.jakarta.security.jacc.PolicyConfigurationFactory.provider=org.glassfish.exousia.modules.def.DefaultPolicyConfigurationFactory
                                 </glassfish.systemProperties>
                                 
@@ -481,6 +488,400 @@
                                     --passwordfile ${maven.multiModuleProjectDirectory}/j2ee.pass create-file-user --groups Employee j2ee
                                 </glassfish.postBootCommands>
                             </systemProperties>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+
+        <!--
+            Runs the TCK on a released GlassFish (glassfish.version), with its Exousia jar replaced by this exousia.version:
+            mvn verify -Pglassfish-exousia. For a snapshot version, build and install Exousia first (mvn install in the
+            Exousia root), as this then takes its jar from the local repository.
+        -->
+        <profile>
+            <id>glassfish-exousia</id>
+
+            <properties>
+                <glassfish.version>8.0.5</glassfish.version>
+                <glassfish.port>8080</glassfish.port>
+                <glassfish.root>${maven.multiModuleProjectDirectory}/target</glassfish.root>
+                <glassfish.home>${glassfish.root}/glassfish8</glassfish.home>
+
+                <exousia.version>3.0.2</exousia.version>
+
+                <!--
+                    Exact artefact used by GlassFish that holds the API classes. The actual API
+                    jar in the GlassFish root folder is installed to these coordinates below.
+                    This is used by the signature test in module /authorization-signaturetest
+                -->
+                <sigtest.api.groupId>jakarta.authorization</sigtest.api.groupId>
+                <sigtest.api.artifactId>jakarta.authorization-vendor-api</sigtest.api.artifactId>
+                <sigtest.api.version>${glassfish.version}</sigtest.api.version>
+            </properties>
+
+            <dependencies>
+                <!-- The actual Arquillian connector -->
+                <dependency>
+                    <groupId>ee.omnifish.arquillian</groupId>
+                    <artifactId>arquillian-glassfish-server-managed</artifactId>
+                    <version>2.2.1</version>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+
+            <build>
+                <plugins>
+                    <!--
+                        GlassFish keeps its own copy of each module in its OSGi cache, and only refreshes it for a
+                        newer module jar. The copied Exousia jar keeps its build time, so drop the cache instead.
+                    -->
+                    <plugin>
+                        <artifactId>maven-clean-plugin</artifactId>
+                        <version>3.4.1</version>
+                        <executions>
+                            <execution>
+                                <id>clear-osgi-cache</id>
+                                <phase>process-test-classes</phase>
+                                <goals>
+                                    <goal>clean</goal>
+                                </goals>
+                                <configuration>
+                                    <skip>${skipITs}</skip>
+                                    <excludeDefaultDirectories>true</excludeDefaultDirectories>
+                                    <filesets>
+                                        <fileset>
+                                            <directory>${glassfish.home}/glassfish/domains/domain1/osgi-cache</directory>
+                                        </fileset>
+                                    </filesets>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-dependency-plugin</artifactId>
+                        <executions>
+                            <!-- Download and unpack GlassFish -->
+                            <execution>
+                                <id>unpack</id>
+                                <phase>process-test-classes</phase>
+                                <goals>
+                                    <goal>unpack</goal>
+                                </goals>
+                                <configuration>
+                                    <skip>${skipITs}</skip>
+                                    <outputDirectory>${glassfish.root}</outputDirectory>
+                                    <markersDirectory>${glassfish.root}/dependency-maven-plugin-markers</markersDirectory>
+                                    <artifactItems>
+                                        <artifactItem>
+                                            <groupId>org.glassfish.main.distributions</groupId>
+                                            <artifactId>glassfish</artifactId>
+                                            <version>${glassfish.version}</version>
+                                            <type>zip</type>
+                                            <overWrite>false</overWrite>
+                                            <outputDirectory>${glassfish.root}</outputDirectory>
+                                        </artifactItem>
+                                    </artifactItems>
+                                </configuration>
+                            </execution>
+
+                            <!-- Replace the Exousia jar in GlassFish; runs after the unpacking, as it's declared later -->
+                            <execution>
+                                <id>update-authorization-impl</id>
+                                <phase>process-test-classes</phase>
+                                <goals>
+                                    <goal>copy</goal>
+                                </goals>
+                                <configuration>
+                                    <skip>${skipITs}</skip>
+                                    <artifactItems>
+                                        <artifactItem>
+                                            <groupId>org.glassfish.exousia</groupId>
+                                            <artifactId>exousia</artifactId>
+                                            <version>${exousia.version}</version>
+                                            <type>jar</type>
+                                            <overWrite>true</overWrite>
+                                            <outputDirectory>${glassfish.home}/glassfish/modules</outputDirectory>
+                                            <destFileName>exousia.jar</destFileName>
+                                        </artifactItem>
+                                    </artifactItems>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <version>3.1.0</version>
+                        <executions>
+                            <execution>
+                                <id>set-port</id>
+                                <phase>pre-integration-test</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <skip>${skipITs}</skip>
+                                    <target>
+                                        <echo level="info">Replacing in ${glassfish.root}</echo>
+                                        <replace token="8080"
+                                            value="${glassfish.port}"
+                                            dir="${glassfish.home}/glassfish/domains/domain1/config/"
+                                            summary="yes">
+                                            <include name="domain.xml" />
+                                        </replace>
+                                    </target>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <!--
+                        Installs the jakarta.authorization-api.jar from GF on the filesystem to the
+                        coordinates expected by the signature test.
+                    -->
+                    <plugin>
+                        <artifactId>maven-install-plugin</artifactId>
+                        <version>3.1.4</version>
+                        <executions>
+                            <execution>
+                                <id>unpack</id>
+                                <phase>pre-integration-test</phase>
+                                <goals>
+                                    <goal>install-file</goal>
+                                </goals>
+                                <configuration>
+                                    <file>${glassfish.home}/glassfish/modules/jakarta.authorization-api.jar</file>
+                                    <groupId>${sigtest.api.groupId}</groupId>
+                                    <artifactId>${sigtest.api.artifactId}</artifactId>
+                                    <version>${sigtest.api.version}</version>
+                                    <packaging>jar</packaging>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <configuration>
+                            <systemProperties>
+                                <glassfish.home>${glassfish.home}</glassfish.home>
+
+                                <log.file.location>${glassfish.home}/glassfish/domains/domain1/logs</log.file.location>
+
+                                <glassfish.systemProperties>
+                                    log.file.location=${glassfish.home}/glassfish/domains/domain1/logs
+                                    vendor.jakarta.security.jacc.PolicyConfigurationFactory.provider=org.glassfish.exousia.modules.def.DefaultPolicyConfigurationFactory
+                                </glassfish.systemProperties>
+
+                                <glassfish.postBootCommands>
+                                    --passwordfile ${maven.multiModuleProjectDirectory}/reza.pass create-file-user --groups foo:bar reza
+                                    --passwordfile ${maven.multiModuleProjectDirectory}/javajoe.pass create-file-user --groups Administrator:Manager:Employee javajoe
+                                    --passwordfile ${maven.multiModuleProjectDirectory}/javajoe.pass create-file-user --groups Manager:Employee Manager
+                                    --passwordfile ${maven.multiModuleProjectDirectory}/j2ee.pass create-file-user --groups Employee j2ee
+                                </glassfish.postBootCommands>
+                            </systemProperties>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+
+        <!-- ### QUARKUS ### -->
+
+        <!--
+            Builds each test deployment into a production Quarkus application and runs it in its own JVM, via the
+            arquillian-quarkus-managed container. Jakarta Authorization is provided by the Exousia Quarkus extension
+            (quarkus-exousia), which also brings in Undertow for the Servlet container.
+        -->
+        <profile>
+            <id>quarkus</id>
+
+            <properties>
+                <exousia.version>3.0.2</exousia.version>
+                <!-- Jakarta Pages (JSP), for the test pages of some modules -->
+                <wasp.version>4.0.4</wasp.version>
+                <arquillian-quarkus.version>1.1.1</arquillian-quarkus.version>
+                <!-- Enterprise Beans (app-ejb-constraints): OmniBeans maps them to CDI, with OmniServices -->
+                <omnibeans.version>0.4</omnibeans.version>
+                <omniservices.version>0.5</omniservices.version>
+                <!--
+                    The HTTPS port of the test applications. Arquillian 1.10 takes the port of URLs injected with
+                    @Secured from the annotation (8181); from a version with HTTPSContext on, it can be 0 (a free port).
+                -->
+                <arquillian-quarkus.httpsPort>8181</arquillian-quarkus.httpsPort>
+                <quarkus.log.dir>${project.build.directory}/quarkus-logs</quarkus.log.dir>
+
+                <!-- The API jar Quarkus ships (managed by the Quarkus BOM), used by /authorization-signaturetest -->
+                <sigtest.api.groupId>jakarta.authorization</sigtest.api.groupId>
+                <sigtest.api.artifactId>jakarta.authorization-api</sigtest.api.artifactId>
+                <sigtest.api.version>3.0.0</sigtest.api.version>
+            </properties>
+
+            <dependencies>
+                <!-- The actual Arquillian connector -->
+                <dependency>
+                    <groupId>ee.omnifish.arquillian</groupId>
+                    <artifactId>arquillian-quarkus-managed</artifactId>
+                    <version>${arquillian-quarkus.version}</version>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <configuration>
+                            <systemPropertyVariables>
+                                <!--
+                                    Extensions the test applications are built with. The properties-file extension
+                                    provides the users (with their groups as roles) for BASIC authentication. Quarkus
+                                    has no Enterprise Beans container, so all applications get OmniBeans (which needs
+                                    Narayana and context propagation), even though only app-ejb-constraints uses it.
+                                -->
+                                <arquillian.quarkus.dependencies>
+                                    org.glassfish.exousia:quarkus-exousia:${exousia.version}
+                                    org.glassfish.wasp:quarkus-wasp:${wasp.version}
+                                    io.quarkus:quarkus-elytron-security-properties-file
+                                    io.quarkus:quarkus-narayana-jta
+                                    io.quarkus:quarkus-smallrye-context-propagation
+                                    ee.omnifish:omnibeans:${omnibeans.version}
+                                    ee.omnifish:omnibeans-quarkus:${omnibeans.version}
+                                    org.omnifaces:omniservices:${omniservices.version}
+                                    jakarta.ejb:jakarta.ejb-api:4.0.1
+                                </arquillian.quarkus.dependencies>
+
+                                <arquillian.quarkus.httpsPort>${arquillian-quarkus.httpsPort}</arquillian.quarkus.httpsPort>
+
+                                <!-- Quarkus build time configuration for the test applications -->
+                                <arquillian.quarkus.buildProperties>
+                                    quarkus.security.users.embedded.enabled=true
+                                    quarkus.http.auth.basic=true
+                                </arquillian.quarkus.buildProperties>
+
+                                <!-- System properties for the server (the application JVM) -->
+                                <arquillian.quarkus.systemProperties>
+                                    quarkus.security.users.embedded.plain-text=true
+                                    quarkus.security.users.embedded.users.reza=secret1
+                                    quarkus.security.users.embedded.roles.reza=foo,bar
+                                    quarkus.security.users.embedded.users.javajoe=javajoe
+                                    quarkus.security.users.embedded.roles.javajoe=Administrator,Manager,Employee
+                                    quarkus.security.users.embedded.users.Manager=javajoe
+                                    quarkus.security.users.embedded.roles.Manager=Manager,Employee
+                                    quarkus.security.users.embedded.users.j2ee=j2ee
+                                    quarkus.security.users.embedded.roles.j2ee=Employee
+                                    log.file.location=${quarkus.log.dir}
+                                    vendor.jakarta.security.jacc.PolicyConfigurationFactory.provider=org.glassfish.exousia.modules.def.DefaultPolicyConfigurationFactory
+                                </arquillian.quarkus.systemProperties>
+
+                                <!-- System properties for the tests -->
+                                <log.file.location>${quarkus.log.dir}</log.file.location>
+                            </systemPropertyVariables>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <!--
+            As the quarkus profile, but builds each test deployment into a native executable: mvn verify -Pquarkus-native.
+            Needs GraalVM or Mandrel, from GRAALVM_HOME or as the JDK that runs Maven. A native build takes a minute or
+            more per test class. The two profiles differ only in arquillian.quarkus.nativeImage.
+        -->
+        <profile>
+            <id>quarkus-native</id>
+
+            <properties>
+                <exousia.version>3.0.2</exousia.version>
+                <!-- Jakarta Pages (JSP), for the test pages of some modules -->
+                <wasp.version>4.0.4</wasp.version>
+                <arquillian-quarkus.version>1.1.1</arquillian-quarkus.version>
+                <!-- Enterprise Beans (app-ejb-constraints): OmniBeans maps them to CDI, with OmniServices -->
+                <omnibeans.version>0.4</omnibeans.version>
+                <omniservices.version>0.5</omniservices.version>
+                <!--
+                    The HTTPS port of the test applications. Arquillian 1.10 takes the port of URLs injected with
+                    @Secured from the annotation (8181); from a version with HTTPSContext on, it can be 0 (a free port).
+                -->
+                <arquillian-quarkus.httpsPort>8181</arquillian-quarkus.httpsPort>
+                <quarkus.log.dir>${project.build.directory}/quarkus-logs</quarkus.log.dir>
+
+                <!-- The API jar Quarkus ships (managed by the Quarkus BOM), used by /authorization-signaturetest -->
+                <sigtest.api.groupId>jakarta.authorization</sigtest.api.groupId>
+                <sigtest.api.artifactId>jakarta.authorization-api</sigtest.api.artifactId>
+                <sigtest.api.version>3.0.0</sigtest.api.version>
+            </properties>
+
+            <dependencies>
+                <!-- The actual Arquillian connector -->
+                <dependency>
+                    <groupId>ee.omnifish.arquillian</groupId>
+                    <artifactId>arquillian-quarkus-managed</artifactId>
+                    <version>${arquillian-quarkus.version}</version>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <configuration>
+                            <systemPropertyVariables>
+                                <!--
+                                    Extensions the test applications are built with. The properties-file extension
+                                    provides the users (with their groups as roles) for BASIC authentication. Quarkus
+                                    has no Enterprise Beans container, so all applications get OmniBeans (which needs
+                                    Narayana and context propagation), even though only app-ejb-constraints uses it.
+                                -->
+                                <arquillian.quarkus.dependencies>
+                                    org.glassfish.exousia:quarkus-exousia:${exousia.version}
+                                    org.glassfish.wasp:quarkus-wasp:${wasp.version}
+                                    io.quarkus:quarkus-elytron-security-properties-file
+                                    io.quarkus:quarkus-narayana-jta
+                                    io.quarkus:quarkus-smallrye-context-propagation
+                                    ee.omnifish:omnibeans:${omnibeans.version}
+                                    ee.omnifish:omnibeans-quarkus:${omnibeans.version}
+                                    org.omnifaces:omniservices:${omniservices.version}
+                                    jakarta.ejb:jakarta.ejb-api:4.0.1
+                                </arquillian.quarkus.dependencies>
+
+                                <arquillian.quarkus.httpsPort>${arquillian-quarkus.httpsPort}</arquillian.quarkus.httpsPort>
+
+                                <!-- Quarkus build time configuration for the test applications -->
+                                <arquillian.quarkus.buildProperties>
+                                    quarkus.security.users.embedded.enabled=true
+                                    quarkus.http.auth.basic=true
+                                </arquillian.quarkus.buildProperties>
+
+                                <!-- System properties for the server (the native executable) -->
+                                <arquillian.quarkus.systemProperties>
+                                    quarkus.security.users.embedded.plain-text=true
+                                    quarkus.security.users.embedded.users.reza=secret1
+                                    quarkus.security.users.embedded.roles.reza=foo,bar
+                                    quarkus.security.users.embedded.users.javajoe=javajoe
+                                    quarkus.security.users.embedded.roles.javajoe=Administrator,Manager,Employee
+                                    quarkus.security.users.embedded.users.Manager=javajoe
+                                    quarkus.security.users.embedded.roles.Manager=Manager,Employee
+                                    quarkus.security.users.embedded.users.j2ee=j2ee
+                                    quarkus.security.users.embedded.roles.j2ee=Employee
+                                    log.file.location=${quarkus.log.dir}
+                                    vendor.jakarta.security.jacc.PolicyConfigurationFactory.provider=org.glassfish.exousia.modules.def.DefaultPolicyConfigurationFactory
+                                </arquillian.quarkus.systemProperties>
+
+                                <arquillian.quarkus.nativeImage>true</arquillian.quarkus.nativeImage>
+
+                                <!-- System properties for the tests -->
+                                <log.file.location>${quarkus.log.dir}</log.file.location>
+                            </systemPropertyVariables>
                         </configuration>
                     </plugin>
                 </plugins>
