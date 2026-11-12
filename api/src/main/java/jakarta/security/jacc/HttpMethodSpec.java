@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to Eclipse Foundation. All rights reserved.
  * Copyright (c) 1997, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -23,8 +24,35 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- * This class is used ...
- * <P>
+ * HTTPMethodSpec describes the syntax of the HTTP method component of their actions values. The HTTPMethodSpec syntax
+ * is defined as follows:
+ * <pre>
+ *
+ *          ExtensionMethod ::= any token as defined by RFC 2616
+ *                    (that is, 1*[any CHAR except CTLs or separators])
+ *
+ *          HTTPMethod ::= "GET" | "POST" | "PUT" | "DELETE" | "HEAD" |
+ *                   "OPTIONS" | "TRACE" | ExtensionMethod
+ *
+ *          HTTPMethodList ::= HTTPMethod | HTTPMethodList comma HTTPMethod
+ *
+ *          HTTPMethodExceptionList ::= exclaimationPoint HTTPMethodList
+ *
+ *          HTTPMethodSpec ::= null | HTTPMethodExceptionList |
+ *                   HTTPMethodList
+ *
+ * </pre>
+ *
+ * <p>
+ * If duplicates occur in the HTTPMethodSpec they must be eliminated by the permission constructor.
+ *
+ * <p>
+ * A null or empty string HTTPMethodSpec indicates that the permission applies to all HTTP methods at the resources
+ * identified by the URL pattern.
+ *
+ * <p>
+ * If the HTTPMethodSpec contains an HTTPMethodExceptionList (i.e., it begins with an exclaimationPoint), the permission
+ * pertains to all methods except those occurring in the exception list.
  *
  * @author Ron Monzillo
  * @author Gary Ellison

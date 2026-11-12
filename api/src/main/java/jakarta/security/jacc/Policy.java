@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, 2024 Contributors to Eclipse Foundation. All rights reserved.
+ * Copyright (c) 2023, 2026 Contributors to Eclipse Foundation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -125,19 +125,12 @@ public interface Policy {
     }
 
     /**
-     * Returns a collection of at least all declared permissions associated with the caller principal
-     * contained in the set of principals being passed in.
-     *
-     * <p>
-     * Policies can represent remote authorization systems which may not be able to provide all permissions, and
-     * there for this method cannot guarantee all permissions are indeed returned. The policy should however
-     * return at least all permissions which are declared or set within a Jakarta EE application. Examples of such permissions
-     * are the permissions transformed from the Jakarta Servlet security constraints expression in @{web.xml}, via annotations
-     * or programmatically using the Jakarta Servlet API.
+     * This method checks whether the permission represented by the @{permissionToBeChecked} parameter is granted
+     * to the given set of principals.
      *
      * @param permissionToBeChecked the permission this policy is going to check
-     * @param principals collection containing the (obscured) caller principal
-     * @return a collection of permissions associated with the caller principal
+     * @param principals the set of principals representing the identity to authorize
+     * @return true if the set of principals allows the requested permission, false otherwise
      */
     default boolean implies(Permission permissionToBeChecked, Set<Principal> principals) {
         Subject subject = new Subject();

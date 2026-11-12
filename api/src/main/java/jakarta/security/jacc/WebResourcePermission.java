@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to Eclipse Foundation. All rights reserved.
  * Copyright (c) 1997, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -131,7 +132,7 @@ public final class WebResourcePermission extends Permission {
      * @param name the URLPatternSpec that identifies the application specific web resources to which the permission
      * pertains. All URLPatterns in the URLPatternSpec are relative to the context path of the deployed web application
      * module, and the same URLPattern must not occur more than once in a URLPatternSpec. A null URLPatternSpec is
-     * translated to the default URLPattern, "/", by the permission constructor. All colons occuring within the URLPattern
+     * translated to the default URLPattern, "/", by the permission constructor. All colons occurring within the URLPattern
      * elements of the URLPatternSpec must be represented in escaped encoding as defined in RFC 2396.
      * @param actions identifies the HTTP methods to which the permission pertains. If the value passed through this
      * parameter is null or the empty string, then the permission pertains to all the possible HTTP methods.
@@ -168,7 +169,7 @@ public final class WebResourcePermission extends Permission {
      * The permission name is the substring of the requestURI (HttpServletRequest.getRequestURI()) that begins after the
      * contextPath (HttpServletRequest.getContextPath()). When the substring operation yields the string "/", the permission
      * is constructed with the empty string as its name. The permission's actions field is obtained from
-     * HttpServletRequest.getMethod(). The constructor must transform all colon characters occuring in the name to escaped
+     * HttpServletRequest.getMethod(). The constructor must transform all colon characters occurring in the name to escaped
      * encoding as defined in RFC 2396.
      */
     public WebResourcePermission(HttpServletRequest request) {

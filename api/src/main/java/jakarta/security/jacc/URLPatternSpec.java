@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to Eclipse Foundation. All rights reserved.
  * Copyright (c) 1997, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -84,8 +85,9 @@ class URLPatternSpec extends URLPattern {
 
     /**
      * This method returns a String containing the first URLPattern in this URLPatternSpec.
+     * 
+     * @return a String containing the first URLPattern in this URLPatternSpec.
      */
-
     public String getURLPattern() {
         return super.toString();
     }

@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to Eclipse Foundation. All rights reserved.
  * Copyright (c) 1997-2020 Oracle and/or its affiliates. All rights reserved.
  * Copyright 2004 The Apache Software Foundation
  *
@@ -117,6 +118,7 @@ class URLPattern extends Object implements Comparable<URLPattern> {
      * </ul>
      *
      * @param that URLPattern to determine if implied by (matched by) this URLPattern to
+     * @return true if this pattern implies the argument pattern.
      */
     public boolean implies(URLPattern that) {
 
